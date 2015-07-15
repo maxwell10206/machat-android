@@ -1,0 +1,36 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:actionBarStyle">@style/MyActionBar</item>
+        <item name="android:logo">@drawable/ic_home_white_48pt_3x</item>
+    </style>
+
+    <style name="MyActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@color/machat_orange</item>
+    </style>
+
+    <style name="LoginTheme" parent="AppTheme">
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <!-- Splash Theme. -->
+    <style name="SplashTheme" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/splash_screen_background</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowAnimationStyle">@style/Default.Activity</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="Default.Activity" parent="@android:style/Animation.Activity">
+        <item name="android:windowEnterAnimation">@null</item>
+        <item name="android:windowExitAnimation">@null</item>
+    </style>
+
+    <style name="SearchTheme" parent= "android:style/Theme.Holo.Light">
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
+</resources>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="machat.machat">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_home_white_48pt_3x_background"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme"
+        android:name=".MachatApplication">
+        <receiver android:name=".AutoStart">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".LoginOrRegisterActivity"
+                  android:theme="@style/SplashTheme"/>
+
+        <activity android:name=".LoginActivity"
+                  android:theme="@style/LoginTheme"
+                  android:windowSoftInputMode="stateVisible"/>
+
+        <activity android:name=".RegisterActivity"
+                  android:theme="@style/LoginTheme"
+                  android:windowSoftInputMode="stateVisible"/>
+
+        <activity android:name=".FavoriteListActivity"/>
+
+        <activity android:name=".HouseActivity"
+                  android:windowSoftInputMode="stateHidden"
+                  android:parentActivityName=".FavoriteListActivity">
+            <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".FavoriteListActivity"/>
+        </activity>
+
+        <activity android:name=".SearchActivity"
+                  android:theme="@style/SearchTheme"/>
+
+        <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
+
+        <activity android:name=".ProfileActivity"/>
+
+        <activity android:name=".MyProfileActivity"/>
+
+        <service android:name=".SocketService"/>
+
+        <activity android:name=".BlockListActivity"/>
+
+    </application>
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
+</manifest>

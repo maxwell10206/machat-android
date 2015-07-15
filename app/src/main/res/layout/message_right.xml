@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical|right"
+    android:paddingLeft="50dp"
+    android:paddingRight="10dp"
+    android:paddingBottom="5dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="..."
+        android:id="@+id/status"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/relativeLayout"
+        android:layout_toStartOf="@+id/relativeLayout"
+        android:layout_marginRight="5dp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="right"
+        android:background="@drawable/right_message"
+        android:addStatesFromChildren="true"
+        android:id="@+id/messageWrapper">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/message"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentStart="false"
+            android:layout_alignParentRight="false"
+            android:gravity="right"
+            android:text="Message"
+            android:autoLink="web"
+            android:layout_gravity="right"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="time"
+            android:id="@+id/time"
+            android:layout_below="@+id/message"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:gravity="right"
+            android:singleLine="false"
+            android:layout_gravity="right" />
+    </LinearLayout>
+
+</LinearLayout>

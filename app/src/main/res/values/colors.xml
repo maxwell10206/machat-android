@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="machat_orange">#FF8200</color>
+    <color name="send_button_pressed">#60C0C0C0</color>
+    <color name="message_list_background">#E8E8E8</color>
+    <color name="grey600">#75000000</color>
+</resources>

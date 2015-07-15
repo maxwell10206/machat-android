@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/asdf"
+    android:paddingLeft="10dp"
+    android:paddingBottom="5dp"
+    android:paddingTop="5dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/avatar"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:src="@drawable/ic_person_black_36dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Name"
+        android:id="@+id/username"
+        android:textSize="18dp"
+        android:singleLine="true"
+        android:layout_alignTop="@+id/avatar"
+        android:layout_marginTop="10dp"
+        android:layout_toLeftOf="@+id/message_time"
+        android:layout_toStartOf="@+id/message_time"
+        android:layout_toRightOf="@+id/avatar"
+        android:layout_marginLeft="10dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="name: message"
+        android:id="@+id/last_message"
+        android:textSize="16dp"
+        android:textColor="#ff808080"
+        android:singleLine="true"
+        android:layout_below="@+id/username"
+        android:layout_alignBottom="@+id/avatar"
+        android:layout_toLeftOf="@+id/mute"
+        android:layout_alignLeft="@+id/username"
+        android:layout_alignStart="@+id/username" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="time"
+        android:id="@+id/message_time"
+        android:layout_alignTop="@+id/username"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="10dp"
+        android:textSize="16dp"
+        android:textColor="#ff808080"
+        android:gravity="center" />
+
+    <ImageView
+        android:layout_width="64dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/mute"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/last_message"
+        android:layout_alignBottom="@+id/last_message"
+        android:src="@drawable/ic_action_volume_on" />
+
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:id="@+id/notRead"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+</RelativeLayout>

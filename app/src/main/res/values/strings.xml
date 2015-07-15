@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">machat</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_profile">Profile</string>
+    <string name="action_favorite">Favorite</string>
+    <string name="action_block_list">Block List</string>
+    <string name="action_search">Search</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="auto_login">Auto Login</string>
+    <string name="pref_notification_settings">Notifications</string>
+    <string name="pref_account_settings">Account</string>
+    <string name="pref_key_vibrate">vibrateKey</string>
+    <string name="pref_summary_vibrate">Vibrate</string>
+    <string name="pref_summary_sound">Sound</string>
+    <string name="pref_key_sound">soundKey</string>
+    <string name="pref_key_name">name</string>
+    <string name="pref_summary_name">Change Name</string>
+    <string name="pref_key_email">email</string>
+    <string name="pref_summary_email">Change Email</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="cancel">Cancel</string>
+    <string name="pref_summary_password">Change Password</string>
+    <string name="pref_key_password">password</string>
+    <string name="pref_summary_blinkLED">Blink LED</string>
+    <string name="pref_key_blinkLED">blinkLED</string>
+    <string name="pref_summary_receive_notifications">Receive Notifications</string>
+    <string name="pref_key_receive_notifications">receiveNotifications</string>
+    <string name="pref_summary_logout">Logout</string>
+    <string name="pref_key_logout">logout</string>
+    <string name="unblock">Unblock</string>
+    <string-array
+        name="message_dialog_options_full">
+        <item>Copy Message</item>
+        <item>Go to profile</item>
+    </string-array>
+    <string-array
+        name="message_dialog_options_short">
+        <item>Copy Message</item>
+    </string-array>
+</resources>

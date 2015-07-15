@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <EditText
+        android:layout_width="250sp"
+        android:layout_height="wrap_content"
+        android:id="@+id/username"
+        android:hint="Username"
+        android:layout_below="@+id/signUpText"
+        android:layout_marginTop="10dp"
+        android:layout_alignLeft="@+id/password"
+        android:layout_alignStart="@+id/password"
+        android:layout_alignRight="@+id/password"
+        android:layout_alignEnd="@+id/password"
+        android:maxLength="24" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/password"
+        android:hint="Password"
+        android:layout_below="@+id/email"
+        android:layout_alignLeft="@+id/retypePassword"
+        android:layout_alignStart="@+id/retypePassword"
+        android:layout_alignRight="@+id/retypePassword"
+        android:layout_alignEnd="@+id/retypePassword"
+        android:layout_marginTop="10dp"
+        android:maxLength="24" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/retypePassword"
+        android:hint="Retype Password"
+        android:layout_below="@+id/password"
+        android:layout_marginTop="10dp"
+        android:layout_alignLeft="@+id/error"
+        android:layout_alignStart="@+id/error"
+        android:layout_alignRight="@+id/error"
+        android:layout_alignEnd="@+id/error"
+        android:maxLength="24" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Register"
+        android:id="@+id/registerButton"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:background="@android:color/holo_blue_light"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:isScrollContainer="true"
+        android:visibility="invisible" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Sign Up"
+        android:id="@+id/signUpText"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:textSize="30dp"
+        android:textColor="@android:color/holo_orange_dark"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="300sp"
+        android:layout_height="35dp"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/error"
+        android:textColor="#ffff0000"
+        android:layout_below="@+id/retypePassword"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:ems="10"
+        android:id="@+id/email"
+        android:layout_below="@+id/username"
+        android:layout_alignLeft="@+id/password"
+        android:layout_alignStart="@+id/password"
+        android:layout_alignRight="@+id/password"
+        android:layout_alignEnd="@+id/password"
+        android:layout_marginTop="10dp"
+        android:hint="Email"
+        android:maxLength="40" />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible"
+        android:indeterminate="false" />
+
+</RelativeLayout>
