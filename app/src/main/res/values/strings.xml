@@ -29,6 +29,7 @@
     <string name="pref_key_receive_notifications">receiveNotifications</string>
     <string name="pref_summary_logout">Logout</string>
     <string name="pref_key_logout">logout</string>
+    <string name="socket_error">Error connecting to server</string>
     <string name="unblock">Unblock</string>
     <string-array
         name="message_dialog_options_full">

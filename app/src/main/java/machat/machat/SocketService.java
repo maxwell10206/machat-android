@@ -11,18 +11,11 @@ import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 
 import java.net.URISyntaxException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-
-import javax.net.ssl.SSLContext;
 
 import machat.machat.socketIO.AvatarManager;
 import machat.machat.socketIO.ServiceReceiver;
 import machat.machat.socketIO.TimeConvert;
 
-/**
- * Created by Admin on 5/16/2015.
- */
 public class SocketService extends Service {
 
     public SocketCommunication send;
@@ -72,6 +65,8 @@ public class SocketService extends Service {
     @Override
     public void onDestroy(){
         super.onDestroy();
+        socket.disconnect();
+        send.turnOffListeners();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(user);
     }
 

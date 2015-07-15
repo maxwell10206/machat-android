@@ -15,9 +15,6 @@ import com.github.nkzawa.socketio.client.Socket;
 
 import machat.machat.SocketService;
 
-/**
- * Created by Admin on 5/27/2015.
- */
 public class SocketActivity{
 
     private SocketListener socketListener;
@@ -96,6 +93,8 @@ public class SocketActivity{
             }
             if(command.equals(Socket.EVENT_DISCONNECT)){
                 Toast.makeText(activity, "Lost Connection", Toast.LENGTH_SHORT).show();
+            } else if (command.equals(Socket.EVENT_ERROR)) {
+                Toast.makeText(activity, "Error connecting to server", Toast.LENGTH_SHORT).show();
             }
         }
     }
