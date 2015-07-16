@@ -75,7 +75,7 @@ public class MachatNotificationManager {
                 .setContentTitle(houseName)
                 .setSmallIcon(R.drawable.ic_home_white_48pt_3x);
 
-        createHouseNotification(houseId, myId, mBuilder);
+        createHouseNotification(houseId, myId, houseName, mBuilder);
     }
 
     private void createMultiMessageNotify(int houseId, int myId, String houseName, String name, int missedMessages, String message){
@@ -84,11 +84,14 @@ public class MachatNotificationManager {
                 .setContentTitle(houseName)
                 .setSmallIcon(R.drawable.ic_home_white_48pt_3x);
 
-        createHouseNotification(houseId, myId, mBuilder);
+        createHouseNotification(houseId, myId, houseName, mBuilder);
     }
 
-    private void createHouseNotification(int houseId, int myId, NotificationCompat.Builder mBuilder){
-        Intent resultIntent = new Intent(service, HouseActivity.class).putExtra(HouseActivity.EXTRA_ID, houseId).putExtra(HouseActivity.MY_ID, myId);
+    private void createHouseNotification(int houseId, int myId, String houseName, NotificationCompat.Builder mBuilder) {
+        Intent resultIntent = new Intent(service, HouseActivity.class)
+                .putExtra(HouseActivity.EXTRA_ID, houseId)
+                .putExtra(HouseActivity.MY_ID, myId)
+                .putExtra(HouseActivity.HOUSE_NAME, houseName);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(service);
 // Adds the back stack
         stackBuilder.addParentStack(HouseActivity.class);

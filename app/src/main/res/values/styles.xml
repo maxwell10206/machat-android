@@ -32,11 +32,13 @@
     <style name="HouseTheme" parent="android:style/Theme.Holo.Light">
         <item name="android:windowAnimationStyle">@null</item>
         <item name="android:logo">@android:color/transparent</item>
+        <item name="android:homeAsUpIndicator">@drawable/layer_list_back_button</item>
     </style>
 
     <style name="SearchTheme" parent= "android:style/Theme.Holo.Light">
         <item name="android:windowAnimationStyle">@null</item>
-        <item name="android:logo">@drawable/ic_search_black_24dp</item>
+        <item name="android:logo">@android:color/transparent</item>
+        <item name="android:homeAsUpIndicator">@drawable/layer_list_back_button</item>
     </style>
 
 </resources>

@@ -59,7 +59,9 @@
 
         <service android:name=".SocketService"/>
 
-        <activity android:name=".BlockListActivity"/>
+        <activity
+            android:name=".BlockListActivity"
+            android:theme="@style/HouseTheme" />
 
     </application>
 
