@@ -16,6 +16,9 @@ import machat.machat.socketIO.AvatarManager;
 import machat.machat.socketIO.ServiceReceiver;
 import machat.machat.socketIO.TimeConvert;
 
+/**
+ * Created by Admin on 5/16/2015.
+ */
 public class SocketService extends Service {
 
     public SocketCommunication send;

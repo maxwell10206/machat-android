@@ -133,6 +133,13 @@ public class FavoriteListAdapter extends ArrayAdapter {
         }
         messageTime.setText(favoriteItem.getTimeString());
 
+        ImageView status = (ImageView) rowView.findViewById(R.id.status);
+        if (favoriteItem.getMessage().getUserId() == myId) {
+            status.setImageResource(favoriteItem.getMessage().getStatusImageId());
+        } else {
+            status.setImageResource(R.drawable.ic_play_arrow_black_18dp);
+        }
+
         if(favoriteItem.isBlock()){
             lastMessage.setText("BLOCKED");
         }
@@ -144,7 +151,7 @@ public class FavoriteListAdapter extends ArrayAdapter {
 
         AvatarManager.getAvatar(favoriteItem.getUserId(), new OnCallbackAvatar() {
             @Override
-            public void newAvatar(int id,final Bitmap bitmap) {
+            public void newAvatar(int id, final Bitmap bitmap) {
                 favoriteListActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -155,9 +162,9 @@ public class FavoriteListAdapter extends ArrayAdapter {
         });
 
         if(favoriteItem.isMute()){
-            mute.setImageResource(R.drawable.ic_action_volume_muted);
+            mute.setImageResource(R.drawable.ic_volume_mute_black_24dp);
         }else{
-            mute.setImageResource(R.drawable.ic_action_volume_on);
+            mute.setImageResource(R.drawable.ic_volume_up_black_24dp);
         }
 
         return rowView;

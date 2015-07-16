@@ -81,8 +81,8 @@ public class HouseArrayAdapter extends ArrayAdapter {
         final Message message = messageList.get(position);
         if(houseActivity.myProfile().getId() == message.getUserId()){
             rowView = inflater.inflate(R.layout.message_right, parent, false);
-            TextView statusView = (TextView) rowView.findViewById(R.id.status);
-            statusView.setText(message.getStatusString());
+            ImageView statusView = (ImageView) rowView.findViewById(R.id.status);
+            statusView.setImageResource(message.getStatusImageId());
         }else {
             rowView = inflater.inflate(R.layout.message_left, parent, false);
             TextView nameView = (TextView) rowView.findViewById(R.id.username);

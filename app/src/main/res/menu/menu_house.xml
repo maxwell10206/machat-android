@@ -1,12 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/action_profile"
-        android:icon="@drawable/ic_action_person"
-        android:title="@+id/action_profile"
+    <item
+        android:id="@+id/action_mute"
+        android:icon="@drawable/ic_volume_up_black_24dp"
+        android:title="@string/action_mute"
+        android:visible="false"
         android:showAsAction="ifRoom"/>
     <item android:id="@+id/action_favorite"
-        android:icon="@drawable/ic_action_favorite"
+        android:icon="@drawable/ic_favorite_border_black_24dp"
         android:title="@string/action_favorite"
         android:actionLayout="@layout/progressbar"
+        android:enabled="false"
+        android:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_profile"
+        android:icon="@drawable/ic_perm_identity_black_24dp"
+        android:title="@+id/action_profile"
         android:showAsAction="ifRoom" />
 </menu>

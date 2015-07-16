@@ -29,8 +29,14 @@
         <item name="android:windowExitAnimation">@null</item>
     </style>
 
+    <style name="HouseTheme" parent="android:style/Theme.Holo.Light">
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:logo">@android:color/transparent</item>
+    </style>
+
     <style name="SearchTheme" parent= "android:style/Theme.Holo.Light">
         <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:logo">@drawable/ic_search_black_24dp</item>
     </style>
 
 </resources>

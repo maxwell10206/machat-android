@@ -176,6 +176,7 @@ public class SearchActivity extends ListActivity implements SocketActivity.Socke
             Intent intent = new Intent(this, HouseActivity.class);
             intent.putExtra(HouseActivity.EXTRA_ID, user.getUserId());
             intent.putExtra(HouseActivity.MY_ID, myProfile.getId());
+            intent.putExtra(HouseActivity.HOUSE_NAME, user.getName());
             startActivity(intent);
         }
     }

@@ -7,16 +7,12 @@
     android:paddingRight="10dp"
     android:paddingBottom="5dp">
 
-    <TextView
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="..."
         android:id="@+id/status"
-        android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/relativeLayout"
-        android:layout_toStartOf="@+id/relativeLayout"
-        android:layout_marginRight="5dp" />
+        android:src="@drawable/ic_access_time_black_18dp"
+        android:padding="8dp" />
 
     <LinearLayout
         android:layout_width="wrap_content"

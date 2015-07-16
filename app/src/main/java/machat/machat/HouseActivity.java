@@ -12,15 +12,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
-import com.github.nkzawa.socketio.client.Socket;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +32,6 @@ import machat.machat.socketIO.OnNewHouse;
 import machat.machat.socketIO.OnNewMessage;
 import machat.machat.socketIO.OnNewMessageList;
 import machat.machat.socketIO.OnUserReadMessage;
-import machat.machat.socketIO.OnUserTyping;
 import machat.machat.socketIO.SocketActivity;
 import machat.machat.socketIO.SocketCommand;
 import machat.machat.socketIO.SocketParse;
@@ -43,9 +39,11 @@ import machat.machat.socketIO.SocketParse;
 /**
  * Created by Admin on 6/13/2015.
  */
-public class HouseActivity extends ListActivity implements SocketActivity.SocketListener, OnCallbackMessageStatus, machat.machat.socketIO.OnBlockedByUser, MessageDialogFragment.Action, OnLoginListener, OnJoinHouse, OnUserReadMessage, OnUserTyping, OnDeliveredMessage, OnCallbackAvatar, machat.machat.socketIO.OnCallbackSendMessage, OnNewHouse, OnNewMessageList, OnCallbackFavorite, ListView.OnScrollListener, OnNewMessage, View.OnClickListener {
+public class HouseActivity extends ListActivity implements SocketActivity.SocketListener, OnCallbackMessageStatus, machat.machat.socketIO.OnBlockedByUser, MessageDialogFragment.Action, OnLoginListener, OnJoinHouse, OnUserReadMessage, OnDeliveredMessage, OnCallbackAvatar, machat.machat.socketIO.OnCallbackSendMessage, OnNewHouse, OnNewMessageList, OnCallbackFavorite, ListView.OnScrollListener, OnNewMessage, View.OnClickListener {
 
     public final static String EXTRA_ID = "houseId";
+
+    public final static String HOUSE_NAME = "houseName";
 
     public final static String MY_ID = "myId";
 
@@ -63,7 +61,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
 
     private SocketService mService;
 
-    private Button sendMessage;
+    private ImageButton sendMessage;
 
     private EditText inputMessage;
 
@@ -85,9 +83,9 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
 
     private MenuItem favoriteMenuItem;
 
-    private Menu menu;
+    private MenuItem muteMenuItem;
 
-    private ArrayList<User> usersTyping = new ArrayList<>();
+    private Menu menu;
 
     private MyProfile myProfile;
 
@@ -104,10 +102,11 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         getListView().setOnScrollListener(this);
         houseId = getIntent().getExtras().getInt(EXTRA_ID);
         myId = getIntent().getExtras().getInt(MY_ID);
+        getActionBar().setTitle(getIntent().getExtras().getString(HOUSE_NAME));
         arrayAdapter = new HouseArrayAdapter(this, new ArrayList<Message>());
         getActionBar().setDisplayHomeAsUpEnabled(true);
         socketActivity.setOnSocketListener(this);
-        sendMessage = (Button) findViewById(R.id.sendMessage);
+        sendMessage = (ImageButton) findViewById(R.id.sendMessage);
         inputMessage = (EditText) findViewById(R.id.inputMessage);
         inputMessage.setOnClickListener(this);
         progressbar = (ProgressBar) findViewById(R.id.progressBar);
@@ -141,6 +140,10 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
                 return true;
             case R.id.action_block_list:
                 startActivity(new Intent(this, BlockListActivity.class));
+                return true;
+            case R.id.action_mute:
+                muteHouse(!(house.isMute()));
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -173,6 +176,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
             inflater.inflate(R.menu.menu_house, menu);
             favoriteMenuItem = menu.findItem(R.id.action_favorite);
         }
+        muteMenuItem = menu.findItem(R.id.action_mute);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -330,11 +334,11 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
                     Message message = new Message(
                             houseId,
                             myProfile.getId(),
-                            -1,
+                            (arrayAdapter.getItem(arrayAdapter.getCount() - 1).getMessageId() + 1),
                             myProfile.getUsername(),
                             myProfile.getName(),
                             messageString,
-                            System.currentTimeMillis(),
+                            (System.currentTimeMillis() / 1000),
                             0,
                             house.getName());
                     message.setLocalId(localId);
@@ -355,6 +359,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
                 Toast.makeText(this, "Not connected to server", Toast.LENGTH_SHORT).show();
             }
         }else if(v.getId() == R.id.inputMessage){
+            getListView().smoothScrollBy(0, 0);
             getListView().setSelection(getListView().getCount() - 1);
         }
     }
@@ -362,15 +367,24 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
     @Override
     public void newHouse(House house) {
         this.house = house;
-        getActionBar().setTitle(house.getName());
         sendMessage.setOnClickListener(this);
         if(myId != houseId) {
             favoriteMenuItem.setActionView(null).setEnabled(true);
             if (house.isFavorite()) {
-                favoriteMenuItem.setIcon(R.drawable.ic_action_favorite);
+                favoriteMenuItem.setIcon(R.drawable.ic_favorite_black_24dp);
             } else {
-                favoriteMenuItem.setIcon(R.drawable.ic_action_unfavorite);
+                favoriteMenuItem.setIcon(R.drawable.ic_favorite_border_black_24dp);
             }
+        }
+        if (house.isFavorite()) {
+            if (house.isMute()) {
+                muteMenuItem.setIcon(R.drawable.ic_volume_mute_black_24dp);
+            } else {
+                muteMenuItem.setIcon(R.drawable.ic_volume_up_black_24dp);
+            }
+            muteMenuItem.setVisible(true);
+        } else {
+            muteMenuItem.setVisible(false);
         }
     }
 
@@ -381,19 +395,38 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
 
     @Override
     public void removeFavorite(int id) {
-        if(id == house.getUserId()){
-            favoriteMenuItem.setIcon(R.drawable.ic_action_unfavorite);
+        if (id == houseId) {
+            favoriteMenuItem.setIcon(R.drawable.ic_favorite_border_black_24dp);
             house.setFavorite(false);
             waitingForFavorite = false;
+            muteMenuItem.setVisible(false);
+            house.setMute(true);
         }
     }
 
     @Override
     public void newFavorite(FavoriteItem favoriteItem) {
-        if(favoriteItem.getUserId() == house.getUserId()){
-            favoriteMenuItem.setIcon(R.drawable.ic_action_favorite);
+        if (favoriteItem.getUserId() == houseId) {
+            favoriteMenuItem.setIcon(R.drawable.ic_favorite_black_24dp);
             house.setFavorite(true);
             waitingForFavorite = false;
+            muteMenuItem.setVisible(true);
+            muteMenuItem.setIcon(R.drawable.ic_volume_up_black_24dp);
+            house.setMute(false);
+        }
+    }
+
+    public void muteHouse(boolean mute) {
+        if (connected && mService.isConnected()) {
+            if (mute) {
+                muteMenuItem.setIcon(R.drawable.ic_volume_mute_black_24dp);
+            } else {
+                muteMenuItem.setIcon(R.drawable.ic_volume_up_black_24dp);
+            }
+            mService.send.muteHouse(houseId, mute);
+            house.setMute(mute);
+        } else {
+            Toast.makeText(this, "Not connected to server", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -486,36 +519,6 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
     @Override
     public void getMessageListFailed(String err) {
         Toast.makeText(this, err, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void newUserTyping(int houseId, User user) {
-        if(this.houseId == houseId) {
-            usersTyping.add(user);
-            if (usersTyping.size() == 1) {
-                getActionBar().setTitle(user.getName() + " is typing...");
-            } else {
-                getActionBar().setTitle(usersTyping.size() + " users typing...");
-            }
-        }
-    }
-
-    @Override
-    public void userStoppedTyping(int houseId, User user) {
-        if(this.houseId == houseId) {
-            usersTyping.remove(user);
-            if (usersTyping.size() == 0) {
-                if(house != null) {
-                    getActionBar().setTitle(house.getName());
-                }else{
-                    getActionBar().setTitle("machat");
-                }
-            }else if(usersTyping.size() == 1){
-                getActionBar().setTitle(user.getName() + " is typing...");
-            } else {
-                getActionBar().setTitle(usersTyping.size() + " users typing...");
-            }
-        }
     }
 
     @Override

@@ -39,7 +39,8 @@
 
         <activity android:name=".HouseActivity"
                   android:windowSoftInputMode="stateHidden"
-                  android:parentActivityName=".FavoriteListActivity">
+            android:parentActivityName=".FavoriteListActivity"
+            android:theme="@style/HouseTheme">
             <meta-data
             android:name="android.support.PARENT_ACTIVITY"
             android:value=".FavoriteListActivity"/>
@@ -50,7 +51,9 @@
 
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
 
-        <activity android:name=".ProfileActivity"/>
+        <activity
+            android:name=".ProfileActivity"
+            android:theme="@style/HouseTheme" />
 
         <activity android:name=".MyProfileActivity"/>
 

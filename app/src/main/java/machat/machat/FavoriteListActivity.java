@@ -59,6 +59,7 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
         FavoriteItem favoriteItem = (FavoriteItem) getListView().getItemAtPosition(position);
         intent.putExtra(HouseActivity.EXTRA_ID, favoriteItem.getUserId());
         intent.putExtra(HouseActivity.MY_ID, myProfile.getId());
+        intent.putExtra(HouseActivity.HOUSE_NAME, favoriteItem.getName());
         startActivity(intent);
     }
 

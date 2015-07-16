@@ -41,12 +41,16 @@ public class Message extends User implements Comparable<Message>{
         this.houseName = houseName;
     }
 
-    public String getStatusString(){
+    public int getStatusImageId() {
         switch(status){
-            case SENT: return "S";
-            case DELIVERED: return "D";
-            case READ: return "R";
-            default: return "...";
+            case SENT:
+                return R.drawable.ic_done_black_18dp;
+            case DELIVERED:
+                return R.drawable.ic_done_black_18dp;
+            case READ:
+                return R.drawable.ic_done_all_black_18dp;
+            default:
+                return R.drawable.ic_access_time_black_18dp;
         }
     }
 

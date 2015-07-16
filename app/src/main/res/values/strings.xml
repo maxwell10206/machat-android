@@ -5,6 +5,7 @@
     <string name="action_profile">Profile</string>
     <string name="action_favorite">Favorite</string>
     <string name="action_block_list">Block List</string>
+    <string name="action_mute">Mute</string>
     <string name="action_search">Search</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
