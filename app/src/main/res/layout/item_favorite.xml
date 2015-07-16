@@ -20,28 +20,27 @@
         android:textSize="18dp"
         android:singleLine="true"
         android:layout_alignTop="@+id/avatar"
-        android:layout_marginTop="10dp"
         android:layout_toLeftOf="@+id/message_time"
         android:layout_toStartOf="@+id/message_time"
         android:layout_toRightOf="@+id/avatar"
-        android:layout_marginLeft="10dp" />
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="name: message"
+        android:text="message"
         android:id="@+id/last_message"
         android:textSize="16dp"
         android:textColor="#ff808080"
         android:singleLine="true"
-        android:layout_below="@+id/username"
-        android:layout_alignBottom="@+id/avatar"
         android:layout_alignRight="@+id/username"
         android:layout_alignEnd="@+id/username"
         android:layout_toEndOf="@+id/status"
-        android:gravity="center_vertical"
-        android:layout_toRightOf="@+id/status" />
+        android:layout_toRightOf="@+id/status"
+        android:layout_below="@+id/username"
+        android:layout_alignBottom="@+id/mute" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -79,10 +78,9 @@
         android:layout_height="wrap_content"
         android:id="@+id/status"
         android:src="@drawable/ic_play_arrow_black_18dp"
+        android:paddingRight="4dp"
         android:layout_below="@+id/username"
         android:layout_alignLeft="@+id/username"
-        android:layout_alignStart="@+id/username"
-        android:layout_alignBottom="@+id/last_message"
-        android:padding="4dp" />
+        android:layout_alignStart="@+id/username" />
 
 </RelativeLayout>

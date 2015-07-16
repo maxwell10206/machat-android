@@ -25,22 +25,32 @@ public class SocketService extends Service {
 
     public MachatNotificationManager machatNotificationManager;
 
-    private Socket socket;
+    private final String address = "http://www.machat.us:3000";
+    //http://www.machat.us:3000
+    //http://192.168.1.127:3000/
+
+    private Socket mSocket;
+
+    {
+        try {
+            mSocket = IO.socket(address);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public ServiceReceiver user;
 
     private final IBinder mBinder = new LocalBinder();
-
-    private final String address = "http://www.machat.us:3000";
-    //http://www.machat.us:3000
-    //http://192.168.1.127:3000/
 
     public static String ACTION = "machat.action.SERVER";
 
     public final static String COMMAND = "Command";
     public final static String DATA = "Data";
 
-    public boolean isConnected(){ return socket.connected(); }
+    public boolean isConnected() {
+        return mSocket.connected();
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
@@ -50,25 +60,20 @@ public class SocketService extends Service {
     @Override
     public void onCreate (){
         super.onCreate();
-        try {
-            IO.Options opts = new IO.Options();
-            socket = IO.socket(address, opts);
-            send = new SocketCommunication(this, socket);
-            machatNotificationManager = new MachatNotificationManager(this);
-            user = new ServiceReceiver(this);
-            AvatarManager.setSocketCommunication(send);
-            TimeConvert.setContext(this);
-            socket.connect();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+
+        send = new SocketCommunication(this, mSocket);
+        machatNotificationManager = new MachatNotificationManager(this);
+        user = new ServiceReceiver(this);
+        AvatarManager.setSocketCommunication(send);
+        TimeConvert.setContext(this);
+        mSocket.connect();
         LocalBroadcastManager.getInstance(this).registerReceiver(user, new IntentFilter(SocketService.ACTION));
     }
 
     @Override
     public void onDestroy(){
         super.onDestroy();
-        socket.disconnect();
+        mSocket.disconnect();
         send.turnOffListeners();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(user);
     }

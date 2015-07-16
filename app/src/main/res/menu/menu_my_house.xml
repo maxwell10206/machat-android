@@ -5,7 +5,7 @@
         android:icon="@drawable/ic_volume_up_black_24dp"
         android:title="@string/action_mute"
         android:visible="false"
-        android:showAsAction="ifRoom" />
+        android:showAsAction="always" />
     <item android:id="@+id/action_block_list"
         android:title="@string/action_block_list"/>
 </menu>

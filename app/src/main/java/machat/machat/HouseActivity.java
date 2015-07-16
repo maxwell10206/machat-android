@@ -334,7 +334,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
                     Message message = new Message(
                             houseId,
                             myProfile.getId(),
-                            (arrayAdapter.getItem(arrayAdapter.getCount() - 1).getMessageId() + 1),
+                            (newestMessageId + 1),
                             myProfile.getUsername(),
                             myProfile.getName(),
                             messageString,
