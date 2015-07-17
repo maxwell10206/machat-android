@@ -10,7 +10,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -20,7 +19,6 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import machat.machat.socketIO.OnCallbackAvatar;
 import machat.machat.socketIO.OnCallbackFavorite;
@@ -114,7 +112,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         loadingView = (RelativeLayout) getLayoutInflater().inflate(R.layout.loading_item, null);
         getListView().addHeaderView(loadingView); //poor android 4.4 design.
         setListAdapter(arrayAdapter);
-        getListView().removeHeaderView(loadingView);
+        loadingView.setVisibility(View.INVISIBLE);
 
         ListView l = getListView();
         l.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
@@ -220,7 +218,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         if(connected && !waitingForOldMessages && olderMessages && mService.isConnected()){
             mService.send.getOldMessages(houseId, oldestMessageId);
             waitingForOldMessages = true;
-            progressbar.setVisibility(View.VISIBLE);
+            loadingView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -448,9 +446,14 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
 
     @Override
     public void addOldMessages(ArrayList<Message> messageList) {
-        getListView().smoothScrollBy(0,0);
-        addNewItems(messageList);
-        progressbar.setVisibility(View.INVISIBLE);
+        int headerViewCount = getListView().getHeaderViewsCount();
+        final int positionToSave = getListView().getFirstVisiblePosition() + messageList.size() + headerViewCount;
+        View v = getListView().getChildAt(headerViewCount);
+        final int top = (v == null) ? 0 : v.getTop();
+        arrayAdapter.addAll(messageList);
+        getListView().setSelectionFromTop(positionToSave, top);
+        waitingForOldMessages = false;
+        loadingView.setVisibility(View.INVISIBLE);
         for(int i = 0; i < messageList.size(); i++){
             Message message = messageList.get(i);
                 int messageId = message.getMessageId();
@@ -463,37 +466,8 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         }
         if(messageList.size() == 0){
             olderMessages = false;
+            getListView().removeHeaderView(loadingView);
         }
-    }
-
-    public void addNewItems(List<Message> items) {
-        int headerViewCount = getListView().getHeaderViewsCount();
-        final int positionToSave = getListView().getFirstVisiblePosition() + items.size();
-        View v = getListView().getChildAt(0);
-        final int top = (v == null) ? 0 : v.getTop();
-        arrayAdapter.addAll(items);
-        getListView().post(new Runnable() {
-
-            @Override
-            public void run() {
-                getListView().setSelectionFromTop(positionToSave, top);
-                waitingForOldMessages = false;
-            }
-        });
-
-        getListView().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-
-            @Override
-            public boolean onPreDraw() {
-                if (getListView().getFirstVisiblePosition() == positionToSave) {
-                    getListView().getViewTreeObserver().removeOnPreDrawListener(this);
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-        });
     }
 
     @Override

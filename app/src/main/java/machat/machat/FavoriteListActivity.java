@@ -26,6 +26,7 @@ import machat.machat.socketIO.OnChangeName;
 import machat.machat.socketIO.OnLoginListener;
 import machat.machat.socketIO.OnNewFavoriteList;
 import machat.machat.socketIO.OnNewMessage;
+import machat.machat.socketIO.OnUserReadMessage;
 import machat.machat.socketIO.SocketActivity;
 import machat.machat.socketIO.SocketCommand;
 import machat.machat.socketIO.SocketParse;
@@ -33,7 +34,7 @@ import machat.machat.socketIO.SocketParse;
 /**
  * Created by Admin on 6/7/2015.
  */
-public class FavoriteListActivity extends ListActivity implements OnCallbackAvatar, OnBlockedByUser, OnCallbackSendMessage, OnChangeName, OnLoginListener, OnNewMessage, machat.machat.socketIO.OnReadHouse, SocketActivity.SocketListener, SwipeRefreshLayout.OnRefreshListener, OnCallbackFavorite, AdapterView.OnItemLongClickListener, OnNewFavoriteList, FavoriteItemDialogFragment.OnCompleteListener {
+public class FavoriteListActivity extends ListActivity implements OnCallbackAvatar, OnBlockedByUser, OnUserReadMessage, OnCallbackSendMessage, OnChangeName, OnLoginListener, OnNewMessage, machat.machat.socketIO.OnReadHouse, SocketActivity.SocketListener, SwipeRefreshLayout.OnRefreshListener, OnCallbackFavorite, AdapterView.OnItemLongClickListener, OnNewFavoriteList, FavoriteItemDialogFragment.OnCompleteListener {
 
     SocketActivity socketActivity = new SocketActivity(this);
 
@@ -194,6 +195,8 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
             SocketParse.parseChangeName(data, this);
         }else if(command.equals(SocketCommand.BLOCKED_BY_USER)){
             SocketParse.parseBlockedByUser(data, this);
+        } else if (command.equals(SocketCommand.READ_MESSAGE)) {
+            SocketParse.parseUserReadMessage(data, this);
         }
     }
 
@@ -250,7 +253,7 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
     @Override
     public void newMessage(Message message) {
         arrayAdapter.setMessageById(message);
-        arrayAdapter.setReadById(message.getHouseId(), false);
+        arrayAdapter.setReadHouseById(message.getHouseId(), false);
     }
 
     @Override
@@ -268,7 +271,7 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
 
     @Override
     public void readHouse(int houseId) {
-        arrayAdapter.setReadById(houseId, true);
+        arrayAdapter.setReadHouseById(houseId, true);
     }
 
     @Override
@@ -299,6 +302,10 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
         arrayAdapter.setBlockById(userId, false);
     }
 
+    @Override
+    public void userReadMessage(int id) {
+        arrayAdapter.setReadMessageById(id);
+    }
 }
 
 

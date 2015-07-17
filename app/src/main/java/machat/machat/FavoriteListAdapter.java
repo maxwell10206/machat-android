@@ -83,11 +83,21 @@ public class FavoriteListAdapter extends ArrayAdapter {
         notifyDataSetChanged();
     }
 
-    public void setReadById(int id, boolean read){
+    public void setReadHouseById(int id, boolean read) {
         for(int i = 0; i < favoriteItems.size(); i++){
             Message message = favoriteItems.get(i).getMessage();
             if(message.getHouseId() == id){
                 favoriteItems.get(i).setRead(read);
+            }
+        }
+        notifyDataSetChanged();
+    }
+
+    public void setReadMessageById(int messageId) {
+        for (int i = 0; i < favoriteItems.size(); i++) {
+            Message message = favoriteItems.get(i).getMessage();
+            if (message.getMessageId() == messageId) {
+                favoriteItems.get(i).getMessage().setStatus(Message.READ);
             }
         }
         notifyDataSetChanged();
