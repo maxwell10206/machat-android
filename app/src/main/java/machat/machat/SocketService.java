@@ -37,10 +37,9 @@ public class SocketService extends Service {
 
     public MachatNotificationManager machatNotificationManager;
 
-    private final String address = "https://www.machat.us:443";
-    //http://www.machat.us:443
-    //http://192.168.1.127:443/
-
+    private final String address = "https://www.machat.us:443/";
+    //https://www.machat.us:443
+    //https://192.168.1.127:443/
 
     private IO.Options opts;
 

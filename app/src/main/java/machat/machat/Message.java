@@ -41,7 +41,7 @@ public class Message extends User implements Comparable<Message>{
         this.houseName = houseName;
     }
 
-    public int getStatusImageId() {
+    public static int getStatusImageId(int status) {
         switch(status){
             case SENT:
                 return R.drawable.ic_done_black_18dp;

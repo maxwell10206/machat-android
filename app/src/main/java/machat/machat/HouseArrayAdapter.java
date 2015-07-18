@@ -82,7 +82,7 @@ public class HouseArrayAdapter extends ArrayAdapter {
         if(houseActivity.myProfile().getId() == message.getUserId()){
             rowView = inflater.inflate(R.layout.message_right, parent, false);
             ImageView statusView = (ImageView) rowView.findViewById(R.id.status);
-            statusView.setImageResource(message.getStatusImageId());
+            statusView.setImageResource(Message.getStatusImageId(message.getStatus()));
         }else {
             rowView = inflater.inflate(R.layout.message_left, parent, false);
             TextView nameView = (TextView) rowView.findViewById(R.id.username);
@@ -103,7 +103,7 @@ public class HouseArrayAdapter extends ArrayAdapter {
                 @Override
                 public void onClick(View v) {
                     if (message.getHouseId() != message.getUserId()) {
-                        houseActivity.goToHouse(message.getUserId());
+                        houseActivity.goToHouse(message.getUserId(), message.getName());
                     }
                 }
             });

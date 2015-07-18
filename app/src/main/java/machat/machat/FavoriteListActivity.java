@@ -18,6 +18,7 @@ import com.github.nkzawa.socketio.client.Socket;
 
 import java.util.ArrayList;
 
+import machat.machat.db.FavoriteListDbAdapter;
 import machat.machat.socketIO.OnBlockedByUser;
 import machat.machat.socketIO.OnCallbackAvatar;
 import machat.machat.socketIO.OnCallbackFavorite;
@@ -87,13 +88,14 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorite_list);
         socketActivity.setOnSocketListener(this);
-        arrayAdapter = new FavoriteListAdapter(this, new ArrayList());
         getListView().setOnItemLongClickListener(this);
         loadingItem = (RelativeLayout) getLayoutInflater().inflate(R.layout.loading_item, null);
-        setListAdapter(arrayAdapter);
 
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_main_swipe_refresh_layout);
         refreshLayout.setOnRefreshListener(this);
+
+        arrayAdapter = new FavoriteListAdapter(this, new ArrayList<FavoriteItem>());
+        setListAdapter(arrayAdapter);
     }
 
     @Override
@@ -202,13 +204,13 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
 
     @Override
     public void newFavoriteList(ArrayList<FavoriteItem> favoriteItems) {
+        arrayAdapter.clear();
         for(int i = 0; i < favoriteItems.size(); i++){
             FavoriteItem favoriteItem = favoriteItems.get(i);
             if(favoriteItem.getUserId() == myProfile.getId()){
                 favoriteItem.setHeader(true);
             }
         }
-        arrayAdapter.clear();
         arrayAdapter.addAll(favoriteItems);
         refreshLayout.setRefreshing(false);
     }

@@ -145,7 +145,7 @@ public class FavoriteListAdapter extends ArrayAdapter {
 
         ImageView status = (ImageView) rowView.findViewById(R.id.status);
         if (favoriteItem.getMessage().getUserId() == myId) {
-            status.setImageResource(favoriteItem.getMessage().getStatusImageId());
+            status.setImageResource(favoriteItem.getMessage().getStatusImageId(favoriteItem.getMessage().getStatus()));
         } else {
             status.setImageResource(R.drawable.ic_play_arrow_black_18dp);
         }

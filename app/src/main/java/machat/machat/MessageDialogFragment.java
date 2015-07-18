@@ -28,7 +28,7 @@ public class MessageDialogFragment extends DialogFragment {
 
         void goToProfile(int userId);
 
-        void goToHouse(int houseId);
+        void goToHouse(int houseId, String name);
 
         void copyText(String text);
 

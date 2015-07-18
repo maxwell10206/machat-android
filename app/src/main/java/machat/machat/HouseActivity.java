@@ -514,10 +514,11 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
     }
 
     @Override
-    public void goToHouse(int houseId) {
+    public void goToHouse(int houseId, String name) {
         Intent intent = new Intent(this, HouseActivity.class);
         intent.putExtra(HouseActivity.MY_ID, myId);
         intent.putExtra(HouseActivity.EXTRA_ID, houseId);
+        intent.putExtra(HouseActivity.HOUSE_NAME, name);
         startActivity(intent);
     }
 
