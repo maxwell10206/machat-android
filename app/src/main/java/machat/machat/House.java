@@ -1,27 +1,32 @@
 package machat.machat;
 
+import io.realm.RealmObject;
+
 /**
  * Created by Admin on 6/21/2015.
  */
-public class House extends User {
+public class House extends RealmObject {
 
-    private boolean isFavorite;
+    private boolean favorite;
 
-    private boolean isMute;
+    private boolean mute;
 
-    public House(int id, String username, String name, boolean isFavorite, boolean isMute){
-        super(id, username, name);
-        this.isFavorite = isFavorite;
-        this.isMute = isMute;
+    private User user;
+
+    public void setUser(User user){
+        this.user = user;
     }
 
-    public boolean isMute(){ return isMute; }
+    public User getUser(){
+        return user;
+    }
+    public boolean isMute(){ return mute; }
 
-    public void setMute(boolean mute){ isMute = mute; }
+    public void setMute(boolean mute){ this.mute = mute; }
 
-    public boolean isFavorite(){ return isFavorite; }
+    public boolean isFavorite(){ return favorite; }
 
-    public void setFavorite(boolean isFavorite){
-        this.isFavorite = isFavorite;
+    public void setFavorite(boolean favorite){
+        this.favorite = favorite;
     }
 }

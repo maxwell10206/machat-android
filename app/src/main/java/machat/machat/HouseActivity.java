@@ -132,7 +132,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
                 return true;
             case R.id.action_favorite:
                 if(mService.isConnected() && !waitingForFavorite) {
-                    mService.send.favoriteHouse(house.getUserId(), (!house.isFavorite()));
+                    mService.send.favoriteHouse(house.getUser().getId(), (!house.isFavorite()));
                     waitingForFavorite = true;
                 }
                 return true;
@@ -150,11 +150,11 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
     public void createMessageDialog(Message message){
         MessageDialogFragment messageDialogFragment = new MessageDialogFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(MessageDialogFragment.ID, message.getUserId());
-        bundle.putString(MessageDialogFragment.NAME, message.getName());
+        bundle.putInt(MessageDialogFragment.ID, message.getUser().getId());
+        bundle.putString(MessageDialogFragment.NAME, message.getUser().getName());
         bundle.putInt(MessageDialogFragment.MY_ID, myId);
         bundle.putInt(MessageDialogFragment.HOUSE_ID, houseId);
-        bundle.putInt(MessageDialogFragment.MESSAGE_ID, message.getMessageId());
+        bundle.putInt(MessageDialogFragment.MESSAGE_ID, message.getId());
         bundle.putString(MessageDialogFragment.MESSAGE, message.getMessage());
         messageDialogFragment.setArguments(bundle);
         messageDialogFragment.show(getFragmentManager(), "messageOptions");
@@ -241,7 +241,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
             for(int i = 0; i < arrayAdapter.getCount(); i++){
                 Message message = arrayAdapter.getItem(i);
                 if(message.getStatus() != Message.READ){
-                    mService.send.getMessageStatus(message.getMessageId());
+                    mService.send.getMessageStatus(message.getId());
                 }
             }
         }
@@ -307,8 +307,8 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         if(arrayAdapter != null && arrayAdapter.getCount() != 0) {
             for (int i = firstVisibleItem + getListView().getHeaderViewsCount(); i < firstVisibleItem + visibleItemCount; i++) {
                 Message message = (Message) getListView().getItemAtPosition(i);
-                if (message.getStatus() != Message.READ && connected && message.getUserId() != myProfile.getId()) {
-                    mService.send.readMessage(message.getMessageId());
+                if (message.getStatus() != Message.READ && connected && message.getUser().getId() != myProfile.getId()) {
+                    mService.send.readMessage(message.getId());
                 }
             }
         }
@@ -319,7 +319,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         if(message.getHouseId() == houseId) {
             arrayAdapter.add(message);
             mService.send.readHouse(houseId);
-            newestMessageId = message.getMessageId();
+            newestMessageId = message.getId();
         }
     }
 
@@ -329,26 +329,26 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
             String messageString = inputMessage.getText().toString().trim();
             if (connected && mService.isConnected()) {
                 if (!messageString.isEmpty()) {
-                    Message message = new Message(
-                            houseId,
-                            myProfile.getId(),
-                            (newestMessageId + 1),
-                            myProfile.getUsername(),
-                            myProfile.getName(),
-                            messageString,
-                            (System.currentTimeMillis() / 1000),
-                            0,
-                            house.getName());
+                    User user = new User();
+                    user.setId(myProfile.getId());
+                    user.setName(myProfile.getName());
+                    user.setUsername(myProfile.getUsername());
+                    Message message = new Message();
+                    message.setHouseId(houseId);
+                    message.setId(newestMessageId + 1);
+                    message.setUser(user);
                     message.setLocalId(localId);
+                    message.setMessage(messageString);
+                    message.setTime(System.currentTimeMillis() / 1000);
+                    message.setHouseName(house.getUser().getName());
                     mService.send.sendMessage(localId, houseId, messageString);
                     arrayAdapter.add(message);
                     localId++;
                     if (house.isMute()) {
-                        mService.send.muteHouse(house.getUserId(), false);
-                        house.setMute(false);
+                        muteHouse(false);
                     }
                     if(!house.isFavorite()){
-                        mService.send.favoriteHouse(house.getUserId(), true);
+                        mService.send.favoriteHouse(house.getUser().getId(), true);
                         house.setFavorite(true);
                     }
                 }
@@ -404,7 +404,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
 
     @Override
     public void newFavorite(FavoriteItem favoriteItem) {
-        if (favoriteItem.getUserId() == houseId) {
+        if (favoriteItem.getUser().getId() == houseId) {
             favoriteMenuItem.setIcon(R.drawable.ic_favorite_black_24dp);
             house.setFavorite(true);
             waitingForFavorite = false;
@@ -456,9 +456,9 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         loadingView.setVisibility(View.INVISIBLE);
         for(int i = 0; i < messageList.size(); i++){
             Message message = messageList.get(i);
-                int messageId = message.getMessageId();
+                int messageId = message.getId();
                 if(messageId > newestMessageId){
-                    newestMessageId = message.getMessageId();
+                    newestMessageId = message.getId();
                 }
                 if(messageId < oldestMessageId){
                     oldestMessageId = messageId;
@@ -475,7 +475,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         waitingForNewMessages = false;
         for(int i = 0; i < messageList.size(); i++){
             Message message = messageList.get(i);
-            int messageId = message.getMessageId();
+            int messageId = message.getId();
             if(messageId > newestMessageId){
                 newestMessageId = messageId;
             }
@@ -533,7 +533,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
     public void sendMessageSuccess(Message message) {
         int localId = message.getLocalId();
         arrayAdapter.replaceByLocalId(localId, message);
-        newestMessageId = message.getMessageId();
+        newestMessageId = message.getId();
     }
 
     @Override

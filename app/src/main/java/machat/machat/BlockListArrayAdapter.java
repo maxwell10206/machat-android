@@ -39,7 +39,7 @@ public class BlockListArrayAdapter extends ArrayAdapter {
 
     public void removeById(int id){
         for(int i = 0; i < blockList.size(); i++){
-            if(blockList.get(i).getUserId() == id){
+            if(blockList.get(i).getId() == id){
                 remove(blockList.get(i));
             }
         }
@@ -60,7 +60,7 @@ public class BlockListArrayAdapter extends ArrayAdapter {
         usernameView.setText(user.getUsername());
         nameView.setText(user.getName());
 
-        AvatarManager.getAvatar(user.getUserId(), new OnCallbackAvatar() {
+        AvatarManager.getAvatar(user.getId(), new OnCallbackAvatar() {
             @Override
             public void newAvatar(int id, final Bitmap bitmap) {
                 activity.runOnUiThread(new Runnable() {

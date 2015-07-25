@@ -2,12 +2,14 @@ package machat.machat;
 
 import android.graphics.Bitmap;
 
+import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import machat.machat.socketIO.TimeConvert;
 
 /**
  * Created by Admin on 6/14/2015.
  */
-public class Message extends User implements Comparable<Message>{
+public class Message extends RealmObject{
 
     public static final int NOT_SENT = 0;
     public static final int SENT = 1;
@@ -22,6 +24,7 @@ public class Message extends User implements Comparable<Message>{
 
     private int houseId;
 
+    @Ignore
     private Bitmap avatar;
 
     //0 = not sent, 1 = sent, 2 = delivered, 3 = seen
@@ -31,15 +34,11 @@ public class Message extends User implements Comparable<Message>{
 
     private String houseName;
 
-    public Message(int houseId, int userId, int id, String username, String name, String message, long time, int status, String houseName){
-        super(userId, username, name);
-        this.message = message;
-        this.houseId = houseId;
-        this.time = time;
-        this.id = id;
-        this.status = status;
-        this.houseName = houseName;
-    }
+    private User user;
+
+    public User getUser(){ return user; }
+
+    public void setUser(User user){ this.user = user; }
 
     public static int getStatusImageId(int status) {
         switch(status){
@@ -54,42 +53,72 @@ public class Message extends User implements Comparable<Message>{
         }
     }
 
-    public String getHouseName(){ return houseName; }
+    public String getHouseName() {
+        return houseName;
+    }
 
-    public int getLocalId(){ return localId; }
+    public void setHouseName(String houseName) {
+        this.houseName = houseName;
+    }
 
-    public void setLocalId(int id){ localId = id; }
+    public String getMessage() {
+        return message;
+    }
 
-    public int getStatus(){ return status; }
-
-    public void setStatus(int status){ this.status = status; }
-
-    public void setMessage(String message){
+    public void setMessage(String message) {
         this.message = message;
     }
 
-    public void setTime(long time){
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
         this.time = time;
     }
 
-    public void setAvatar(Bitmap bitmap){ this.avatar = bitmap; }
+    public int getId() {
+        return id;
+    }
 
-    public Bitmap getAvatar(){ return avatar; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public int getHouseId(){ return houseId; }
+    public int getHouseId() {
+        return houseId;
+    }
 
-    public int getMessageId(){ return id; }
+    public void setHouseId(int houseId) {
+        this.houseId = houseId;
+    }
 
-    public String getMessage(){ return message; }
+    public Bitmap getAvatar() {
+        return avatar;
+    }
 
-    public long getTime(){ return time; }
+    public void setAvatar(Bitmap avatar) {
+        this.avatar = avatar;
+    }
 
-    public String getTimeString(){
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public int getLocalId() {
+        return localId;
+    }
+
+    public void setLocalId(int localId) {
+        this.localId = localId;
+    }
+
+    public static String getTimeString(long time){
         return TimeConvert.formatDate(time * 1000);
     }
 
-    @Override
-    public int compareTo(Message another) {
-        return Integer.valueOf(id).compareTo(Integer.valueOf(another.id));
-    }
 }

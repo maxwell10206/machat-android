@@ -82,12 +82,20 @@ public class AvatarManager {
         }
     }
 
+    public static void reDownload(){
+        for(int i = 0; i < imageViewUsers.size(); i++){
+            ImageViewUser imageViewUser = imageViewUsers.get(i);
+            send.getAvatar(imageViewUser.getId());
+        }
+    }
+
     public static void newAvatar(int id, Bitmap bitmap){
         bitmapUsers.add(new BitmapUser(id, bitmap));
         for(int i = 0; i < imageViewUsers.size(); i++){
             ImageViewUser imageViewUser = imageViewUsers.get(i);
             if(imageViewUser.getId() == id){
                 imageViewUser.getListener().newAvatar(id, bitmap);
+                imageViewUsers.remove(i);
             }
         }
     }

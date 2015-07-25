@@ -44,7 +44,7 @@ public class BlockListActivity extends ListActivity implements SocketActivity.So
         User blockUser = arrayAdapter.getItem(position);
         BlockItemDialog blockItemDialog = new BlockItemDialog();
         Bundle bundle = new Bundle();
-        bundle.putInt(BlockItemDialog.ID, blockUser.getUserId());
+        bundle.putInt(BlockItemDialog.ID, blockUser.getId());
         bundle.putString(BlockItemDialog.NAME, blockUser.getName());
         blockItemDialog.setArguments(bundle);
         blockItemDialog.show(getFragmentManager(), "dialog");

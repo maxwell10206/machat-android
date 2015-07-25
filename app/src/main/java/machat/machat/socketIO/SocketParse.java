@@ -30,11 +30,12 @@ public class SocketParse {
             JSONArray jsonArray = new JSONArray(string);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                int id = jsonObject.getInt(SocketData.id);
-                String useranme = jsonObject.getString(SocketData.username);
-                String name = jsonObject.getString(SocketData.name);
                 boolean blocked = (0 != jsonObject.getInt(SocketData.block));
-                users.add(new SearchItem(id, useranme, name, blocked));
+                User user = parseUser(jsonObject);
+                SearchItem searchItem = new SearchItem();
+                searchItem.setBlock(blocked);
+                searchItem.setUser(user);
+                users.add(searchItem);
             }
             listener.newSearchResults(users);
         }catch(JSONException e){
@@ -146,8 +147,29 @@ public class SocketParse {
         String messageString = jsonObject.getString(SocketData.message);
         boolean block = (jsonObject.getInt(SocketData.block) > 0);
 
-        Message message = new Message(id, userId, messageId, messageUsername, messageName, messageString, messageTime, status, name);
-        FavoriteItem favoriteItem = new FavoriteItem(id, username, name, mute, message, read, block);
+        User user1 = new User();
+        user1.setId(userId);
+        user1.setUsername(messageUsername);
+        user1.setName(messageName);
+        Message message = new Message();
+        message.setHouseId(id);
+        message.setId(messageId);
+        message.setHouseName(name);
+        message.setStatus(status);
+        message.setTime(messageTime);
+        message.setMessage(messageString);
+        message.setUser(user1);
+        User user2 = new User();
+        user2.setName(name);
+        user2.setUsername(username);
+        user2.setId(id);
+        FavoriteItem favoriteItem = new FavoriteItem();
+        favoriteItem.setMessage(message);
+        favoriteItem.setBlock(block);
+        favoriteItem.setMute(mute);
+        favoriteItem.setRead(read);
+        favoriteItem.setUser(user2);
+        favoriteItem.setPrimaryKey(id);
         return favoriteItem;
     }
 
@@ -182,7 +204,11 @@ public class SocketParse {
         int id = jsonObject.getInt(SocketData.id);
         String username = jsonObject.getString(SocketData.username);
         String name = jsonObject.getString(SocketData.name);
-        return new User(id, username, name);
+        User user = new User();
+        user.setId(id);
+        user.setName(name);
+        user.setUsername(username);
+        return user;
     }
 
     public static void parseChangeName(String string, OnChangeName listener){
@@ -278,12 +304,14 @@ public class SocketParse {
     public static void parseHouse(String string, OnNewHouse listener){
         try{
             JSONObject jsonObject = new JSONObject(string);
-            int id = jsonObject.getInt(SocketData.id);
-            String username = jsonObject.getString(SocketData.username);
-            String name = jsonObject.getString(SocketData.name);
             boolean isFavorite = jsonObject.getBoolean(SocketData.isFavorite);
             boolean isMute = (1 == jsonObject.getInt(SocketData.isMute));
-            listener.newHouse(new House(id, username, name, isFavorite, isMute));
+            House house = new House();
+            User user = parseUser(jsonObject);
+            house.setMute(isMute);
+            house.setFavorite(isFavorite);
+            house.setUser(user);
+            listener.newHouse(house);
         }catch(JSONException e){
             e.printStackTrace();
         }
@@ -292,11 +320,13 @@ public class SocketParse {
     public static void parseProfile(String string, OnNewProfile listener) {
         try {
             JSONObject jsonObject = new JSONObject(string);
-            int id = jsonObject.getInt(SocketData.id);
-            String username = jsonObject.getString(SocketData.username);
-            String name = jsonObject.getString(SocketData.name);
             boolean isBlocked = (0 != jsonObject.getInt(SocketData.block_id));
-            listener.newProfile(new Profile(id, username, name, isBlocked));
+
+            User user = parseUser(jsonObject);
+            Profile profile = new Profile();
+            profile.setBlocked(isBlocked);
+            profile.setUser(user);
+            listener.newProfile(profile);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -339,7 +369,19 @@ public class SocketParse {
         String lastMessage = jsonObject.getString(SocketData.message);
         int status = jsonObject.getInt(SocketData.status);
         String houseName = jsonObject.getString(SocketData.houseName);
-        Message message = new Message(houseId, userId, id, username, name, lastMessage, messageTime, status, houseName);
+        //Message message = new Message(houseId, userId, id, username, name, lastMessage, messageTime, status, houseName);
+        Message message = new Message();
+        User user = new User();
+        user.setUsername(username);
+        user.setId(userId);
+        user.setName(name);
+        message.setHouseName(houseName);
+        message.setStatus(status);
+        message.setId(id);
+        message.setHouseId(houseId);
+        message.setMessage(lastMessage);
+        message.setTime(messageTime);
+        message.setUser(user);
         return message;
     }
 

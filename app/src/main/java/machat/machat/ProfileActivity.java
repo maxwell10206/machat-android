@@ -112,11 +112,11 @@ public class ProfileActivity extends Activity implements SocketActivity.SocketLi
 
     @Override
     public void newProfile(Profile profile) {
-        if(profile.getUserId() == id) {
+        if(profile.getUser().getId() == id) {
             this.profile = profile;
             blockCheckBox.setOnCheckedChangeListener(this);
-            name.setText(profile.getName());
-            username.setText(profile.getUsername());
+            name.setText(profile.getUser().getName());
+            username.setText(profile.getUser().getUsername());
             progressBar.setVisibility(View.GONE);
             blockCheckBox.setChecked(profile.isBlocked());
         }

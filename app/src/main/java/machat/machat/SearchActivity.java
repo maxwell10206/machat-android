@@ -174,9 +174,9 @@ public class SearchActivity extends ListActivity implements SocketActivity.Socke
             Toast.makeText(this, "You are blocked from this house", Toast.LENGTH_SHORT).show();
         }else {
             Intent intent = new Intent(this, HouseActivity.class);
-            intent.putExtra(HouseActivity.EXTRA_ID, user.getUserId());
+            intent.putExtra(HouseActivity.EXTRA_ID, user.getUser().getId());
             intent.putExtra(HouseActivity.MY_ID, myProfile.getId());
-            intent.putExtra(HouseActivity.HOUSE_NAME, user.getName());
+            intent.putExtra(HouseActivity.HOUSE_NAME, user.getUser().getName());
             startActivity(intent);
         }
     }

@@ -4,34 +4,55 @@ import android.graphics.Bitmap;
 
 import java.io.Serializable;
 
+import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
+import io.realm.annotations.PrimaryKey;
+
 /**
  * Created by Admin on 6/12/2015.
  */
 @SuppressWarnings("serial")
-public class User implements Serializable {
+public class User extends RealmObject implements Serializable {
 
+    @PrimaryKey
     private int id;
 
     private String username;
 
     private String name;
 
+    @Ignore
     private Bitmap avatar;
 
-    public User(int id, String username, String name){
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
         this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
         this.name = name;
     }
 
-    public Bitmap getAvatar(){ return avatar; }
-    public void setAvatar(Bitmap bitmap){ this.avatar = bitmap;}
+    public Bitmap getAvatar() {
+        return avatar;
+    }
 
-    public int getUserId(){ return id; }
-    public String getUsername(){ return username; }
-    public String getName(){ return name; }
-
-    public void setName(String name){
-        this.name = name;
+    public void setAvatar(Bitmap avatar) {
+        this.avatar = avatar;
     }
 }

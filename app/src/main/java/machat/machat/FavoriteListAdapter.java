@@ -41,7 +41,7 @@ public class FavoriteListAdapter extends ArrayAdapter {
 
     public void removeById(int id){
         for(int i = 0; i < favoriteItems.size(); i++){
-            if(favoriteItems.get(i).getUserId() == id){
+            if(favoriteItems.get(i).getUser().getId() == id){
                 remove(favoriteItems.get(i));
             }
         }
@@ -49,7 +49,7 @@ public class FavoriteListAdapter extends ArrayAdapter {
 
     public void setMuteById(int id, boolean mute){
         for(int i = 0; i < favoriteItems.size(); i++) {
-            if (favoriteItems.get(i).getUserId() == id) {
+            if (favoriteItems.get(i).getUser().getId() == id) {
                 favoriteItems.get(i).setMute(mute);
             }
         }
@@ -58,8 +58,8 @@ public class FavoriteListAdapter extends ArrayAdapter {
 
     public void setBitmapById(int id, Bitmap bitmap){
         for(int i = 0; i < favoriteItems.size(); i++){
-            if(favoriteItems.get(i).getUserId() == id){
-                favoriteItems.get(i).setAvatar(bitmap);
+            if(favoriteItems.get(i).getUser().getId() == id){
+                favoriteItems.get(i).getUser().setAvatar(bitmap);
             }
         }
         notifyDataSetChanged();
@@ -67,7 +67,7 @@ public class FavoriteListAdapter extends ArrayAdapter {
 
     public void setBlockById(int id, boolean block){
         for(int i = 0; i < favoriteItems.size(); i++){
-            if(favoriteItems.get(i).getUserId() == id){
+            if(favoriteItems.get(i).getUser().getId() == id){
                 favoriteItems.get(i).setBlock(block);
             }
         }
@@ -76,8 +76,8 @@ public class FavoriteListAdapter extends ArrayAdapter {
 
     public void changeNameById(int id, String name){
         for(int i = 0; i < favoriteItems.size(); i++){
-            if(favoriteItems.get(i).getUserId() == id){
-                favoriteItems.get(i).setName(name);
+            if(favoriteItems.get(i).getUser().getId() == id){
+                favoriteItems.get(i).getUser().setName(name);
             }
         }
         notifyDataSetChanged();
@@ -96,7 +96,7 @@ public class FavoriteListAdapter extends ArrayAdapter {
     public void setReadMessageById(int messageId) {
         for (int i = 0; i < favoriteItems.size(); i++) {
             Message message = favoriteItems.get(i).getMessage();
-            if (message.getMessageId() == messageId) {
+            if (message.getId() == messageId) {
                 favoriteItems.get(i).getMessage().setStatus(Message.READ);
             }
         }
@@ -105,7 +105,7 @@ public class FavoriteListAdapter extends ArrayAdapter {
 
     public void setMessageById(Message message){
         for(int i = 0; i < favoriteItems.size(); i++){
-            if(favoriteItems.get(i).getUserId() == message.getHouseId()){
+            if(favoriteItems.get(i).getUser().getId() == message.getHouseId()){
                 FavoriteItem favoriteItem = favoriteItems.get(i);
                 favoriteItem.setMessage(message);
             }
@@ -135,16 +135,16 @@ public class FavoriteListAdapter extends ArrayAdapter {
 
         FavoriteItem favoriteItem = favoriteItems.get(position);
         Message message = favoriteItem.getMessage();
-        name.setText(favoriteItem.getName());
+        name.setText(favoriteItem.getUser().getName());
         if(message.getMessage().isEmpty()){
             lastMessage.setText("No messages");
         }else {
             lastMessage.setText(message.getMessage());
         }
-        messageTime.setText(favoriteItem.getTimeString());
+        messageTime.setText(FavoriteItem.getTimeString(favoriteItem.getMessage().getTime()));
 
         ImageView status = (ImageView) rowView.findViewById(R.id.status);
-        if (favoriteItem.getMessage().getUserId() == myId) {
+        if (favoriteItem.getMessage().getUser().getId() == myId) {
             status.setImageResource(favoriteItem.getMessage().getStatusImageId(favoriteItem.getMessage().getStatus()));
         } else {
             status.setImageResource(R.drawable.ic_play_arrow_black_18dp);
@@ -159,7 +159,7 @@ public class FavoriteListAdapter extends ArrayAdapter {
             notRead.setImageResource(R.drawable.blue_circle);
         }
 
-        AvatarManager.getAvatar(favoriteItem.getUserId(), new OnCallbackAvatar() {
+        AvatarManager.getAvatar(favoriteItem.getUser().getId(), new OnCallbackAvatar() {
             @Override
             public void newAvatar(int id, final Bitmap bitmap) {
                 favoriteListActivity.runOnUiThread(new Runnable() {

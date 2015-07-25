@@ -1,10 +1,12 @@
 package machat.machat;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.github.nkzawa.socketio.client.IO;
@@ -37,9 +39,9 @@ public class SocketService extends Service {
 
     public MachatNotificationManager machatNotificationManager;
 
-    private final String address = "https://www.machat.us:443/";
-    //https://www.machat.us:443
-    //https://192.168.1.127:443/
+    private final String address = "http://www.machat.us:3000";
+    //http://www.machat.us:3000
+    //http://192.168.1.125:3000/
 
     private IO.Options opts;
 
@@ -83,10 +85,13 @@ public class SocketService extends Service {
         }
     }
 
+    private PowerManager.WakeLock wl;
+
     @Override
     public void onCreate (){
         super.onCreate();
         try {
+            /*/ SSL doesn't work cause nkzawa sucks?
             SSLContext sc = SSLContext.getInstance("TLS");
             sc.init(null, trustAllCerts, new SecureRandom());
             IO.setDefaultSSLContext(sc);
@@ -94,7 +99,8 @@ public class SocketService extends Service {
             opts = new IO.Options();
             opts.sslContext = sc;
             opts.secure = true;
-            mSocket = IO.socket(address, opts);
+            /*/
+            mSocket = IO.socket(address);
             send = new SocketCommunication(this, mSocket);
             machatNotificationManager = new MachatNotificationManager(this);
             user = new ServiceReceiver(this);
@@ -102,13 +108,12 @@ public class SocketService extends Service {
             TimeConvert.setContext(this);
             mSocket.connect();
             LocalBroadcastManager.getInstance(this).registerReceiver(user, new IntentFilter(SocketService.ACTION));
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
         } catch (URISyntaxException e) {
             e.printStackTrace();
-        } catch (KeyManagementException e) {
-            e.printStackTrace();
         }
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "My tag");
+        wl.acquire(); //Keeps service thread from sleeping.
     }
 
     @Override
@@ -116,6 +121,7 @@ public class SocketService extends Service {
         super.onDestroy();
         mSocket.disconnect();
         send.turnOffListeners();
+        wl.release();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(user);
     }
 

@@ -114,6 +114,7 @@ public class ServiceReceiver extends BroadcastReceiver implements OnNewMessage, 
             }
         }else if(command.equals(SocketCommand.LOGIN)){
             SocketParse.parseLogin(data, this);
+            AvatarManager.reDownload();
         }else if(command.equals(SocketCommand.FAVORITE_HOUSE)){
             SocketParse.parseFavoriteHouse(data, this);
         }else if(command.equals(SocketCommand.GET_FAVORITE_LIST)){
@@ -132,15 +133,15 @@ public class ServiceReceiver extends BroadcastReceiver implements OnNewMessage, 
         boolean mute = false;
         for(int i = 0; i < favoritesList.size(); i++){
             FavoriteItem favoriteItem = favoritesList.get(i);
-            if(favoriteItem.getUserId() == message.getHouseId()){
+            if(favoriteItem.getUser().getId() == message.getHouseId()){
                 mute = favoriteItem.isMute();
             }
         }
         if(!application.isActivityVisible() && houseId != message.getHouseId() && !mute) {
-            mService.machatNotificationManager.newMissedMessages(message.getHouseId(), getMyProfile().getId(), message.getHouseName(), message.getName(), message.getMessage(), 1, true);
+            mService.machatNotificationManager.newMissedMessages(message.getHouseId(), getMyProfile().getId(), message.getHouseName(), message.getUser().getName(), message.getMessage(), 1, true);
         }
         if(!mute) {
-            mService.send.deliveredMessage(message.getMessageId());
+            mService.send.deliveredMessage(message.getId());
         }
     }
 
@@ -168,7 +169,7 @@ public class ServiceReceiver extends BroadcastReceiver implements OnNewMessage, 
     public void removeFavorite(int id) {
         for(int i = 0; i < favoritesList.size(); i++){
             FavoriteItem favoriteItem = favoritesList.get(i);
-            if(favoriteItem.getUserId() == id){
+            if(favoriteItem.getUser().getId() == id){
                 favoritesList.remove(i);
             }
         }
@@ -187,7 +188,7 @@ public class ServiceReceiver extends BroadcastReceiver implements OnNewMessage, 
     public void setFavoriteMute(int id, boolean mute) {
         for(int i = 0; i < favoritesList.size(); i++){
             FavoriteItem favoriteItem = favoritesList.get(i);
-            if(favoriteItem.getUserId() == id){
+            if(favoriteItem.getUser().getId() == id){
                 favoritesList.get(i).setMute(mute);
             }
         }

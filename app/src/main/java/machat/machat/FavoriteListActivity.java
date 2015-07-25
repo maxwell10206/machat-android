@@ -18,7 +18,9 @@ import com.github.nkzawa.socketio.client.Socket;
 
 import java.util.ArrayList;
 
-import machat.machat.db.FavoriteListDbAdapter;
+import io.realm.Realm;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 import machat.machat.socketIO.OnBlockedByUser;
 import machat.machat.socketIO.OnCallbackAvatar;
 import machat.machat.socketIO.OnCallbackFavorite;
@@ -55,22 +57,24 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
 
     private SwipeRefreshLayout refreshLayout;
 
+    Realm realm;
+
     @Override
     protected void onListItemClick (ListView l, View v, int position, long i){
         Intent intent = new Intent(this, HouseActivity.class);
         FavoriteItem favoriteItem = (FavoriteItem) getListView().getItemAtPosition(position);
-        intent.putExtra(HouseActivity.EXTRA_ID, favoriteItem.getUserId());
+        intent.putExtra(HouseActivity.EXTRA_ID, favoriteItem.getUser().getId());
         intent.putExtra(HouseActivity.MY_ID, myProfile.getId());
-        intent.putExtra(HouseActivity.HOUSE_NAME, favoriteItem.getName());
+        intent.putExtra(HouseActivity.HOUSE_NAME, favoriteItem.getUser().getName());
         startActivity(intent);
     }
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         FavoriteItem favoriteItem = (FavoriteItem) getListView().getItemAtPosition(position);
-        if(myProfile.getId() == favoriteItem.getUserId()){
+        if(myProfile.getId() == favoriteItem.getUser().getId()){
             if(mService.isConnected()) {
-                muteHouse(favoriteItem.getUserId(), !(favoriteItem.isMute()));
+                muteHouse(favoriteItem.getUser().getId(), !(favoriteItem.isMute()));
             }
         }else {
             Bundle bundle = new Bundle();
@@ -96,29 +100,27 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
 
         arrayAdapter = new FavoriteListAdapter(this, new ArrayList<FavoriteItem>());
         setListAdapter(arrayAdapter);
-    }
 
-    @Override
-    protected void onStart(){
-        super.onStart();
-        socketActivity.connect();
+        /*/ WIP Offline Storage
+        realm = Realm.getInstance(getApplicationContext());
+
+        RealmQuery<FavoriteItem> query = realm.where(FavoriteItem.class);
+        RealmResults<FavoriteItem> result = query.findAll();
+        arrayAdapter.addAll(result);
+        /*/
     }
 
     @Override
     protected void onResume(){
         super.onResume();
         ((MachatApplication) getApplication()).activityResumed();
+        socketActivity.connect();
     }
 
     @Override
     protected void onPause(){
         super.onPause();
         ((MachatApplication) getApplication()).activityPaused();
-    }
-
-    @Override
-    protected void onStop(){
-        super.onStop();
         socketActivity.disconnect();
     }
 
@@ -207,10 +209,21 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
         arrayAdapter.clear();
         for(int i = 0; i < favoriteItems.size(); i++){
             FavoriteItem favoriteItem = favoriteItems.get(i);
-            if(favoriteItem.getUserId() == myProfile.getId()){
+            if(favoriteItem.getUser().getId() == myProfile.getId()){
                 favoriteItem.setHeader(true);
             }
         }
+        /*/ WIP Offline Storage
+        RealmQuery<FavoriteItem> query = realm.where(FavoriteItem.class);
+        RealmResults<FavoriteItem> result = query.findAll();
+        realm.beginTransaction();
+        for(int i = 0; i < result.size(); i++){
+            FavoriteItem favoriteItem = result.get(i);
+            favoriteItem.removeFromRealm();
+        }
+        realm.copyToRealmOrUpdate(favoriteItems);
+        realm.commitTransaction();
+        /*/
         arrayAdapter.addAll(favoriteItems);
         refreshLayout.setRefreshing(false);
     }

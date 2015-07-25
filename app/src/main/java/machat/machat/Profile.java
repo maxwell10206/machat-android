@@ -1,20 +1,27 @@
 package machat.machat;
 
+import io.realm.RealmObject;
+
 /**
  * Created by Admin on 6/20/2015.
  */
-public class Profile extends User {
+public class Profile extends RealmObject {
 
-    private boolean isBlocked;
+    private boolean blocked;
 
-    public Profile(int id, String username, String name, boolean isBlocked){
-        super(id, username, name);
-        this.isBlocked = isBlocked;
+    private User user;
+
+    public void setUser(User user){
+        this.user = user;
     }
 
-    public Boolean isBlocked(){ return isBlocked; }
+    public User getUser(){
+        return user;
+    }
+
+    public boolean isBlocked(){ return blocked; }
 
     public void setBlocked(boolean isBlocked){
-        this.isBlocked = isBlocked;
+        this.blocked = isBlocked;
     }
 }

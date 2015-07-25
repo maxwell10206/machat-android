@@ -1,6 +1,7 @@
 package machat.machat;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.Ack;

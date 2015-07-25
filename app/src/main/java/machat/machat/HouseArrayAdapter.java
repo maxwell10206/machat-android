@@ -32,7 +32,7 @@ public class HouseArrayAdapter extends ArrayAdapter {
 
     public void setBitmapById(int id, Bitmap bitmap){
         for(int i = 0; i < messageList.size(); i++){
-            if(messageList.get(i).getUserId() == id){
+            if(messageList.get(i).getUser().getId() == id){
                 messageList.get(i).setAvatar(bitmap);
             }
         }
@@ -50,7 +50,7 @@ public class HouseArrayAdapter extends ArrayAdapter {
 
     public void changeMessageStatus(int id, int status){
         for(int i = 0; i < messageList.size(); i++){
-            if(messageList.get(i).getMessageId() == id){
+            if(messageList.get(i).getId() == id){
                 int oldStatus = messageList.get(i).getStatus();
                 if(oldStatus < status) {
                     messageList.get(i).setStatus(status);
@@ -63,7 +63,7 @@ public class HouseArrayAdapter extends ArrayAdapter {
     @Override
     public void notifyDataSetChanged() {
         //do your sorting here
-        Collections.sort(messageList);
+        Collections.sort(messageList, new MessageItemComparator());
 
         super.notifyDataSetChanged();
     }
@@ -79,16 +79,16 @@ public class HouseArrayAdapter extends ArrayAdapter {
         View rowView;
 
         final Message message = messageList.get(position);
-        if(houseActivity.myProfile().getId() == message.getUserId()){
+        if(houseActivity.myProfile().getId() == message.getUser().getId()){
             rowView = inflater.inflate(R.layout.message_right, parent, false);
             ImageView statusView = (ImageView) rowView.findViewById(R.id.status);
             statusView.setImageResource(Message.getStatusImageId(message.getStatus()));
         }else {
             rowView = inflater.inflate(R.layout.message_left, parent, false);
             TextView nameView = (TextView) rowView.findViewById(R.id.username);
-            nameView.setText(message.getName());
+            nameView.setText(message.getUser().getName());
             final ImageView avatar = (ImageView) rowView.findViewById(R.id.avatar);
-            AvatarManager.getAvatar(message.getUserId(), new OnCallbackAvatar() {
+            AvatarManager.getAvatar(message.getUser().getId(), new OnCallbackAvatar() {
                 @Override
                 public void newAvatar(int id,final Bitmap bitmap) {
                     houseActivity.runOnUiThread(new Runnable() {
@@ -102,8 +102,8 @@ public class HouseArrayAdapter extends ArrayAdapter {
             avatar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (message.getHouseId() != message.getUserId()) {
-                        houseActivity.goToHouse(message.getUserId(), message.getName());
+                    if (message.getHouseId() != message.getUser().getId()) {
+                        houseActivity.goToHouse(message.getUser().getId(), message.getUser().getName());
                     }
                 }
             });
@@ -113,7 +113,7 @@ public class HouseArrayAdapter extends ArrayAdapter {
         final TextView messageView = (TextView) rowView.findViewById(R.id.message);
         messageView.setText(message.getMessage());
         TextView timeView = (TextView) rowView.findViewById(R.id.time);
-        timeView.setText(message.getTimeString());
+        timeView.setText(Message.getTimeString(message.getTime()));
 
         View messageWrapper = rowView.findViewById(R.id.messageWrapper);
         messageWrapper.setOnLongClickListener(new View.OnLongClickListener() {
