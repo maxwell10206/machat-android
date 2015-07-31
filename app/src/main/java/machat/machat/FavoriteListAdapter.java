@@ -12,6 +12,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import io.realm.Realm;
 import machat.machat.socketIO.AvatarManager;
 import machat.machat.socketIO.OnCallbackAvatar;
 
@@ -56,10 +57,10 @@ public class FavoriteListAdapter extends ArrayAdapter {
         notifyDataSetChanged();
     }
 
-    public void setBitmapById(int id, Bitmap bitmap){
+    public void setBitmapById(int id, byte[] avatar){
         for(int i = 0; i < favoriteItems.size(); i++){
-            if(favoriteItems.get(i).getUser().getId() == id){
-                favoriteItems.get(i).getUser().setAvatar(bitmap);
+            if(favoriteItems.get(i).getUser().getId() == id) {
+                favoriteItems.get(i).getUser().setAvatar(avatar);
             }
         }
         notifyDataSetChanged();
@@ -131,9 +132,9 @@ public class FavoriteListAdapter extends ArrayAdapter {
         TextView lastMessage = (TextView) rowView.findViewById(R.id.last_message);
         TextView messageTime = (TextView) rowView.findViewById(R.id.message_time);
         ImageView mute = (ImageView) rowView.findViewById(R.id.mute);
-        final ImageView avatar = (ImageView) rowView.findViewById(R.id.avatar);
+        final ImageView avatarView = (ImageView) rowView.findViewById(R.id.avatar);
 
-        FavoriteItem favoriteItem = favoriteItems.get(position);
+        final FavoriteItem favoriteItem = favoriteItems.get(position);
         Message message = favoriteItem.getMessage();
         name.setText(favoriteItem.getUser().getName());
         if(message.getMessage().isEmpty()){
@@ -150,7 +151,7 @@ public class FavoriteListAdapter extends ArrayAdapter {
             status.setImageResource(R.drawable.ic_play_arrow_black_18dp);
         }
 
-        if(favoriteItem.isBlock()){
+        if (favoriteItem.isBlock()){
             lastMessage.setText("BLOCKED");
         }
 
@@ -159,13 +160,21 @@ public class FavoriteListAdapter extends ArrayAdapter {
             notRead.setImageResource(R.drawable.blue_circle);
         }
 
+        if(favoriteItem.getUser().getAvatar() != null && favoriteItem.getUser().getAvatar().length != 0){
+            avatarView.setImageBitmap(User.getBitmapAvatar(favoriteItem.getUser().getAvatar()));
+        }
         AvatarManager.getAvatar(favoriteItem.getUser().getId(), new OnCallbackAvatar() {
             @Override
-            public void newAvatar(int id, final Bitmap bitmap) {
+            public void newAvatar(int id, final byte[] avatar) {
                 favoriteListActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        avatar.setImageBitmap(bitmap);
+                        avatarView.setImageBitmap(User.getBitmapAvatar(avatar));
+                        /*/
+                        favoriteListActivity.realm.beginTransaction();
+                        //favoriteItem.getUser().setAvatar(avatar);
+                        favoriteListActivity.realm.commitTransaction();
+                        /*/
                     }
                 });
             }
@@ -173,7 +182,7 @@ public class FavoriteListAdapter extends ArrayAdapter {
 
         if(favoriteItem.isMute()){
             mute.setImageResource(R.drawable.ic_volume_mute_black_24dp);
-        }else{
+        } else {
             mute.setImageResource(R.drawable.ic_volume_up_black_24dp);
         }
 

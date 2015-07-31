@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -50,7 +51,7 @@ public class MyProfileActivity extends Activity implements View.OnClickListener,
 
     private TextView nameView;
     private TextView usernameView;
-    private ImageView avatar;
+    private ImageView avatarView;
     private Button uploadAvatar;
     private TextView versionView;
 
@@ -62,7 +63,7 @@ public class MyProfileActivity extends Activity implements View.OnClickListener,
         getActionBar().setDisplayHomeAsUpEnabled(true);
         nameView = (TextView) findViewById(R.id.name);
         usernameView = (TextView) findViewById(R.id.username);
-        avatar = (ImageView) findViewById(R.id.avatar);
+        avatarView = (ImageView) findViewById(R.id.avatar);
         uploadAvatar = (Button) findViewById(R.id.uploadAvatar);
         versionView = (TextView) findViewById(R.id.version);
         uploadAvatar.setOnClickListener(this);
@@ -201,12 +202,12 @@ public class MyProfileActivity extends Activity implements View.OnClickListener,
     }
 
     @Override
-    public void newAvatar(int id, final Bitmap bitmap) {
+    public void newAvatar(int id, final byte[] avatar) {
         if(id == myProfile.getId()) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    avatar.setImageBitmap(bitmap);
+                    avatarView.setImageBitmap(User.getBitmapAvatar(avatar));
                 }
             });
         }
@@ -238,13 +239,13 @@ public class MyProfileActivity extends Activity implements View.OnClickListener,
             m.setRectToRect(new RectF(0, 0, b.getWidth(), b.getHeight()), new RectF(0, 0, 256, 256), Matrix.ScaleToFit.CENTER);
             Bitmap bitmap = Bitmap.createBitmap(b, 0, 0, b.getWidth(), b.getHeight(), m, true);
             myProfile.setAvatar(bitmap);
-            avatar.setImageBitmap(bitmap);
-            AvatarManager.newAvatar(myProfile.getId(), bitmap);
+            avatarView.setImageBitmap(bitmap);
 
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
             byte[] byteArray = stream.toByteArray();
             mService.send.sendAvatar(byteArray);
+            AvatarManager.newAvatar(myProfile.getId(), byteArray);
 
         } else if (resultCode == Crop.RESULT_ERROR) {
             Toast.makeText(this, Crop.getError(result).getMessage(), Toast.LENGTH_SHORT).show();

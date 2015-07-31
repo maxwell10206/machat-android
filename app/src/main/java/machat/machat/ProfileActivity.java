@@ -1,7 +1,6 @@
 package machat.machat;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,7 +40,7 @@ public class ProfileActivity extends Activity implements SocketActivity.SocketLi
     private ProgressBar progressBar;
     private CheckBox blockCheckBox;
 
-    private ImageView avatar;
+    private ImageView avatarView;
 
     private int id;
 
@@ -60,7 +59,7 @@ public class ProfileActivity extends Activity implements SocketActivity.SocketLi
         username = (TextView) findViewById(R.id.username);
         blockCheckBox = (CheckBox) findViewById(R.id.blockCheckBox);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        avatar = (ImageView) findViewById(R.id.avatar);
+        avatarView = (ImageView) findViewById(R.id.avatar);
     }
 
     @Override
@@ -132,12 +131,12 @@ public class ProfileActivity extends Activity implements SocketActivity.SocketLi
     }
 
     @Override
-    public void newAvatar(int id, final Bitmap bitmap) {
+    public void newAvatar(int id, final byte[] avatar) {
         if(id == this.id) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    avatar.setImageBitmap(bitmap);
+                    avatarView.setImageBitmap(User.getBitmapAvatar(avatar));
                 }
             });
         }

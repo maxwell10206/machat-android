@@ -102,8 +102,7 @@ public class SocketParse {
             int id = jsonObject.getInt(SocketData.id);
             String base64Image = jsonObject.getString(SocketData.byteArray);
             byte[] bytesImage = Base64.decode(base64Image, Base64.DEFAULT);
-            Bitmap image = BitmapFactory.decodeByteArray(bytesImage, Base64.DEFAULT, bytesImage.length);
-            listener.newAvatar(id, image);
+            listener.newAvatar(id, bytesImage);
         } catch (JSONException e) {
             e.printStackTrace();
         }

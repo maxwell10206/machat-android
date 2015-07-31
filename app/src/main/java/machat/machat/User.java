@@ -1,6 +1,7 @@
 package machat.machat;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import java.io.Serializable;
 
@@ -21,8 +22,7 @@ public class User extends RealmObject implements Serializable {
 
     private String name;
 
-    @Ignore
-    private Bitmap avatar;
+    private byte[] avatar;
 
     public int getId() {
         return id;
@@ -48,11 +48,15 @@ public class User extends RealmObject implements Serializable {
         this.name = name;
     }
 
-    public Bitmap getAvatar() {
+    public byte[] getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(Bitmap avatar) {
+    public void setAvatar(byte[] avatar) {
         this.avatar = avatar;
+    }
+
+    public static Bitmap getBitmapAvatar(byte[] avatar){
+        return BitmapFactory.decodeByteArray(avatar, 0, avatar.length);
     }
 }

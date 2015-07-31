@@ -33,16 +33,16 @@ public class AvatarManager {
 
         private int id;
 
-        private Bitmap bitmap;
+        private byte[] avatar;
 
-        BitmapUser(int id, Bitmap bitmap){
+        BitmapUser(int id, byte[] avatar){
             this.id = id;
-            this.bitmap = bitmap;
+            this.avatar = avatar;
         }
 
         public int getId(){ return id; }
 
-        public Bitmap getBitmap(){ return bitmap; }
+        public byte[] getAvatar(){ return avatar; }
     }
 
     private static ArrayList<ImageViewUser> imageViewUsers = new ArrayList<>();
@@ -56,12 +56,12 @@ public class AvatarManager {
     }
 
     public static void getAvatar(int id, OnCallbackAvatar listener){
-        Bitmap bitmap = null;
+        byte[] avatar = null;
         boolean found = false;
         for(int i = 0; i < bitmapUsers.size(); i++){
             BitmapUser bitmapUser = bitmapUsers.get(i);
             if(bitmapUser.getId() == id){
-                bitmap = bitmapUser.getBitmap();
+                avatar = bitmapUser.getAvatar();
                 found = true;
             }
         }
@@ -78,7 +78,7 @@ public class AvatarManager {
             }
             imageViewUsers.add(new ImageViewUser(id, listener));
         }else{
-            listener.newAvatar(id, bitmap);
+            listener.newAvatar(id, avatar);
         }
     }
 
@@ -89,12 +89,12 @@ public class AvatarManager {
         }
     }
 
-    public static void newAvatar(int id, Bitmap bitmap){
-        bitmapUsers.add(new BitmapUser(id, bitmap));
+    public static void newAvatar(int id, byte[] avatar){
+        bitmapUsers.add(new BitmapUser(id, avatar));
         for(int i = 0; i < imageViewUsers.size(); i++){
             ImageViewUser imageViewUser = imageViewUsers.get(i);
             if(imageViewUser.getId() == id){
-                imageViewUser.getListener().newAvatar(id, bitmap);
+                imageViewUser.getListener().newAvatar(id, avatar);
                 imageViewUsers.remove(i);
             }
         }

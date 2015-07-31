@@ -158,11 +158,11 @@ public class SearchActivity extends ListActivity implements SocketActivity.Socke
     }
 
     @Override
-    public void newAvatar(final int id, final Bitmap bitmap) {
+    public void newAvatar(final int id, final byte[] avatar) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                arrayAdapter.setBitmapById(id, bitmap);
+                arrayAdapter.setBitmapById(id, avatar);
             }
         });
     }

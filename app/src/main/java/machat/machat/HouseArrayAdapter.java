@@ -30,10 +30,10 @@ public class HouseArrayAdapter extends ArrayAdapter {
         this.houseActivity = houseActivity;
     }
 
-    public void setBitmapById(int id, Bitmap bitmap){
+    public void setBitmapById(int id, byte[] avatar){
         for(int i = 0; i < messageList.size(); i++){
             if(messageList.get(i).getUser().getId() == id){
-                messageList.get(i).setAvatar(bitmap);
+                messageList.get(i).setAvatar(User.getBitmapAvatar(avatar));
             }
         }
         notifyDataSetChanged();
@@ -87,19 +87,19 @@ public class HouseArrayAdapter extends ArrayAdapter {
             rowView = inflater.inflate(R.layout.message_left, parent, false);
             TextView nameView = (TextView) rowView.findViewById(R.id.username);
             nameView.setText(message.getUser().getName());
-            final ImageView avatar = (ImageView) rowView.findViewById(R.id.avatar);
+            final ImageView avatarView = (ImageView) rowView.findViewById(R.id.avatar);
             AvatarManager.getAvatar(message.getUser().getId(), new OnCallbackAvatar() {
                 @Override
-                public void newAvatar(int id,final Bitmap bitmap) {
+                public void newAvatar(int id,final byte[] avatar) {
                     houseActivity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            avatar.setImageBitmap(bitmap);
+                            avatarView.setImageBitmap(User.getBitmapAvatar(avatar));
                         }
                     });
                 }
             });
-            avatar.setOnClickListener(new View.OnClickListener() {
+            avatarView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (message.getHouseId() != message.getUser().getId()) {

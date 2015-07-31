@@ -55,18 +55,18 @@ public class BlockListArrayAdapter extends ArrayAdapter {
 
         TextView usernameView = (TextView) rowView.findViewById(R.id.username);
         TextView nameView = (TextView) rowView.findViewById(R.id.name);
-        final ImageView avatar = (ImageView) rowView.findViewById(R.id.avatar);
+        final ImageView avatarView = (ImageView) rowView.findViewById(R.id.avatar);
 
         usernameView.setText(user.getUsername());
         nameView.setText(user.getName());
 
         AvatarManager.getAvatar(user.getId(), new OnCallbackAvatar() {
             @Override
-            public void newAvatar(int id, final Bitmap bitmap) {
+            public void newAvatar(int id, final byte[] avatar) {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        avatar.setImageBitmap(bitmap);
+                        avatarView.setImageBitmap(User.getBitmapAvatar(avatar));
                     }
                 });
             }

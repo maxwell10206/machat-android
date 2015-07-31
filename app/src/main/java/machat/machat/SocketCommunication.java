@@ -330,8 +330,8 @@ public class SocketCommunication implements OnCallbackAvatar{
     }
 
     @Override
-    public void newAvatar(int id, Bitmap bitmap) {
-        AvatarManager.newAvatar(id, bitmap);
+    public void newAvatar(int id, byte[] avatar) {
+        AvatarManager.newAvatar(id, avatar);
     }
 
 }

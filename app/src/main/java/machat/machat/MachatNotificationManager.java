@@ -107,8 +107,8 @@ public class MachatNotificationManager {
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(service);
-            boolean soundNotify = sharedPreferences.getBoolean(service.getString(R.string.pref_key_sound), false);
-            boolean vibrateNotify = sharedPreferences.getBoolean(service.getString(R.string.pref_key_vibrate), false);
+            boolean soundNotify = sharedPreferences.getBoolean(service.getString(R.string.pref_key_sound), true);
+            boolean vibrateNotify = sharedPreferences.getBoolean(service.getString(R.string.pref_key_vibrate), true);
             boolean blinkLED = sharedPreferences.getBoolean(service.getString(R.string.pref_key_blinkLED), false);
             if (soundNotify) {
                 notification.defaults |= Notification.DEFAULT_SOUND;
@@ -123,7 +123,7 @@ public class MachatNotificationManager {
                 notification.ledOffMS = 1000;
             }
 
-        boolean notify = sharedPreferences.getBoolean(service.getString(R.string.pref_key_receive_notifications), false);
+        boolean notify = sharedPreferences.getBoolean(service.getString(R.string.pref_key_receive_notifications), true);
         if(notify){
             mNotificationManager.notify(houseId, notification);
         }

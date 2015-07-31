@@ -57,7 +57,7 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
 
     private SwipeRefreshLayout refreshLayout;
 
-    Realm realm;
+    public Realm realm;
 
     @Override
     protected void onListItemClick (ListView l, View v, int position, long i){
@@ -101,7 +101,7 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
         arrayAdapter = new FavoriteListAdapter(this, new ArrayList<FavoriteItem>());
         setListAdapter(arrayAdapter);
 
-        /*/ WIP Offline Storage
+        /*/
         realm = Realm.getInstance(getApplicationContext());
 
         RealmQuery<FavoriteItem> query = realm.where(FavoriteItem.class);
@@ -209,11 +209,12 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
         arrayAdapter.clear();
         for(int i = 0; i < favoriteItems.size(); i++){
             FavoriteItem favoriteItem = favoriteItems.get(i);
-            if(favoriteItem.getUser().getId() == myProfile.getId()){
+            if(myProfile != null && favoriteItem.getUser().getId() == myProfile.getId()){
                 favoriteItem.setHeader(true);
             }
         }
-        /*/ WIP Offline Storage
+
+        /*/
         RealmQuery<FavoriteItem> query = realm.where(FavoriteItem.class);
         RealmResults<FavoriteItem> result = query.findAll();
         realm.beginTransaction();
@@ -224,6 +225,7 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
         realm.copyToRealmOrUpdate(favoriteItems);
         realm.commitTransaction();
         /*/
+
         arrayAdapter.addAll(favoriteItems);
         refreshLayout.setRefreshing(false);
     }
@@ -261,8 +263,8 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
     }
 
     @Override
-    public void newAvatar(int id, Bitmap bitmap) {
-        arrayAdapter.setBitmapById(id, bitmap);
+    public void newAvatar(int id, byte[] avatar) {
+        arrayAdapter.setBitmapById(id, avatar);
     }
 
     @Override

@@ -7,5 +7,5 @@ import android.graphics.Bitmap;
  */
 public interface OnCallbackAvatar {
 
-    void newAvatar(int id, Bitmap bitmap);
+    void newAvatar(int id, byte[] avatar);
 }

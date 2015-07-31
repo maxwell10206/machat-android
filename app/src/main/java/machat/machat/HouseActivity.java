@@ -387,8 +387,8 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
     }
 
     @Override
-    public void newAvatar(int id, Bitmap bitmap) {
-        arrayAdapter.setBitmapById(id, bitmap);
+    public void newAvatar(int id, byte[] avatar) {
+        arrayAdapter.setBitmapById(id, avatar);
     }
 
     @Override

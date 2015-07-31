@@ -3,6 +3,7 @@ package machat.machat;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,10 +31,10 @@ public class SearchArrayAdapter extends ArrayAdapter {
         this.activity = activity;
     }
 
-    public void setBitmapById(int id, Bitmap bitmap){
+    public void setBitmapById(int id, byte[] avatar){
         for(int i = 0; i < users.size(); i++){
             if(users.get(i).getUser().getId() == id){
-                users.get(i).getUser().setAvatar(bitmap);
+                users.get(i).getUser().setAvatar(avatar);
             }
         }
         notifyDataSetChanged();
@@ -54,18 +55,18 @@ public class SearchArrayAdapter extends ArrayAdapter {
 
         TextView usernameView = (TextView) rowView.findViewById(R.id.username);
         TextView nameView = (TextView) rowView.findViewById(R.id.name);
-        final ImageView avatar = (ImageView) rowView.findViewById(R.id.avatar);
+        final ImageView avatarView = (ImageView) rowView.findViewById(R.id.avatar);
 
         usernameView.setText(user.getUsername());
         nameView.setText(user.getName());
 
         AvatarManager.getAvatar(user.getId(), new OnCallbackAvatar() {
             @Override
-            public void newAvatar(int id, final Bitmap bitmap) {
+            public void newAvatar(int id, final byte[] avatar) {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        avatar.setImageBitmap(bitmap);
+                        avatarView.setImageBitmap(User.getBitmapAvatar(avatar));
                     }
                 });
             }
