@@ -1,7 +1,6 @@
 package machat.machat;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import io.realm.Realm;
 import machat.machat.socketIO.AvatarManager;
 import machat.machat.socketIO.OnCallbackAvatar;
 
@@ -42,16 +40,22 @@ public class FavoriteListAdapter extends ArrayAdapter {
 
     public void removeById(int id){
         for(int i = 0; i < favoriteItems.size(); i++){
-            if(favoriteItems.get(i).getUser().getId() == id){
-                remove(favoriteItems.get(i));
+            if(favoriteItems.get(i).getUserId() == id){
+                favoriteListActivity.realm.beginTransaction();
+                favoriteItems.get(i).removeFromRealm();
+                favoriteListActivity.realm.commitTransaction();
+                favoriteItems.remove(i);
             }
         }
+        notifyDataSetChanged();
     }
 
     public void setMuteById(int id, boolean mute){
         for(int i = 0; i < favoriteItems.size(); i++) {
-            if (favoriteItems.get(i).getUser().getId() == id) {
+            if (favoriteItems.get(i).getUserId() == id) {
+                favoriteListActivity.realm.beginTransaction();
                 favoriteItems.get(i).setMute(mute);
+                favoriteListActivity.realm.commitTransaction();
             }
         }
         notifyDataSetChanged();
@@ -59,8 +63,8 @@ public class FavoriteListAdapter extends ArrayAdapter {
 
     public void setBitmapById(int id, byte[] avatar){
         for(int i = 0; i < favoriteItems.size(); i++){
-            if(favoriteItems.get(i).getUser().getId() == id) {
-                favoriteItems.get(i).getUser().setAvatar(avatar);
+            if(favoriteItems.get(i).getUserId() == id) {
+                favoriteItems.get(i).setAvatar(avatar);
             }
         }
         notifyDataSetChanged();
@@ -68,8 +72,10 @@ public class FavoriteListAdapter extends ArrayAdapter {
 
     public void setBlockById(int id, boolean block){
         for(int i = 0; i < favoriteItems.size(); i++){
-            if(favoriteItems.get(i).getUser().getId() == id){
+            if(favoriteItems.get(i).getUserId() == id){
+                favoriteListActivity.realm.beginTransaction();
                 favoriteItems.get(i).setBlock(block);
+                favoriteListActivity.realm.commitTransaction();
             }
         }
         notifyDataSetChanged();
@@ -77,8 +83,10 @@ public class FavoriteListAdapter extends ArrayAdapter {
 
     public void changeNameById(int id, String name){
         for(int i = 0; i < favoriteItems.size(); i++){
-            if(favoriteItems.get(i).getUser().getId() == id){
-                favoriteItems.get(i).getUser().setName(name);
+            if(favoriteItems.get(i).getUserId() == id){
+                favoriteListActivity.realm.beginTransaction();
+                favoriteItems.get(i).setName(name);
+                favoriteListActivity.realm.commitTransaction();
             }
         }
         notifyDataSetChanged();
@@ -86,9 +94,10 @@ public class FavoriteListAdapter extends ArrayAdapter {
 
     public void setReadHouseById(int id, boolean read) {
         for(int i = 0; i < favoriteItems.size(); i++){
-            Message message = favoriteItems.get(i).getMessage();
-            if(message.getHouseId() == id){
+            if(favoriteItems.get(i).getUserId() == id){
+                favoriteListActivity.realm.beginTransaction();
                 favoriteItems.get(i).setRead(read);
+                favoriteListActivity.realm.commitTransaction();
             }
         }
         notifyDataSetChanged();
@@ -96,9 +105,10 @@ public class FavoriteListAdapter extends ArrayAdapter {
 
     public void setReadMessageById(int messageId) {
         for (int i = 0; i < favoriteItems.size(); i++) {
-            Message message = favoriteItems.get(i).getMessage();
-            if (message.getId() == messageId) {
-                favoriteItems.get(i).getMessage().setStatus(Message.READ);
+            if (favoriteItems.get(i).getMessageId() == messageId) {
+                favoriteListActivity.realm.beginTransaction();
+                favoriteItems.get(i).setStatus(Message.READ);
+                favoriteListActivity.realm.commitTransaction();
             }
         }
         notifyDataSetChanged();
@@ -106,9 +116,15 @@ public class FavoriteListAdapter extends ArrayAdapter {
 
     public void setMessageById(Message message){
         for(int i = 0; i < favoriteItems.size(); i++){
-            if(favoriteItems.get(i).getUser().getId() == message.getHouseId()){
+            if(favoriteItems.get(i).getUserId() == message.getHouseId()){
                 FavoriteItem favoriteItem = favoriteItems.get(i);
-                favoriteItem.setMessage(message);
+                favoriteListActivity.realm.beginTransaction();
+                favoriteItem.setMessage(message.getMessage());
+                favoriteItem.setMessageId(message.getId());
+                favoriteItem.setMessageUserId(message.getUserId());
+                favoriteItem.setStatus(message.getStatus());
+                favoriteItem.setTime(message.getTime());
+                favoriteListActivity.realm.commitTransaction();
             }
         }
         notifyDataSetChanged();
@@ -135,18 +151,18 @@ public class FavoriteListAdapter extends ArrayAdapter {
         final ImageView avatarView = (ImageView) rowView.findViewById(R.id.avatar);
 
         final FavoriteItem favoriteItem = favoriteItems.get(position);
-        Message message = favoriteItem.getMessage();
-        name.setText(favoriteItem.getUser().getName());
-        if(message.getMessage().isEmpty()){
+        name.setText(favoriteItem.getName());
+
+        if(favoriteItem.getMessage().isEmpty()){
             lastMessage.setText("No messages");
         }else {
-            lastMessage.setText(message.getMessage());
+            lastMessage.setText(favoriteItem.getMessage());
         }
-        messageTime.setText(FavoriteItem.getTimeString(favoriteItem.getMessage().getTime()));
+        messageTime.setText(FavoriteItem.getTimeString(favoriteItem.getTime()));
 
         ImageView status = (ImageView) rowView.findViewById(R.id.status);
-        if (favoriteItem.getMessage().getUser().getId() == myId) {
-            status.setImageResource(favoriteItem.getMessage().getStatusImageId(favoriteItem.getMessage().getStatus()));
+        if (favoriteItem.getMessageUserId() == myId) {
+            status.setImageResource(Message.getStatusImageId(favoriteItem.getStatus()));
         } else {
             status.setImageResource(R.drawable.ic_play_arrow_black_18dp);
         }
@@ -160,21 +176,17 @@ public class FavoriteListAdapter extends ArrayAdapter {
             notRead.setImageResource(R.drawable.blue_circle);
         }
 
-        if(favoriteItem.getUser().getAvatar() != null && favoriteItem.getUser().getAvatar().length != 0){
-            avatarView.setImageBitmap(User.getBitmapAvatar(favoriteItem.getUser().getAvatar()));
+        byte[] imageByteArray = favoriteItem.getAvatar();
+        if(imageByteArray != null && imageByteArray.length != 0) {
+            avatarView.setImageBitmap(User.getBitmapAvatar(imageByteArray));
         }
-        AvatarManager.getAvatar(favoriteItem.getUser().getId(), new OnCallbackAvatar() {
+        AvatarManager.getAvatar(favoriteItem.getUserId(), new OnCallbackAvatar() {
             @Override
-            public void newAvatar(int id, final byte[] avatar) {
+            public void newAvatar(int id, final byte[] avatar, long time) {
                 favoriteListActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         avatarView.setImageBitmap(User.getBitmapAvatar(avatar));
-                        /*/
-                        favoriteListActivity.realm.beginTransaction();
-                        //favoriteItem.getUser().setAvatar(avatar);
-                        favoriteListActivity.realm.commitTransaction();
-                        /*/
                     }
                 });
             }

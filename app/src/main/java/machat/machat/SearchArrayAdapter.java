@@ -62,7 +62,7 @@ public class SearchArrayAdapter extends ArrayAdapter {
 
         AvatarManager.getAvatar(user.getId(), new OnCallbackAvatar() {
             @Override
-            public void newAvatar(int id, final byte[] avatar) {
+            public void newAvatar(int id, final byte[] avatar, long time) {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

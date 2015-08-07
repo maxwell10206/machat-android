@@ -158,7 +158,7 @@ public class SearchActivity extends ListActivity implements SocketActivity.Socke
     }
 
     @Override
-    public void newAvatar(final int id, final byte[] avatar) {
+    public void newAvatar(final int id, final byte[] avatar, long time) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -174,9 +174,12 @@ public class SearchActivity extends ListActivity implements SocketActivity.Socke
             Toast.makeText(this, "You are blocked from this house", Toast.LENGTH_SHORT).show();
         }else {
             Intent intent = new Intent(this, HouseActivity.class);
-            intent.putExtra(HouseActivity.EXTRA_ID, user.getUser().getId());
+            int houseId = user.getUser().getId();
+            intent.putExtra(HouseActivity.EXTRA_ID, houseId);
             intent.putExtra(HouseActivity.MY_ID, myProfile.getId());
             intent.putExtra(HouseActivity.HOUSE_NAME, user.getUser().getName());
+            intent.putExtra(HouseActivity.FAVORITE, mService.user.getFavorite(houseId));
+            intent.putExtra(HouseActivity.MUTE, mService.user.getMute(houseId));
             startActivity(intent);
         }
     }

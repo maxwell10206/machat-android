@@ -311,6 +311,17 @@ public class SocketCommunication implements OnCallbackAvatar{
         });
     }
 
+    public void updateAvatar(int id, long time){
+        mSocket.emit(SocketCommand.UPDATE_AVATAR, SocketCompose.updateAvatar(id, time), new Ack() {
+            @Override
+            public void call(Object... args) {
+                JSONObject jsonObject = ServiceCompose.getAvatar((JSONObject) args[0]);
+                service.sendBroadcast(SocketCommand.GET_AVATAR, jsonObject.toString());
+                SocketParse.parseGetAvatar(jsonObject.toString(), SocketCommunication.this);
+            }
+        });
+    }
+
     public void sendAvatar(byte[] avatar){
         mSocket.emit(SocketCommand.SEND_AVATAR, avatar, new Ack() {
             @Override
@@ -330,8 +341,8 @@ public class SocketCommunication implements OnCallbackAvatar{
     }
 
     @Override
-    public void newAvatar(int id, byte[] avatar) {
-        AvatarManager.newAvatar(id, avatar);
+    public void newAvatar(int id, byte[] avatar, long time) {
+        AvatarManager.newAvatar(id, avatar, time);
     }
 
 }

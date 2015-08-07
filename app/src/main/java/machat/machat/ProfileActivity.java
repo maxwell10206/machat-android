@@ -13,6 +13,7 @@ import android.widget.TextView;
 import machat.machat.socketIO.AvatarManager;
 import machat.machat.socketIO.OnCallbackAvatar;
 import machat.machat.socketIO.OnCallbackBlock;
+import machat.machat.socketIO.OnLoginListener;
 import machat.machat.socketIO.OnNewProfile;
 import machat.machat.socketIO.SocketActivity;
 import machat.machat.socketIO.SocketCommand;
@@ -21,7 +22,7 @@ import machat.machat.socketIO.SocketParse;
 /**
  * Created by Admin on 6/18/2015.
  */
-public class ProfileActivity extends Activity implements SocketActivity.SocketListener, OnCallbackBlock, CompoundButton.OnCheckedChangeListener, OnNewProfile, OnCallbackAvatar {
+public class ProfileActivity extends Activity implements SocketActivity.SocketListener, OnCallbackBlock, OnLoginListener, CompoundButton.OnCheckedChangeListener, OnNewProfile, OnCallbackAvatar {
 
     public static final String BUNDLE_ID = "id";
 
@@ -89,8 +90,7 @@ public class ProfileActivity extends Activity implements SocketActivity.SocketLi
     public void onConnect(SocketService mService) {
         this.mService = mService;
         connected = true;
-        mService.send.getProfile(id);
-        AvatarManager.getAvatar(id, this);
+        onLoginSuccess(mService.user.getMyProfile());
     }
 
     @Override
@@ -106,6 +106,8 @@ public class ProfileActivity extends Activity implements SocketActivity.SocketLi
             SocketParse.parseBlockUser(data, this);
         }else if(command.equals(SocketCommand.GET_AVATAR)){
             SocketParse.parseGetAvatar(data, this);
+        }else if(command.equals(SocketCommand.LOGIN)){
+            SocketParse.parseLogin(data, this);
         }
     }
 
@@ -131,7 +133,7 @@ public class ProfileActivity extends Activity implements SocketActivity.SocketLi
     }
 
     @Override
-    public void newAvatar(int id, final byte[] avatar) {
+    public void newAvatar(int id, final byte[] avatar, long time) {
         if(id == this.id) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -149,5 +151,16 @@ public class ProfileActivity extends Activity implements SocketActivity.SocketLi
                 mService.send.blockUser(id, isChecked);
             }
         }
+    }
+
+    @Override
+    public void onLoginSuccess(MyProfile myProfile) {
+        mService.send.getProfile(id);
+        AvatarManager.getAvatar(id, this);
+    }
+
+    @Override
+    public void onLoginFailed(String err) {
+
     }
 }

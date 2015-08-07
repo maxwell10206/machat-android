@@ -17,10 +17,12 @@ import android.widget.Toast;
 import com.github.nkzawa.socketio.client.Socket;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
+import machat.machat.socketIO.AvatarManager;
 import machat.machat.socketIO.OnBlockedByUser;
 import machat.machat.socketIO.OnCallbackAvatar;
 import machat.machat.socketIO.OnCallbackFavorite;
@@ -63,18 +65,20 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
     protected void onListItemClick (ListView l, View v, int position, long i){
         Intent intent = new Intent(this, HouseActivity.class);
         FavoriteItem favoriteItem = (FavoriteItem) getListView().getItemAtPosition(position);
-        intent.putExtra(HouseActivity.EXTRA_ID, favoriteItem.getUser().getId());
+        intent.putExtra(HouseActivity.EXTRA_ID, favoriteItem.getUserId());
         intent.putExtra(HouseActivity.MY_ID, myProfile.getId());
-        intent.putExtra(HouseActivity.HOUSE_NAME, favoriteItem.getUser().getName());
+        intent.putExtra(HouseActivity.HOUSE_NAME, favoriteItem.getName());
+        intent.putExtra(HouseActivity.FAVORITE, mService.user.getFavorite(favoriteItem.getUserId()));
+        intent.putExtra(HouseActivity.MUTE, mService.user.getMute(favoriteItem.getUserId()));
         startActivity(intent);
     }
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         FavoriteItem favoriteItem = (FavoriteItem) getListView().getItemAtPosition(position);
-        if(myProfile.getId() == favoriteItem.getUser().getId()){
+        if(myProfile.getId() == favoriteItem.getUserId()){
             if(mService.isConnected()) {
-                muteHouse(favoriteItem.getUser().getId(), !(favoriteItem.isMute()));
+                muteHouse(favoriteItem.getUserId(), !(favoriteItem.isMute()));
             }
         }else {
             Bundle bundle = new Bundle();
@@ -101,13 +105,11 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
         arrayAdapter = new FavoriteListAdapter(this, new ArrayList<FavoriteItem>());
         setListAdapter(arrayAdapter);
 
-        /*/
-        realm = Realm.getInstance(getApplicationContext());
+        realm = Realm.getInstance(this);
 
         RealmQuery<FavoriteItem> query = realm.where(FavoriteItem.class);
         RealmResults<FavoriteItem> result = query.findAll();
         arrayAdapter.addAll(result);
-        /*/
     }
 
     @Override
@@ -153,7 +155,6 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
     public void getHouses(){
         if(connected){
             mService.send.getFavoriteList();
-            refreshLayout.setRefreshing(true);
         }
     }
 
@@ -209,24 +210,21 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
         arrayAdapter.clear();
         for(int i = 0; i < favoriteItems.size(); i++){
             FavoriteItem favoriteItem = favoriteItems.get(i);
-            if(myProfile != null && favoriteItem.getUser().getId() == myProfile.getId()){
+            if(myProfile != null && favoriteItem.getUserId() == myProfile.getId()){
                 favoriteItem.setHeader(true);
             }
         }
 
-        /*/
-        RealmQuery<FavoriteItem> query = realm.where(FavoriteItem.class);
-        RealmResults<FavoriteItem> result = query.findAll();
         realm.beginTransaction();
-        for(int i = 0; i < result.size(); i++){
-            FavoriteItem favoriteItem = result.get(i);
-            favoriteItem.removeFromRealm();
+        RealmResults<FavoriteItem> results = realm.where(FavoriteItem.class).findAll();
+        for(int i = 0; i < results.size(); i++){
+            results.get(i).removeFromRealm();
         }
-        realm.copyToRealmOrUpdate(favoriteItems);
-        realm.commitTransaction();
-        /*/
+        List<FavoriteItem> realmFavoriteItems = realm.copyToRealmOrUpdate(favoriteItems);
 
-        arrayAdapter.addAll(favoriteItems);
+        realm.commitTransaction();
+
+        arrayAdapter.addAll(realmFavoriteItems);
         refreshLayout.setRefreshing(false);
     }
 
@@ -263,7 +261,7 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
     }
 
     @Override
-    public void newAvatar(int id, byte[] avatar) {
+    public void newAvatar(int id, byte[] avatar, long time) {
         arrayAdapter.setBitmapById(id, avatar);
     }
 

@@ -104,7 +104,7 @@ public class SocketService extends Service {
             send = new SocketCommunication(this, mSocket);
             machatNotificationManager = new MachatNotificationManager(this);
             user = new ServiceReceiver(this);
-            AvatarManager.setSocketCommunication(send);
+            AvatarManager.setSocketService(this);
             TimeConvert.setContext(this);
             mSocket.connect();
             LocalBroadcastManager.getInstance(this).registerReceiver(user, new IntentFilter(SocketService.ACTION));

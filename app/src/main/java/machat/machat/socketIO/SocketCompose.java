@@ -41,6 +41,17 @@ public class SocketCompose {
         return data;
     }
 
+    public static JSONObject updateAvatar(int id, long time){
+        JSONObject data = new JSONObject();
+        try{
+            data.put(SocketData.time, time);
+            data.put(SocketData.id, id);
+        }catch(JSONException e){
+            e.printStackTrace();
+        }
+        return data;
+    }
+
     public static JSONObject getOldMessages(int houseId, int oldestMessageId){
         JSONObject data = new JSONObject();
         try {

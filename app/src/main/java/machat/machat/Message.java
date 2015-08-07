@@ -2,14 +2,17 @@ package machat.machat;
 
 import android.graphics.Bitmap;
 
+import java.io.Serializable;
+
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
+import io.realm.annotations.PrimaryKey;
 import machat.machat.socketIO.TimeConvert;
 
 /**
  * Created by Admin on 6/14/2015.
  */
-public class Message extends RealmObject{
+public class Message extends RealmObject implements Serializable{
 
     public static final int NOT_SENT = 0;
     public static final int SENT = 1;
@@ -20,25 +23,41 @@ public class Message extends RealmObject{
 
     private long time;
 
+    @PrimaryKey
     private int id;
 
     private int houseId;
 
     @Ignore
-    private Bitmap avatar;
+    private byte[] avatar;
 
     //0 = not sent, 1 = sent, 2 = delivered, 3 = seen
     private int status = 0;
 
+    @Ignore
     private int localId = -1;
 
     private String houseName;
 
-    private User user;
+    private int userId;
 
-    public User getUser(){ return user; }
+    private String name;
 
-    public void setUser(User user){ this.user = user; }
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public static int getStatusImageId(int status) {
         switch(status){
@@ -93,11 +112,11 @@ public class Message extends RealmObject{
         this.houseId = houseId;
     }
 
-    public Bitmap getAvatar() {
+    public byte[] getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(Bitmap avatar) {
+    public void setAvatar(byte[] avatar) {
         this.avatar = avatar;
     }
 

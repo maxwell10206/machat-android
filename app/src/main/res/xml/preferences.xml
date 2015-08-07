@@ -14,7 +14,8 @@
                             android:key="@string/pref_key_sound"
                             android:defaultValue="true"/>
         <CheckBoxPreference android:title="@string/pref_summary_blinkLED"
-                            android:key="@string/pref_key_blinkLED"/>
+                            android:key="@string/pref_key_blinkLED"
+                            android:defaultValue="true"/>
     </PreferenceScreen>
     <PreferenceScreen android:title="@string/pref_account_settings"
         android:persistent="false">

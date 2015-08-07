@@ -15,6 +15,8 @@ public final class SocketCommand {
 
     public static final String GET_AVATAR = "getAvatar";
 
+    public static final String UPDATE_AVATAR = "updateAvatar";
+
     public static final String NEW_MESSAGE = "newMessage";
 
     public static final String SEND_MESSAGE = "sendMessage";

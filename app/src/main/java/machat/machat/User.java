@@ -22,6 +22,7 @@ public class User extends RealmObject implements Serializable {
 
     private String name;
 
+    @Ignore
     private byte[] avatar;
 
     public int getId() {

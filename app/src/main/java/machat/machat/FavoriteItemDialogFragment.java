@@ -45,15 +45,15 @@ public class FavoriteItemDialogFragment extends DialogFragment {
         }
         list[1] = "Profile";
         list[2] = "UnFavorite";
-        builder.setTitle(favoriteItem.getUser().getName())
+        builder.setTitle(favoriteItem.getName())
                 .setItems(list, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         if(which == 0){
-                            listener.muteHouse(favoriteItem.getUser().getId(), !(favoriteItem.isMute()));
+                            listener.muteHouse(favoriteItem.getUserId(), !(favoriteItem.isMute()));
                         }else if(which == 1){
-                            listener.openProfile(favoriteItem.getUser().getId());
+                            listener.openProfile(favoriteItem.getUserId());
                         }else{
-                            listener.unFavoriteHouse(favoriteItem.getUser().getId());
+                            listener.unFavoriteHouse(favoriteItem.getUserId());
                         }
                     }
                 });

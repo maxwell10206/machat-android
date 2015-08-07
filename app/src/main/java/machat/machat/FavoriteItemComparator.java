@@ -10,6 +10,6 @@ public class FavoriteItemComparator implements Comparator<FavoriteItem> {
     public int compare(FavoriteItem lhs, FavoriteItem rhs) {
         if (lhs.isHeader()) return -1;
         if (rhs.isHeader()) return 1;
-        return Long.valueOf(rhs.getMessage().getTime()).compareTo(Long.valueOf(lhs.getMessage().getTime()));
+        return Long.valueOf(rhs.getTime()).compareTo(Long.valueOf(lhs.getTime()));
     }
 }

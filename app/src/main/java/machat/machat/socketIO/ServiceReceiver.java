@@ -10,6 +10,7 @@ import com.github.nkzawa.socketio.client.Socket;
 
 import java.util.ArrayList;
 
+import io.realm.Realm;
 import machat.machat.FavoriteItem;
 import machat.machat.MachatApplication;
 import machat.machat.Message;
@@ -35,13 +36,31 @@ public class ServiceReceiver extends BroadcastReceiver implements OnNewMessage, 
 
     private int houseId = 0;
 
+    private Realm realm;
+
     public void setHouseId(int id){
         houseId = id;
     }
 
     private ArrayList<FavoriteItem> favoritesList = new ArrayList<>();
 
-    public ArrayList<FavoriteItem> getFavoritesList(){ return favoritesList; }
+    public boolean getMute(int userId){
+        for(FavoriteItem favoriteItem: favoritesList){
+            if(userId == favoriteItem.getUserId()){
+                return favoriteItem.isMute();
+            }
+        }
+        return false;
+    }
+
+    public boolean getFavorite(int userId){
+        for(FavoriteItem favoriteItem: favoritesList){
+            if(userId == favoriteItem.getUserId()){
+                return true;
+            }
+        }
+        return false;
+    }
 
     public boolean isLogin() {
         return login;
@@ -51,6 +70,8 @@ public class ServiceReceiver extends BroadcastReceiver implements OnNewMessage, 
         this.application = (MachatApplication)mService.getApplication();
         sharedPref = PreferenceManager.getDefaultSharedPreferences(mService);
         this.mService = mService;
+        this.realm = Realm.getInstance(mService.getApplicationContext());
+        this.favoritesList.addAll(realm.where(FavoriteItem.class).findAll());
     }
 
     public MyProfile getMyProfile() {
@@ -69,6 +90,7 @@ public class ServiceReceiver extends BroadcastReceiver implements OnNewMessage, 
 
     @Override
     public void onLoginSuccess(MyProfile myProfile) {
+
         login = true;
         this.myProfile = myProfile;
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -80,6 +102,7 @@ public class ServiceReceiver extends BroadcastReceiver implements OnNewMessage, 
         editor.commit();
         mService.send.getUndeliveredMessages();
         mService.send.getFavoriteList();
+        AvatarManager.checkForUpdates();
     }
 
     @Override
@@ -133,16 +156,19 @@ public class ServiceReceiver extends BroadcastReceiver implements OnNewMessage, 
         boolean mute = false;
         for(int i = 0; i < favoritesList.size(); i++){
             FavoriteItem favoriteItem = favoritesList.get(i);
-            if(favoriteItem.getUser().getId() == message.getHouseId()){
+            if(favoriteItem.getUserId() == message.getHouseId()){
                 mute = favoriteItem.isMute();
             }
         }
         if(!application.isActivityVisible() && houseId != message.getHouseId() && !mute) {
-            mService.machatNotificationManager.newMissedMessages(message.getHouseId(), getMyProfile().getId(), message.getHouseName(), message.getUser().getName(), message.getMessage(), 1, true);
+            mService.machatNotificationManager.newMissedMessages(message.getHouseId(), getMyProfile().getId(), message.getHouseName(), message.getName(), message.getMessage(), 1, true);
         }
         if(!mute) {
             mService.send.deliveredMessage(message.getId());
         }
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(message);
+        realm.commitTransaction();
     }
 
     @Override
@@ -169,7 +195,7 @@ public class ServiceReceiver extends BroadcastReceiver implements OnNewMessage, 
     public void removeFavorite(int id) {
         for(int i = 0; i < favoritesList.size(); i++){
             FavoriteItem favoriteItem = favoritesList.get(i);
-            if(favoriteItem.getUser().getId() == id){
+            if(favoriteItem.getUserId() == id){
                 favoritesList.remove(i);
             }
         }
@@ -188,7 +214,7 @@ public class ServiceReceiver extends BroadcastReceiver implements OnNewMessage, 
     public void setFavoriteMute(int id, boolean mute) {
         for(int i = 0; i < favoritesList.size(); i++){
             FavoriteItem favoriteItem = favoritesList.get(i);
-            if(favoriteItem.getUser().getId() == id){
+            if(favoriteItem.getUserId() == id){
                 favoritesList.get(i).setMute(mute);
             }
         }

@@ -1,7 +1,6 @@
 package machat.machat;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,8 +31,10 @@ public class HouseArrayAdapter extends ArrayAdapter {
 
     public void setBitmapById(int id, byte[] avatar){
         for(int i = 0; i < messageList.size(); i++){
-            if(messageList.get(i).getUser().getId() == id){
-                messageList.get(i).setAvatar(User.getBitmapAvatar(avatar));
+            if(messageList.get(i).getUserId() == id){
+                houseActivity.realm.beginTransaction();
+                messageList.get(i).setAvatar(avatar);
+                houseActivity.realm.commitTransaction();
             }
         }
         notifyDataSetChanged();
@@ -53,7 +54,9 @@ public class HouseArrayAdapter extends ArrayAdapter {
             if(messageList.get(i).getId() == id){
                 int oldStatus = messageList.get(i).getStatus();
                 if(oldStatus < status) {
+                    houseActivity.realm.beginTransaction();
                     messageList.get(i).setStatus(status);
+                    houseActivity.realm.commitTransaction();
                 }
             }
         }
@@ -79,18 +82,24 @@ public class HouseArrayAdapter extends ArrayAdapter {
         View rowView;
 
         final Message message = messageList.get(position);
-        if(houseActivity.myProfile().getId() == message.getUser().getId()){
+        if(houseActivity.getMyId() == message.getUserId()){
             rowView = inflater.inflate(R.layout.message_right, parent, false);
             ImageView statusView = (ImageView) rowView.findViewById(R.id.status);
             statusView.setImageResource(Message.getStatusImageId(message.getStatus()));
         }else {
             rowView = inflater.inflate(R.layout.message_left, parent, false);
             TextView nameView = (TextView) rowView.findViewById(R.id.username);
-            nameView.setText(message.getUser().getName());
+            nameView.setText(message.getName());
             final ImageView avatarView = (ImageView) rowView.findViewById(R.id.avatar);
-            AvatarManager.getAvatar(message.getUser().getId(), new OnCallbackAvatar() {
+
+            byte[] imageByteArray = message.getAvatar();
+            if(imageByteArray != null && imageByteArray.length > 0){
+                avatarView.setImageBitmap(User.getBitmapAvatar(imageByteArray));
+            }
+
+            AvatarManager.getAvatar(message.getUserId(), new OnCallbackAvatar() {
                 @Override
-                public void newAvatar(int id,final byte[] avatar) {
+                public void newAvatar(int id, final byte[] avatar, long time) {
                     houseActivity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -102,8 +111,8 @@ public class HouseArrayAdapter extends ArrayAdapter {
             avatarView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (message.getHouseId() != message.getUser().getId()) {
-                        houseActivity.goToHouse(message.getUser().getId(), message.getUser().getName());
+                    if (message.getHouseId() != message.getUserId()) {
+                        houseActivity.goToHouse(message.getUserId(), message.getName());
                     }
                 }
             });

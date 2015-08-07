@@ -93,8 +93,6 @@ public class SocketActivity{
             }
             if(command.equals(Socket.EVENT_DISCONNECT)){
                 Toast.makeText(activity, "Lost Connection", Toast.LENGTH_SHORT).show();
-            } else if (command.equals(Socket.EVENT_ERROR)) {
-                Toast.makeText(activity, "Error connecting to server", Toast.LENGTH_SHORT).show();
             }
         }
     }

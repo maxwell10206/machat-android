@@ -5,6 +5,7 @@ import android.text.format.DateUtils;
 import java.io.Serializable;
 
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -21,18 +22,85 @@ public class FavoriteItem extends RealmObject implements Serializable {
 
     private boolean block;
 
-    private Message message;
+    private int messageId;
+
+    private String message;
+
+    private int status;
+
+    private String name;
+
+    private long time;
 
     @PrimaryKey
-    private int primaryKey;
+    private int userId;
 
-    public void setPrimaryKey(int primaryKey) {
-        this.primaryKey = primaryKey;
+    private int messageUserId;
+
+    @Ignore
+    private byte[] avatar;
+
+    public void setStatus(int status){
+        this.status = status;
     }
 
-    public int getPrimaryKey(){ return primaryKey; }
+    public int getStatus(){
+        return status;
+    }
 
-    private User user;
+    public void setMessageId(int messageId){
+        this.messageId = messageId;
+    }
+
+    public int getMessageId(){ return messageId; }
+
+    public void setAvatar(byte[] avatar){
+        this.avatar = avatar;
+    }
+
+    public byte[] getAvatar(){
+        return avatar;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public int getMessageUserId() {
+        return messageUserId;
+    }
+
+    public void setMessageUserId(int messageUserId) {
+        this.messageUserId = messageUserId;
+    }
 
     public boolean isMute() {
         return mute;
@@ -64,22 +132,6 @@ public class FavoriteItem extends RealmObject implements Serializable {
 
     public void setBlock(boolean block) {
         this.block = block;
-    }
-
-    public Message getMessage() {
-        return message;
-    }
-
-    public void setMessage(Message message) {
-        this.message = message;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public static String getTimeString(long time){

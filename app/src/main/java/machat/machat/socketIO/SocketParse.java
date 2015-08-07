@@ -1,7 +1,5 @@
 package machat.machat.socketIO;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Base64;
 
 import org.json.JSONArray;
@@ -100,9 +98,10 @@ public class SocketParse {
         try {
             JSONObject jsonObject = new JSONObject(string);
             int id = jsonObject.getInt(SocketData.id);
+            long time = jsonObject.getLong(SocketData.time);
             String base64Image = jsonObject.getString(SocketData.byteArray);
             byte[] bytesImage = Base64.decode(base64Image, Base64.DEFAULT);
-            listener.newAvatar(id, bytesImage);
+            listener.newAvatar(id, bytesImage, time);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -146,29 +145,17 @@ public class SocketParse {
         String messageString = jsonObject.getString(SocketData.message);
         boolean block = (jsonObject.getInt(SocketData.block) > 0);
 
-        User user1 = new User();
-        user1.setId(userId);
-        user1.setUsername(messageUsername);
-        user1.setName(messageName);
-        Message message = new Message();
-        message.setHouseId(id);
-        message.setId(messageId);
-        message.setHouseName(name);
-        message.setStatus(status);
-        message.setTime(messageTime);
-        message.setMessage(messageString);
-        message.setUser(user1);
-        User user2 = new User();
-        user2.setName(name);
-        user2.setUsername(username);
-        user2.setId(id);
         FavoriteItem favoriteItem = new FavoriteItem();
-        favoriteItem.setMessage(message);
+        favoriteItem.setMessage(messageString);
+        favoriteItem.setUserId(id);
+        favoriteItem.setMessageUserId(userId);
+        favoriteItem.setTime(messageTime);
+        favoriteItem.setStatus(status);
+        favoriteItem.setName(name);
+        favoriteItem.setMessageId(messageId);
         favoriteItem.setBlock(block);
         favoriteItem.setMute(mute);
         favoriteItem.setRead(read);
-        favoriteItem.setUser(user2);
-        favoriteItem.setPrimaryKey(id);
         return favoriteItem;
     }
 
@@ -370,17 +357,14 @@ public class SocketParse {
         String houseName = jsonObject.getString(SocketData.houseName);
         //Message message = new Message(houseId, userId, id, username, name, lastMessage, messageTime, status, houseName);
         Message message = new Message();
-        User user = new User();
-        user.setUsername(username);
-        user.setId(userId);
-        user.setName(name);
         message.setHouseName(houseName);
         message.setStatus(status);
         message.setId(id);
         message.setHouseId(houseId);
         message.setMessage(lastMessage);
         message.setTime(messageTime);
-        message.setUser(user);
+        message.setName(name);
+        message.setUserId(userId);
         return message;
     }
 

@@ -202,7 +202,7 @@ public class MyProfileActivity extends Activity implements View.OnClickListener,
     }
 
     @Override
-    public void newAvatar(int id, final byte[] avatar) {
+    public void newAvatar(int id, final byte[] avatar, long time) {
         if(id == myProfile.getId()) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -245,7 +245,7 @@ public class MyProfileActivity extends Activity implements View.OnClickListener,
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
             byte[] byteArray = stream.toByteArray();
             mService.send.sendAvatar(byteArray);
-            AvatarManager.newAvatar(myProfile.getId(), byteArray);
+            AvatarManager.newAvatar(myProfile.getId(), byteArray, System.currentTimeMillis());
 
         } else if (resultCode == Crop.RESULT_ERROR) {
             Toast.makeText(this, Crop.getError(result).getMessage(), Toast.LENGTH_SHORT).show();

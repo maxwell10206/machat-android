@@ -91,7 +91,10 @@ public class MachatNotificationManager {
         Intent resultIntent = new Intent(service, HouseActivity.class)
                 .putExtra(HouseActivity.EXTRA_ID, houseId)
                 .putExtra(HouseActivity.MY_ID, myId)
-                .putExtra(HouseActivity.HOUSE_NAME, houseName);
+                .putExtra(HouseActivity.HOUSE_NAME, houseName)
+                .putExtra(HouseActivity.FAVORITE, service.user.getFavorite(houseId))
+                .putExtra(HouseActivity.MUTE, service.user.getMute(houseId));
+
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(service);
 // Adds the back stack
         stackBuilder.addParentStack(HouseActivity.class);
@@ -109,7 +112,7 @@ public class MachatNotificationManager {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(service);
             boolean soundNotify = sharedPreferences.getBoolean(service.getString(R.string.pref_key_sound), true);
             boolean vibrateNotify = sharedPreferences.getBoolean(service.getString(R.string.pref_key_vibrate), true);
-            boolean blinkLED = sharedPreferences.getBoolean(service.getString(R.string.pref_key_blinkLED), false);
+            boolean blinkLED = sharedPreferences.getBoolean(service.getString(R.string.pref_key_blinkLED), true);
             if (soundNotify) {
                 notification.defaults |= Notification.DEFAULT_SOUND;
             }
