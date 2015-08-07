@@ -9,6 +9,7 @@ import io.realm.RealmObject;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.annotations.PrimaryKey;
+import machat.machat.FavoriteItem;
 import machat.machat.SocketCommunication;
 import machat.machat.SocketService;
 
@@ -48,6 +49,14 @@ public class AvatarManager {
         realm = Realm.getInstance(mService.getApplicationContext());
         RealmResults<BitmapUser> results = realm.where(BitmapUser.class).findAll();
         bitmapUsers.clear();
+
+        realm.beginTransaction();
+        for(int i = 0; i < results.size(); i++){
+            if(!mService.user.getFavorite(results.get(i).getId())){
+                results.get(i).removeFromRealm();
+            }
+        }
+        realm.commitTransaction();
         bitmapUsers.addAll(results);
     }
 
@@ -111,9 +120,11 @@ public class AvatarManager {
         bitmapUser.setTime(time);
         bitmapUsers.add(bitmapUser);
         Realm realm = Realm.getInstance(mService.getApplicationContext());
-        realm.beginTransaction();
-        realm.copyToRealmOrUpdate(bitmapUser);
-        realm.commitTransaction();
+        if(mService.user.getFavorite(id)) {
+            realm.beginTransaction();
+            realm.copyToRealmOrUpdate(bitmapUser);
+            realm.commitTransaction();
+        }
         for(int i = 0; i < imageViewUsers.size(); i++){
             ImageViewUser imageViewUser = imageViewUsers.get(i);
             if(imageViewUser.getId() == id){
