@@ -133,10 +133,6 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
 
         realm = Realm.getInstance(getApplicationContext());
 
-        RealmQuery<Message> query = realm.where(Message.class).equalTo("houseId", houseId);
-        RealmResults<Message> result = query.findAll();
-        arrayAdapter.addAll(result);
-
     }
 
     @Override
@@ -226,6 +222,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
     @Override
     protected void onStart(){
         super.onStart();
+        updateMessages();
         if(menu != null){
             socketActivity.connect();
         }
@@ -295,7 +292,15 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
             mService.send.getHouse(houseId);
             mService.user.setHouseId(houseId);
             mService.machatNotificationManager.clearNotification(houseId);
-            updateMessages();
+            for(int i = 0; i < arrayAdapter.getCount(); i++){
+                Message message = arrayAdapter.getItem(i);
+                int messageId = message.getId();
+                if(message.getStatus() < Message.READ){
+                    if(mService.isConnected()) {
+                        mService.send.getMessageStatus(messageId);
+                    }
+                }
+            }
         }
     }
 
@@ -305,6 +310,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
     }
 
     private void updateMessages(){
+        arrayAdapter.addAll(realm.where(Message.class).equalTo("houseId", houseId).greaterThan("id", newestMessageId).findAll());
         for(int i = 0; i < arrayAdapter.getCount(); i++){
             Message message = arrayAdapter.getItem(i);
             int messageId = message.getId();
@@ -314,9 +320,6 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
             if(messageId < oldestMessageId){
                 oldestMessageId = messageId;
             }
-            if(message.getStatus() < Message.READ){
-                mService.send.getMessageStatus(messageId);
-            }
         }
     }
 
@@ -325,7 +328,6 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         this.mService = mService;
         this.myProfile = mService.user.getMyProfile();
         connected = true;
-        updateMessages();
         onLoginSuccess(myProfile);
     }
 
@@ -581,10 +583,9 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
     @Override
     public void sendMessageSuccess(Message message) {
         int localId = message.getLocalId();
-        arrayAdapter.replaceByLocalId(localId, message);
         newestMessageId = message.getId();
         realm.beginTransaction();
-        realm.copyToRealmOrUpdate(message);
+        arrayAdapter.replaceByLocalId(localId, realm.copyToRealmOrUpdate(message));
         realm.commitTransaction();
     }
 

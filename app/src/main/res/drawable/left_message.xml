@@ -21,4 +21,5 @@
     <item android:drawable="@drawable/left_message_bubble">
 
     </item>
+
 </selector>
