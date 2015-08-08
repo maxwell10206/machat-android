@@ -52,7 +52,7 @@ public class AvatarManager {
 
         realm.beginTransaction();
         for(int i = 0; i < results.size(); i++){
-            if(!mService.user.getFavorite(results.get(i).getId())){
+            if(!mService.favorites.getFavorite(results.get(i).getId())){
                 results.get(i).removeFromRealm();
             }
         }
@@ -120,7 +120,14 @@ public class AvatarManager {
         bitmapUser.setTime(time);
         bitmapUsers.add(bitmapUser);
         Realm realm = Realm.getInstance(mService.getApplicationContext());
-        if(mService.user.getFavorite(id)) {
+        RealmResults<FavoriteItem> results = realm.where(FavoriteItem.class).findAll();
+        boolean favorite = false;
+        for(int i = 0; i < results.size(); i++){
+            if(results.get(i).getUserId() == id){
+                favorite = true;
+            }
+        }
+        if(favorite) {
             realm.beginTransaction();
             realm.copyToRealmOrUpdate(bitmapUser);
             realm.commitTransaction();

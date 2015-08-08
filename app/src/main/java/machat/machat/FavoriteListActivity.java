@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import machat.machat.socketIO.AvatarManager;
@@ -39,7 +40,7 @@ import machat.machat.socketIO.SocketParse;
 /**
  * Created by Admin on 6/7/2015.
  */
-public class FavoriteListActivity extends ListActivity implements OnCallbackAvatar, OnBlockedByUser, OnUserReadMessage, OnCallbackSendMessage, OnChangeName, OnLoginListener, OnNewMessage, machat.machat.socketIO.OnReadHouse, SocketActivity.SocketListener, SwipeRefreshLayout.OnRefreshListener, OnCallbackFavorite, AdapterView.OnItemLongClickListener, OnNewFavoriteList, FavoriteItemDialogFragment.OnCompleteListener {
+public class FavoriteListActivity extends ListActivity implements OnCallbackAvatar, OnLoginListener, SocketActivity.SocketListener, SwipeRefreshLayout.OnRefreshListener, AdapterView.OnItemLongClickListener, FavoriteItemDialogFragment.OnCompleteListener {
 
     SocketActivity socketActivity = new SocketActivity(this);
 
@@ -61,6 +62,8 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
 
     public Realm realm;
 
+    private RealmChangeListener realmListener;
+
     @Override
     protected void onListItemClick (ListView l, View v, int position, long i){
         Intent intent = new Intent(this, HouseActivity.class);
@@ -68,8 +71,8 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
         intent.putExtra(HouseActivity.EXTRA_ID, favoriteItem.getUserId());
         intent.putExtra(HouseActivity.MY_ID, myProfile.getId());
         intent.putExtra(HouseActivity.HOUSE_NAME, favoriteItem.getName());
-        intent.putExtra(HouseActivity.FAVORITE, mService.user.getFavorite(favoriteItem.getUserId()));
-        intent.putExtra(HouseActivity.MUTE, mService.user.getMute(favoriteItem.getUserId()));
+        intent.putExtra(HouseActivity.FAVORITE, mService.favorites.getFavorite(favoriteItem.getUserId()));
+        intent.putExtra(HouseActivity.MUTE, mService.favorites.getMute(favoriteItem.getUserId()));
         startActivity(intent);
     }
 
@@ -106,16 +109,30 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
         setListAdapter(arrayAdapter);
 
         realm = Realm.getInstance(this);
-
-        RealmQuery<FavoriteItem> query = realm.where(FavoriteItem.class);
-        RealmResults<FavoriteItem> result = query.findAll();
-        arrayAdapter.addAll(result);
     }
 
     @Override
     protected void onResume(){
         super.onResume();
         ((MachatApplication) getApplication()).activityResumed();
+
+        realmListener = new RealmChangeListener() {
+            @Override
+            public void onChange() {
+                arrayAdapter.clear();
+                RealmQuery<FavoriteItem> query = realm.where(FavoriteItem.class);
+                RealmResults<FavoriteItem> result = query.findAll();
+                arrayAdapter.addAll(result);
+                refreshLayout.setRefreshing(false);
+            }
+        };
+
+        RealmQuery<FavoriteItem> query = realm.where(FavoriteItem.class);
+        RealmResults<FavoriteItem> result = query.findAll();
+        arrayAdapter.clear();
+        arrayAdapter.addAll(result);
+
+        realm.addChangeListener(realmListener);
         socketActivity.connect();
     }
 
@@ -123,6 +140,7 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
     protected void onPause(){
         super.onPause();
         ((MachatApplication) getApplication()).activityPaused();
+        realm.removeChangeListener(realmListener);
         socketActivity.disconnect();
     }
 
@@ -180,64 +198,19 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
 
     @Override
     public void onReceive(String command, String data) {
-        if(command.equals(SocketCommand.GET_FAVORITE_LIST)) {
-            SocketParse.parseFavoriteList(data, this);
-        }else if (command.equals(Socket.EVENT_CONNECT)) {
+        if (command.equals(Socket.EVENT_CONNECT)) {
             getHouses();
-        }else if(command.equals(SocketCommand.FAVORITE_HOUSE)){
-            SocketParse.parseFavoriteHouse(data, this);
         }else if(command.equals(SocketCommand.GET_AVATAR)){
             SocketParse.parseGetAvatar(data, this);
-        }else if(command.equals(SocketCommand.NEW_MESSAGE)){
-            SocketParse.parseMessage(data, this);
-        }else if(command.equals(SocketCommand.SEND_MESSAGE)){
-            SocketParse.parseSendMessage(data, this);
-        }else if(command.equals(SocketCommand.READ_HOUSE)){
-            SocketParse.parseReadHouse(data, this);
         }else if(command.equals(SocketCommand.LOGIN)){
             SocketParse.parseLogin(data, this);
-        }else if(command.equals(SocketCommand.CHANGE_NAME)){
-            SocketParse.parseChangeName(data, this);
-        }else if(command.equals(SocketCommand.BLOCKED_BY_USER)){
-            SocketParse.parseBlockedByUser(data, this);
-        } else if (command.equals(SocketCommand.READ_MESSAGE)) {
-            SocketParse.parseUserReadMessage(data, this);
         }
-    }
-
-    @Override
-    public void newFavoriteList(ArrayList<FavoriteItem> favoriteItems) {
-        arrayAdapter.clear();
-        for(int i = 0; i < favoriteItems.size(); i++){
-            FavoriteItem favoriteItem = favoriteItems.get(i);
-            if(myProfile != null && favoriteItem.getUserId() == myProfile.getId()){
-                favoriteItem.setHeader(true);
-            }
-        }
-
-        realm.beginTransaction();
-        RealmResults<FavoriteItem> results = realm.where(FavoriteItem.class).findAll();
-        for(int i = 0; i < results.size(); i++){
-            results.get(i).removeFromRealm();
-        }
-        List<FavoriteItem> realmFavoriteItems = realm.copyToRealmOrUpdate(favoriteItems);
-
-        realm.commitTransaction();
-
-        arrayAdapter.addAll(realmFavoriteItems);
-        refreshLayout.setRefreshing(false);
-    }
-
-    @Override
-    public void getFavoriteListFailed(String err) {
-        Toast.makeText(this, err, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void muteHouse(int id, boolean mute) {
         if(connected && mService.isConnected()){
             mService.send.muteHouse(id, mute);
-            arrayAdapter.setMuteById(id, mute);
         }
     }
 
@@ -263,63 +236,6 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
     @Override
     public void newAvatar(int id, byte[] avatar, long time) {
         arrayAdapter.setBitmapById(id, avatar);
-    }
-
-    @Override
-    public void newMessage(Message message) {
-        arrayAdapter.setMessageById(message);
-        arrayAdapter.setReadHouseById(message.getHouseId(), false);
-    }
-
-    @Override
-    public void removeFavorite(int id) {
-        arrayAdapter.removeById(id);
-    }
-
-    @Override
-    public void newFavorite(FavoriteItem favoriteItem) {
-        arrayAdapter.add(favoriteItem);
-    }
-
-    @Override
-    public void favoriteError(String err) {}
-
-    @Override
-    public void readHouse(int houseId) {
-        arrayAdapter.setReadHouseById(houseId, true);
-    }
-
-    @Override
-    public void changeNameSuccess(String name) {
-        arrayAdapter.changeNameById(myProfile.getId(), name);
-    }
-
-    @Override
-    public void changeNameFailed(String err) {
-    }
-
-    @Override
-    public void sendMessageSuccess(Message message) {
-        arrayAdapter.setMessageById(message);
-    }
-
-    @Override
-    public void sendMessageFailed(String err) {
-    }
-
-    @Override
-    public void blockedBy(int userId) {
-        arrayAdapter.setBlockById(userId, true);
-    }
-
-    @Override
-    public void unBlockedBy(int userId) {
-        arrayAdapter.setBlockById(userId, false);
-    }
-
-    @Override
-    public void userReadMessage(int id) {
-        arrayAdapter.setReadMessageById(id);
     }
 }
 

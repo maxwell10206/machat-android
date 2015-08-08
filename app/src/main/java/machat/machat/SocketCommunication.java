@@ -242,7 +242,7 @@ public class SocketCommunication implements OnCallbackAvatar{
     }
 
     public void muteHouse(int id, boolean mute) {
-        service.user.setFavoriteMute(id, mute);
+        service.favorites.setFavoriteMute(id, mute);
         mSocket.emit(SocketCommand.MUTE_HOUSE, SocketCompose.muteHouse(id, mute), new Ack() {
             @Override
             public void call(Object... args) {

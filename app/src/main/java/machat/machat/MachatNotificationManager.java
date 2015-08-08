@@ -92,8 +92,8 @@ public class MachatNotificationManager {
                 .putExtra(HouseActivity.EXTRA_ID, houseId)
                 .putExtra(HouseActivity.MY_ID, myId)
                 .putExtra(HouseActivity.HOUSE_NAME, houseName)
-                .putExtra(HouseActivity.FAVORITE, service.user.getFavorite(houseId))
-                .putExtra(HouseActivity.MUTE, service.user.getMute(houseId));
+                .putExtra(HouseActivity.FAVORITE, service.favorites.getFavorite(houseId))
+                .putExtra(HouseActivity.MUTE, service.favorites.getMute(houseId));
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(service);
 // Adds the back stack

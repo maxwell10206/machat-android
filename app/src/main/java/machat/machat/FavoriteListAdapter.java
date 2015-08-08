@@ -38,93 +38,10 @@ public class FavoriteListAdapter extends ArrayAdapter {
         this.favoriteItems = favoriteItems;
     }
 
-    public void removeById(int id){
-        for(int i = 0; i < favoriteItems.size(); i++){
-            if(favoriteItems.get(i).getUserId() == id){
-                favoriteListActivity.realm.beginTransaction();
-                favoriteItems.get(i).removeFromRealm();
-                favoriteListActivity.realm.commitTransaction();
-                favoriteItems.remove(i);
-            }
-        }
-        notifyDataSetChanged();
-    }
-
-    public void setMuteById(int id, boolean mute){
-        for(int i = 0; i < favoriteItems.size(); i++) {
-            if (favoriteItems.get(i).getUserId() == id) {
-                favoriteListActivity.realm.beginTransaction();
-                favoriteItems.get(i).setMute(mute);
-                favoriteListActivity.realm.commitTransaction();
-            }
-        }
-        notifyDataSetChanged();
-    }
-
     public void setBitmapById(int id, byte[] avatar){
         for(int i = 0; i < favoriteItems.size(); i++){
             if(favoriteItems.get(i).getUserId() == id) {
                 favoriteItems.get(i).setAvatar(avatar);
-            }
-        }
-        notifyDataSetChanged();
-    }
-
-    public void setBlockById(int id, boolean block){
-        for(int i = 0; i < favoriteItems.size(); i++){
-            if(favoriteItems.get(i).getUserId() == id){
-                favoriteListActivity.realm.beginTransaction();
-                favoriteItems.get(i).setBlock(block);
-                favoriteListActivity.realm.commitTransaction();
-            }
-        }
-        notifyDataSetChanged();
-    }
-
-    public void changeNameById(int id, String name){
-        for(int i = 0; i < favoriteItems.size(); i++){
-            if(favoriteItems.get(i).getUserId() == id){
-                favoriteListActivity.realm.beginTransaction();
-                favoriteItems.get(i).setName(name);
-                favoriteListActivity.realm.commitTransaction();
-            }
-        }
-        notifyDataSetChanged();
-    }
-
-    public void setReadHouseById(int id, boolean read) {
-        for(int i = 0; i < favoriteItems.size(); i++){
-            if(favoriteItems.get(i).getUserId() == id){
-                favoriteListActivity.realm.beginTransaction();
-                favoriteItems.get(i).setRead(read);
-                favoriteListActivity.realm.commitTransaction();
-            }
-        }
-        notifyDataSetChanged();
-    }
-
-    public void setReadMessageById(int messageId) {
-        for (int i = 0; i < favoriteItems.size(); i++) {
-            if (favoriteItems.get(i).getMessageId() == messageId) {
-                favoriteListActivity.realm.beginTransaction();
-                favoriteItems.get(i).setStatus(Message.READ);
-                favoriteListActivity.realm.commitTransaction();
-            }
-        }
-        notifyDataSetChanged();
-    }
-
-    public void setMessageById(Message message){
-        for(int i = 0; i < favoriteItems.size(); i++){
-            if(favoriteItems.get(i).getUserId() == message.getHouseId()){
-                FavoriteItem favoriteItem = favoriteItems.get(i);
-                favoriteListActivity.realm.beginTransaction();
-                favoriteItem.setMessage(message.getMessage());
-                favoriteItem.setMessageId(message.getId());
-                favoriteItem.setMessageUserId(message.getUserId());
-                favoriteItem.setStatus(message.getStatus());
-                favoriteItem.setTime(message.getTime());
-                favoriteListActivity.realm.commitTransaction();
             }
         }
         notifyDataSetChanged();

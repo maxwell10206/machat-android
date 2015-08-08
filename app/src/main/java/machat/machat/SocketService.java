@@ -27,6 +27,8 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import machat.machat.socketIO.AvatarManager;
+import machat.machat.socketIO.FavoriteReceiver;
+import machat.machat.socketIO.HouseReceiver;
 import machat.machat.socketIO.ServiceReceiver;
 import machat.machat.socketIO.TimeConvert;
 
@@ -48,6 +50,10 @@ public class SocketService extends Service {
     private Socket mSocket;
 
     public ServiceReceiver user;
+
+    public FavoriteReceiver favorites;
+
+    public HouseReceiver houseReceiver;
 
     private final IBinder mBinder = new LocalBinder();
 
@@ -104,10 +110,14 @@ public class SocketService extends Service {
             send = new SocketCommunication(this, mSocket);
             machatNotificationManager = new MachatNotificationManager(this);
             user = new ServiceReceiver(this);
+            favorites = new FavoriteReceiver(this);
+            houseReceiver = new HouseReceiver(this);
             AvatarManager.setSocketService(this);
             TimeConvert.setContext(this);
             mSocket.connect();
-            LocalBroadcastManager.getInstance(this).registerReceiver(user, new IntentFilter(SocketService.ACTION));
+            LocalBroadcastManager.getInstance(this).registerReceiver(user, new IntentFilter(ACTION));
+            LocalBroadcastManager.getInstance(this).registerReceiver(favorites, new IntentFilter(ACTION));
+            LocalBroadcastManager.getInstance(this).registerReceiver(houseReceiver, new IntentFilter(ACTION));
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -123,6 +133,8 @@ public class SocketService extends Service {
         send.turnOffListeners();
         wl.release();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(user);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(favorites);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(houseReceiver);
     }
 
     public void sendBroadcast(String command, String data){

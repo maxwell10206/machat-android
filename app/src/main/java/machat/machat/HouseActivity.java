@@ -235,7 +235,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
     protected void onResume(){
         super.onResume();
         if(connected) {
-            mService.user.setHouseId(houseId);
+            mService.houseReceiver.setHouseId(houseId);
         }
     }
 
@@ -243,7 +243,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
     protected void onPause(){
         super.onPause();
         if(connected) {
-            mService.user.setHouseId(0);
+            mService.houseReceiver.setHouseId(0);
         }
     }
 
@@ -290,7 +290,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
             mService.send.readHouse(houseId);
             mService.send.joinHouse(houseId);
             mService.send.getHouse(houseId);
-            mService.user.setHouseId(houseId);
+            mService.houseReceiver.setHouseId(houseId);
             mService.machatNotificationManager.clearNotification(houseId);
             for(int i = 0; i < arrayAdapter.getCount(); i++){
                 Message message = arrayAdapter.getItem(i);
@@ -310,7 +310,8 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
     }
 
     private void updateMessages(){
-        arrayAdapter.addAll(realm.where(Message.class).equalTo("houseId", houseId).greaterThan("id", newestMessageId).findAll());
+        RealmResults<Message> results = realm.where(Message.class).equalTo("houseId", houseId).greaterThan("id", newestMessageId).findAll();
+        arrayAdapter.addAll(results);
         for(int i = 0; i < arrayAdapter.getCount(); i++){
             Message message = arrayAdapter.getItem(i);
             int messageId = message.getId();
@@ -492,7 +493,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         final int positionToSave = getListView().getFirstVisiblePosition() + messageList.size() + headerViewCount;
         View v = getListView().getChildAt(headerViewCount);
         final int top = (v == null) ? 0 : v.getTop();
-        saveMessages(messageList);
+        arrayAdapter.addAll(messageList);
         getListView().setSelectionFromTop(positionToSave, top);
         waitingForOldMessages = false;
         loadingView.setVisibility(View.INVISIBLE);
@@ -528,16 +529,10 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         if(messageList.size() >= 20){
             arrayAdapter.clear();
         }
-        saveMessages(messageList);
-
+        arrayAdapter.addAll(messageList);
         mService.send.readHouse(houseId);
     }
 
-    private void saveMessages(ArrayList<Message> messageList){
-        realm.beginTransaction();
-        arrayAdapter.addAll(realm.copyToRealmOrUpdate(messageList));
-        realm.commitTransaction();
-    }
 
     @Override
     public void getMessageListFailed(String err) {
@@ -568,8 +563,8 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         intent.putExtra(HouseActivity.MY_ID, myId);
         intent.putExtra(HouseActivity.EXTRA_ID, houseId);
         intent.putExtra(HouseActivity.HOUSE_NAME, name);
-        intent.putExtra(HouseActivity.FAVORITE, mService.user.getFavorite(houseId));
-        intent.putExtra(HouseActivity.MUTE, mService.user.getMute(houseId));
+        intent.putExtra(HouseActivity.FAVORITE, mService.favorites.getFavorite(houseId));
+        intent.putExtra(HouseActivity.MUTE, mService.favorites.getMute(houseId));
         startActivity(intent);
     }
 

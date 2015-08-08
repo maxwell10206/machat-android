@@ -178,8 +178,8 @@ public class SearchActivity extends ListActivity implements SocketActivity.Socke
             intent.putExtra(HouseActivity.EXTRA_ID, houseId);
             intent.putExtra(HouseActivity.MY_ID, myProfile.getId());
             intent.putExtra(HouseActivity.HOUSE_NAME, user.getUser().getName());
-            intent.putExtra(HouseActivity.FAVORITE, mService.user.getFavorite(houseId));
-            intent.putExtra(HouseActivity.MUTE, mService.user.getMute(houseId));
+            intent.putExtra(HouseActivity.FAVORITE, mService.favorites.getFavorite(houseId));
+            intent.putExtra(HouseActivity.MUTE, mService.favorites.getMute(houseId));
             startActivity(intent);
         }
     }
