@@ -91,8 +91,6 @@ public class SocketService extends Service {
         }
     }
 
-    private PowerManager.WakeLock wl;
-
     @Override
     public void onCreate (){
         super.onCreate();
@@ -121,9 +119,6 @@ public class SocketService extends Service {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "My tag");
-        wl.acquire(); //Keeps service thread from sleeping.
     }
 
     @Override
@@ -131,7 +126,6 @@ public class SocketService extends Service {
         super.onDestroy();
         mSocket.disconnect();
         send.turnOffListeners();
-        wl.release();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(user);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(favorites);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(houseReceiver);

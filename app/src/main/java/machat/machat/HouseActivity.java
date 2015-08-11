@@ -103,6 +103,8 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
 
     public Realm realm;
 
+    private ProgressBar progressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -119,6 +121,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         arrayAdapter = new HouseArrayAdapter(this, new ArrayList<Message>());
         getActionBar().setDisplayHomeAsUpEnabled(true);
         socketActivity.setOnSocketListener(this);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
         sendMessage = (ImageButton) findViewById(R.id.sendMessage);
         inputMessage = (EditText) findViewById(R.id.inputMessage);
         inputMessage.setOnClickListener(this);
@@ -321,6 +324,9 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
             if(messageId < oldestMessageId){
                 oldestMessageId = messageId;
             }
+        }
+        if(results.size() > 0){
+            progressBar.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -531,6 +537,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         }
         arrayAdapter.addAll(messageList);
         mService.send.readHouse(houseId);
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
 
