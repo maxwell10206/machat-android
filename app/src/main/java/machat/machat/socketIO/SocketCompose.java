@@ -1,7 +1,12 @@
 package machat.machat.socketIO;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+import machat.machat.FavoriteItem;
 
 /**
  * Created by Admin on 5/28/2015.
@@ -41,15 +46,19 @@ public class SocketCompose {
         return data;
     }
 
-    public static JSONObject updateAvatar(int id, long time){
-        JSONObject data = new JSONObject();
-        try{
-            data.put(SocketData.time, time);
-            data.put(SocketData.id, id);
-        }catch(JSONException e){
-            e.printStackTrace();
+    public static JSONArray getAvatarUpdates(ArrayList<BitmapUser> bitmapUsers){
+        JSONArray jsonArray = new JSONArray();
+        for(int i = 0; i < bitmapUsers.size(); i++){
+            try {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put(SocketData.id, bitmapUsers.get(i).getId());
+                jsonObject.put(SocketData.time, bitmapUsers.get(i).getTime());
+                jsonArray.put(jsonObject);
+            }catch (JSONException e){
+                e.printStackTrace();
+            }
         }
-        return data;
+        return jsonArray;
     }
 
     public static JSONObject getOldMessages(int houseId, int oldestMessageId){

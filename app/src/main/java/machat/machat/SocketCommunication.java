@@ -9,7 +9,10 @@ import com.github.nkzawa.socketio.client.Socket;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import machat.machat.socketIO.AvatarManager;
+import machat.machat.socketIO.BitmapUser;
 import machat.machat.socketIO.OnCallbackAvatar;
 import machat.machat.socketIO.OnChangeEmail;
 import machat.machat.socketIO.OnChangeName;
@@ -68,6 +71,13 @@ public class SocketCommunication implements OnCallbackAvatar{
             @Override
             public void call(Object... args) {
                 service.sendBroadcast(SocketCommand.BLOCKED_BY_USER, args[0].toString());
+            }
+        }).on(SocketCommand.GET_AVATAR, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                JSONObject jsonObject = ServiceCompose.getAvatar((JSONObject) args[0]);
+                service.sendBroadcast(SocketCommand.GET_AVATAR, jsonObject.toString());
+                SocketParse.parseGetAvatar(jsonObject.toString(), SocketCommunication.this);
             }
         });
 
@@ -311,8 +321,8 @@ public class SocketCommunication implements OnCallbackAvatar{
         });
     }
 
-    public void updateAvatar(int id, long time){
-        mSocket.emit(SocketCommand.UPDATE_AVATAR, SocketCompose.updateAvatar(id, time), new Ack() {
+    public void updateAvatars(ArrayList<BitmapUser> bitmapUsers){
+        mSocket.emit(SocketCommand.UPDATE_AVATARS, SocketCompose.getAvatarUpdates(bitmapUsers), new Ack() {
             @Override
             public void call(Object... args) {
                 JSONObject jsonObject = ServiceCompose.getAvatar((JSONObject) args[0]);

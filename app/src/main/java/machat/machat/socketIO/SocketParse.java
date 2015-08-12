@@ -95,16 +95,19 @@ public class SocketParse {
     }
 
     public static void parseGetAvatar(String string, OnCallbackAvatar listener){
+        int id = 0;
+        long time = 0;
+        byte[] bytesImage = new byte[0];
         try {
             JSONObject jsonObject = new JSONObject(string);
-            int id = jsonObject.getInt(SocketData.id);
-            long time = jsonObject.getLong(SocketData.time);
+            id = jsonObject.getInt(SocketData.id);
+            time = jsonObject.getLong(SocketData.time);
             String base64Image = jsonObject.getString(SocketData.byteArray);
-            byte[] bytesImage = Base64.decode(base64Image, Base64.DEFAULT);
-            listener.newAvatar(id, bytesImage, time);
+            bytesImage = Base64.decode(base64Image, Base64.DEFAULT);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        listener.newAvatar(id, bytesImage, time);
     }
 
     public static void parseLogin(String string, OnLoginListener listener) {

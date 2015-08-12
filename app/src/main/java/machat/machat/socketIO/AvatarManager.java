@@ -3,6 +3,7 @@ package machat.machat.socketIO;
 import android.graphics.Bitmap;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
@@ -61,9 +62,7 @@ public class AvatarManager {
     }
 
     public static void checkForUpdates(){
-        for(BitmapUser bitmapUser: bitmapUsers){
-            mService.send.updateAvatar(bitmapUser.getId(), bitmapUser.getTime());
-        }
+        mService.send.updateAvatars(bitmapUsers);
     }
 
     public static void getAvatar(int id, OnCallbackAvatar listener){
@@ -91,7 +90,9 @@ public class AvatarManager {
             }
             imageViewUsers.add(new ImageViewUser(id, listener));
         }else{
-            listener.newAvatar(id, avatar, time);
+            if(avatar.length > 0) {
+                listener.newAvatar(id, avatar, time);
+            }
         }
     }
 
@@ -107,9 +108,19 @@ public class AvatarManager {
     }
 
     public static void reDownload(){
+        List<Integer> downloadedIDs = new ArrayList<>();
         for(int i = 0; i < imageViewUsers.size(); i++){
             ImageViewUser imageViewUser = imageViewUsers.get(i);
-            mService.send.getAvatar(imageViewUser.getId());
+            boolean download = true;
+            for(int j = 0; j < downloadedIDs.size(); j++){
+                if(downloadedIDs.get(j) == imageViewUser.getId()){
+                    download = false;
+                }
+            }
+            if(download){
+                mService.send.getAvatar(imageViewUser.getId());
+                downloadedIDs.add(imageViewUser.getId());
+            }
         }
     }
 
@@ -132,12 +143,15 @@ public class AvatarManager {
             realm.copyToRealmOrUpdate(bitmapUser);
             realm.commitTransaction();
         }
+
+        ArrayList<ImageViewUser> temp = new ArrayList<>();
         for(int i = 0; i < imageViewUsers.size(); i++){
             ImageViewUser imageViewUser = imageViewUsers.get(i);
             if(imageViewUser.getId() == id){
                 imageViewUser.getListener().newAvatar(id, avatar, time);
-                imageViewUsers.remove(i);
+                temp.add(imageViewUser);
             }
         }
+        imageViewUsers.removeAll(temp);
     }
 }
