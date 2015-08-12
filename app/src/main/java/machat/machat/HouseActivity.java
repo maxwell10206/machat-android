@@ -235,24 +235,9 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
     }
 
     @Override
-    protected void onResume(){
-        super.onResume();
-        if(connected) {
-            mService.houseReceiver.setHouseId(houseId);
-        }
-    }
-
-    @Override
-    protected void onPause(){
-        super.onPause();
-        if(connected) {
-            mService.houseReceiver.setHouseId(0);
-        }
-    }
-
-    @Override
     protected void onStop(){
         super.onStop();
+        mService.houseReceiver.setHouseId(0);
         socketActivity.disconnect();
         if(!favorite) {
             mService.send.leaveHouse(houseId);
@@ -289,19 +274,18 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
 
     @Override
     public void onLoginSuccess(MyProfile myProfile) {
-        if(connected){
-            mService.send.readHouse(houseId);
-            mService.send.joinHouse(houseId);
-            mService.send.getHouse(houseId);
-            mService.houseReceiver.setHouseId(houseId);
-            mService.machatNotificationManager.clearNotification(houseId);
-            for(int i = 0; i < arrayAdapter.getCount(); i++){
-                Message message = arrayAdapter.getItem(i);
-                int messageId = message.getId();
-                if(message.getStatus() < Message.READ){
-                    if(mService.isConnected()) {
-                        mService.send.getMessageStatus(messageId);
-                    }
+        mService.send.readHouse(houseId);
+        mService.send.joinHouse(houseId);
+        getNewMessages();
+        mService.send.getHouse(houseId);
+        mService.houseReceiver.setHouseId(houseId);
+        mService.machatNotificationManager.clearNotification(houseId);
+        for(int i = 0; i < arrayAdapter.getCount(); i++){
+            Message message = arrayAdapter.getItem(i);
+            int messageId = message.getId();
+            if(message.getStatus() < Message.READ){
+                if(mService.isConnected()) {
+                    mService.send.getMessageStatus(messageId);
                 }
             }
         }
@@ -335,6 +319,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         this.mService = mService;
         this.myProfile = mService.user.getMyProfile();
         connected = true;
+        mService.houseReceiver.setHouseId(houseId);
         onLoginSuccess(myProfile);
     }
 
@@ -396,6 +381,9 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
             arrayAdapter.add(message);
             mService.send.readHouse(houseId);
             newestMessageId = message.getId();
+            realm.beginTransaction();
+            realm.copyToRealmOrUpdate(message);
+            realm.commitTransaction();
         }
     }
 
@@ -505,13 +493,13 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         loadingView.setVisibility(View.INVISIBLE);
         for(int i = 0; i < messageList.size(); i++){
             Message message = messageList.get(i);
-                int messageId = message.getId();
-                if(messageId > newestMessageId){
-                    newestMessageId = message.getId();
-                }
-                if(messageId < oldestMessageId){
-                    oldestMessageId = messageId;
-                }
+            int messageId = message.getId();
+            if(messageId > newestMessageId){
+                newestMessageId = message.getId();
+            }
+            if(messageId < oldestMessageId){
+                oldestMessageId = messageId;
+            }
         }
         if(messageList.size() == 0){
             olderMessages = false;
@@ -522,6 +510,10 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
     @Override
     public void addNewMessages(ArrayList<Message> messageList) {
         waitingForNewMessages = false;
+        if(messageList.size() >= 20){
+            arrayAdapter.clear();
+            oldestMessageId = 0;
+        }
         for(int i = 0; i < messageList.size(); i++){
             Message message = messageList.get(i);
             int messageId = message.getId();
@@ -531,9 +523,6 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
             if(messageId < oldestMessageId){
                 oldestMessageId = messageId;
             }
-        }
-        if(messageList.size() >= 20){
-            arrayAdapter.clear();
         }
         arrayAdapter.addAll(messageList);
         mService.send.readHouse(houseId);
@@ -548,7 +537,6 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
 
     @Override
     public void joinedHouseSuccess() {
-        getNewMessages();
     }
 
     @Override

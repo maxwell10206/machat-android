@@ -81,6 +81,18 @@ public class HouseReceiver extends BroadcastReceiver implements OnNewMessage, On
             mService.send.deliveredMessage(message.getId());
         }
 
+        if(houseId == 0) {
+            int newestMessageId = 0;
+            RealmResults<Message> results = realm.where(Message.class).equalTo("houseId", message.getHouseId()).findAll();
+            for (int i = 0; i < results.size(); i++) {
+                Message dbMessage = results.get(i);
+                if (dbMessage.getId() > newestMessageId) {
+                    newestMessageId = dbMessage.getId();
+                }
+            }
+            mService.send.getNewMessages(message.getHouseId(), newestMessageId);
+        }
+
     }
 
     @Override
