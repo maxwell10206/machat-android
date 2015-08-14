@@ -6,7 +6,7 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Created by Maxwell on 8/6/2015.
  */
-public class BitmapUser extends RealmObject{
+public class BitmapUser extends RealmObject {
 
     @PrimaryKey
     private int id;
@@ -15,21 +15,27 @@ public class BitmapUser extends RealmObject{
 
     private long time;
 
-    public long getTime(){ return time; }
+    public long getTime() {
+        return time;
+    }
 
-    public void setTime(long time){
+    public void setTime(long time) {
         this.time = time;
     }
 
-    public void setId(int id){
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
         this.id = id;
     }
 
-    public void setAvatar(byte[] avatar){
-        this.avatar = avatar;
+    public byte[] getAvatar() {
+        return avatar;
     }
 
-    public int getId(){ return id; }
-
-    public byte[] getAvatar(){ return avatar; }
+    public void setAvatar(byte[] avatar) {
+        this.avatar = avatar;
+    }
 }

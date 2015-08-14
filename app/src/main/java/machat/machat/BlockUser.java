@@ -1,19 +1,15 @@
 package machat.machat;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
 import java.io.Serializable;
 
 import io.realm.RealmObject;
-import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by Admin on 6/12/2015.
  */
 @SuppressWarnings("serial")
-public class User extends RealmObject implements Serializable {
+public class BlockUser extends RealmObject implements Serializable {
 
     @PrimaryKey
     private int id;
@@ -21,9 +17,6 @@ public class User extends RealmObject implements Serializable {
     private String username;
 
     private String name;
-
-    @Ignore
-    private byte[] avatar;
 
     public int getId() {
         return id;
@@ -49,15 +42,4 @@ public class User extends RealmObject implements Serializable {
         this.name = name;
     }
 
-    public byte[] getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(byte[] avatar) {
-        this.avatar = avatar;
-    }
-
-    public static Bitmap getBitmapAvatar(byte[] avatar){
-        return BitmapFactory.decodeByteArray(avatar, 0, avatar.length);
-    }
 }

@@ -8,93 +8,96 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import machat.machat.BlockUser;
 import machat.machat.FavoriteItem;
-import machat.machat.House;
 import machat.machat.Message;
 import machat.machat.MissedMessage;
 import machat.machat.MyProfile;
 import machat.machat.Profile;
 import machat.machat.SearchItem;
-import machat.machat.User;
 
 /**
  * Created by Admin on 5/28/2015.
  */
 public class SocketParse {
 
-    public static void parseSearchResults(String string, OnSearchResults listener){
+    public static void parseSearchResults(String string, OnSearchResults listener) {
         try {
             ArrayList<SearchItem> users = new ArrayList<>();
             JSONArray jsonArray = new JSONArray(string);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 boolean blocked = (0 != jsonObject.getInt(SocketData.block));
-                User user = parseUser(jsonObject);
+                int id = jsonObject.getInt(SocketData.id);
+                String username = jsonObject.getString(SocketData.username);
+                String name = jsonObject.getString(SocketData.name);
                 SearchItem searchItem = new SearchItem();
                 searchItem.setBlock(blocked);
-                searchItem.setUser(user);
+                searchItem.setName(name);
+                searchItem.setUsername(username);
+                searchItem.setId(id);
                 users.add(searchItem);
             }
             listener.newSearchResults(users);
-        }catch(JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    public static void parseJoinHouse(String string, OnJoinHouse listener){
-        try{
+    public static void parseJoinHouse(String string, OnJoinHouse listener) {
+        try {
             JSONObject jsonObject = new JSONObject(string);
             boolean succ = jsonObject.getBoolean(SocketData.succ);
-            if(succ){
+            if (succ) {
                 listener.joinedHouseSuccess();
-            }else{
+            } else {
                 String err = jsonObject.getString(SocketData.err);
                 listener.joinedHouseFailed(err);
             }
-        }catch(JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    public static void parseGetMessageStatus(String string, OnCallbackMessageStatus listener){
-        try{
+    public static void parseGetMessageStatus(String string, OnCallbackMessageStatus listener) {
+        try {
             JSONObject jsonObject = new JSONObject(string);
             int id = jsonObject.getInt(SocketData.id);
             int status = jsonObject.getInt(SocketData.status);
             listener.updateMessageStatus(id, status);
-        }catch(JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    public static void parseUserReadMessage(String string, OnUserReadMessage listener){
+    public static void parseUserReadMessage(String string, OnUserReadMessage listener) {
         listener.userReadMessage(Integer.parseInt(string));
     }
 
-    public static void parseReadHouse(String string, OnReadHouse listener){
+    public static void parseReadHouse(String string, OnReadHouse listener) {
         listener.readHouse(Integer.parseInt(string));
     }
 
-    public static void parseDeliveredMessage(String string, OnDeliveredMessage listener){
+    public static void parseDeliveredMessage(String string, OnDeliveredMessage listener) {
         listener.deliveredMessage(Integer.parseInt(string));
     }
 
-    public static void parseSendAvatar(String string, OnCallbackSendAvatar listener){
-        try{
+    public static void parseSendAvatar(String string, OnCallbackSendAvatar listener) {
+        try {
             JSONObject jsonObject = new JSONObject(string);
             boolean succ = jsonObject.getBoolean(SocketData.succ);
-            if(succ){
+            if (succ) {
                 listener.avatarUploadSuccess();
-            }else{
+            } else {
                 String err = jsonObject.getString(SocketData.err);
                 listener.avatarUploadFailed(err);
             }
-        }catch(JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    public static void parseGetAvatar(String string, OnCallbackAvatar listener){
+    public static void parseGetAvatar(String string, OnCallbackAvatar listener) {
         int id = 0;
         long time = 0;
         byte[] bytesImage = new byte[0];
@@ -162,13 +165,13 @@ public class SocketParse {
         return favoriteItem;
     }
 
-    public static void parseChangeEmail(String string, OnChangeEmail listener){
+    public static void parseChangeEmail(String string, OnChangeEmail listener) {
         try {
             JSONObject jsonObject = new JSONObject(string);
             boolean succ = jsonObject.getBoolean(SocketData.succ);
-            if(succ){
+            if (succ) {
                 listener.changeEmailSuccess(jsonObject.getString(SocketData.email));
-            }else{
+            } else {
                 listener.changeEmailFailed(jsonObject.getString(SocketData.err));
             }
         } catch (JSONException e) {
@@ -176,37 +179,34 @@ public class SocketParse {
         }
     }
 
-    public static void parseBlockList(String string, OnCallbackBlockList listener){
-        try{
-            ArrayList<User> blockList = new ArrayList<>();
+    public static void parseBlockList(String string, OnCallbackBlockList listener) {
+        try {
+            ArrayList<BlockUser> blockList = new ArrayList<>();
             JSONArray jsonArray = new JSONArray(string);
-            for(int i = 0; i < jsonArray.length(); i++){
-                blockList.add(parseUser(jsonArray.getJSONObject(i)));
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                int id = jsonObject.getInt(SocketData.id);
+                String username = jsonObject.getString(SocketData.username);
+                String name = jsonObject.getString(SocketData.name);
+                BlockUser blockUser = new BlockUser();
+                blockUser.setId(id);
+                blockUser.setUsername(username);
+                blockUser.setName(name);
+                blockList.add(blockUser);
             }
             listener.newBlockList(blockList);
-        }catch(JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    private static User parseUser(JSONObject jsonObject) throws JSONException {
-        int id = jsonObject.getInt(SocketData.id);
-        String username = jsonObject.getString(SocketData.username);
-        String name = jsonObject.getString(SocketData.name);
-        User user = new User();
-        user.setId(id);
-        user.setName(name);
-        user.setUsername(username);
-        return user;
-    }
-
-    public static void parseChangeName(String string, OnChangeName listener){
+    public static void parseChangeName(String string, OnChangeName listener) {
         try {
             JSONObject jsonObject = new JSONObject(string);
             boolean succ = jsonObject.getBoolean(SocketData.succ);
-            if(succ){
+            if (succ) {
                 listener.changeNameSuccess(jsonObject.getString(SocketData.name));
-            }else{
+            } else {
                 listener.changeNameFailed(jsonObject.getString(SocketData.err));
             }
         } catch (JSONException e) {
@@ -214,7 +214,7 @@ public class SocketParse {
         }
     }
 
-    public static void parseChangePassword(String string, OnChangePassword listener){
+    public static void parseChangePassword(String string, OnChangePassword listener) {
         try {
             JSONObject jsonObject = new JSONObject(string);
             boolean succ = jsonObject.getBoolean(SocketData.succ);
@@ -224,7 +224,7 @@ public class SocketParse {
                 String err = jsonObject.getString(SocketData.err);
                 listener.passwordChangeFailed(err);
             }
-        }catch(JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
         }
     }
@@ -234,14 +234,14 @@ public class SocketParse {
             ArrayList<FavoriteItem> favoriteItems = new ArrayList();
             JSONObject jsonObject = new JSONObject(string);
             boolean succ = jsonObject.getBoolean(SocketData.succ);
-            if(succ) {
+            if (succ) {
                 JSONArray jsonArray = jsonObject.getJSONArray(SocketData.favoriteList);
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject houseJSON = jsonArray.getJSONObject(i);
                     favoriteItems.add(parseFavoriteItem(houseJSON));
                 }
                 listener.newFavoriteList(favoriteItems);
-            }else{
+            } else {
                 String err = jsonObject.getString(SocketData.err);
                 listener.getFavoriteListFailed(err);
             }
@@ -255,7 +255,7 @@ public class SocketParse {
             ArrayList<Message> messageList = new ArrayList<>();
             JSONObject jsonObject = new JSONObject(string);
             boolean succ = jsonObject.getBoolean(SocketData.succ);
-            if(succ) {
+            if (succ) {
                 JSONArray jsonArray = jsonObject.getJSONArray(SocketData.messageList);
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject messageJSON = jsonArray.getJSONObject(i);
@@ -266,7 +266,7 @@ public class SocketParse {
                 } else {
                     listener.addOldMessages(messageList);
                 }
-            }else{
+            } else {
                 String err = jsonObject.getString(SocketData.err);
                 listener.getMessageListFailed(err);
             }
@@ -275,33 +275,17 @@ public class SocketParse {
         }
     }
 
-    public static void parseRegister(String string, OnCallbackRegister listener){
-        try{
+    public static void parseRegister(String string, OnCallbackRegister listener) {
+        try {
             JSONObject jsonObject = new JSONObject(string);
             boolean succ = jsonObject.getBoolean(SocketData.succ);
-            if(succ){
+            if (succ) {
                 listener.registerSuccess();
-            }else{
+            } else {
                 String err = jsonObject.getString(SocketData.err);
                 listener.registerFailed(err);
             }
-        }catch(JSONException e){
-            e.printStackTrace();
-        }
-    }
-
-    public static void parseHouse(String string, OnNewHouse listener){
-        try{
-            JSONObject jsonObject = new JSONObject(string);
-            boolean isFavorite = jsonObject.getBoolean(SocketData.isFavorite);
-            boolean isMute = (1 == jsonObject.getInt(SocketData.isMute));
-            House house = new House();
-            User user = parseUser(jsonObject);
-            house.setMute(isMute);
-            house.setFavorite(isFavorite);
-            house.setUser(user);
-            listener.newHouse(house);
-        }catch(JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
         }
     }
@@ -310,11 +294,15 @@ public class SocketParse {
         try {
             JSONObject jsonObject = new JSONObject(string);
             boolean isBlocked = (0 != jsonObject.getInt(SocketData.block_id));
+            int id = jsonObject.getInt(SocketData.id);
+            String username = jsonObject.getString(SocketData.username);
+            String name = jsonObject.getString(SocketData.name);
 
-            User user = parseUser(jsonObject);
             Profile profile = new Profile();
             profile.setBlocked(isBlocked);
-            profile.setUser(user);
+            profile.setUsername(username);
+            profile.setName(name);
+            profile.setId(id);
             listener.newProfile(profile);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -329,11 +317,11 @@ public class SocketParse {
         }
     }
 
-    public static void parseUndeliveredMessages(String string, OnUndeliveredMessages listener){
-        try{
+    public static void parseUndeliveredMessages(String string, OnUndeliveredMessages listener) {
+        try {
             ArrayList<MissedMessage> messages = new ArrayList<>();
             JSONArray jsonArray = new JSONArray(string);
-            for(int i = 0; i < jsonArray.length(); i++){
+            for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 int houseId = jsonObject.getInt(SocketData.houseId);
                 String name = jsonObject.getString(SocketData.name);
@@ -343,7 +331,7 @@ public class SocketParse {
                 messages.add(new MissedMessage(houseId, houseName, name, lastMessage, missedMessages));
             }
             listener.undeliveredMessages(messages);
-        }catch(JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
         }
     }
@@ -371,35 +359,35 @@ public class SocketParse {
         return message;
     }
 
-    public static void parseSendMessage(String string, OnCallbackSendMessage listener){
+    public static void parseSendMessage(String string, OnCallbackSendMessage listener) {
         try {
             JSONObject jsonObject = new JSONObject(string);
             boolean succ = jsonObject.getBoolean(SocketData.succ);
-            if(succ) {
+            if (succ) {
                 int localId = jsonObject.getInt(SocketData.localId);
                 Message message = parseMessage(jsonObject);
                 message.setLocalId(localId);
                 listener.sendMessageSuccess(message);
-            }else{
+            } else {
                 String err = jsonObject.getString(SocketData.err);
                 listener.sendMessageFailed(err);
             }
-        }catch(JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    public static void parseBlockedByUser(String string, OnBlockedByUser listener){
-        try{
+    public static void parseBlockedByUser(String string, OnBlockedByUser listener) {
+        try {
             JSONObject jsonObject = new JSONObject(string);
             int id = jsonObject.getInt(SocketData.id);
             boolean block = jsonObject.getBoolean(SocketData.block);
-            if(block){
+            if (block) {
                 listener.blockedBy(id);
-            }else{
+            } else {
                 listener.unBlockedBy(id);
             }
-        }catch(JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
         }
     }
@@ -409,17 +397,27 @@ public class SocketParse {
             JSONObject jsonObject = new JSONObject(string);
             int id = jsonObject.getInt(SocketData.id);
             boolean block = jsonObject.getBoolean(SocketData.block);
-            listener.callbackBlock(id, block);
+            if (block) {
+                String username = jsonObject.getString(SocketData.username);
+                String name = jsonObject.getString(SocketData.name);
+                BlockUser blockUser = new BlockUser();
+                blockUser.setId(id);
+                blockUser.setUsername(username);
+                blockUser.setName(name);
+                listener.blocked(blockUser);
+            } else {
+                listener.unBlocked(id);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    public static void parseFavoriteHouse(String string, OnCallbackFavorite listener){
-        try{
+    public static void parseFavoriteHouse(String string, OnCallbackFavorite listener) {
+        try {
             JSONObject jsonObject = new JSONObject(string);
             boolean succ = jsonObject.getBoolean(SocketData.succ);
-            if(succ) {
+            if (succ) {
                 int id = jsonObject.getInt(SocketData.id);
                 boolean favorite = jsonObject.getBoolean(SocketData.favorite);
                 if (!favorite) {
@@ -427,11 +425,11 @@ public class SocketParse {
                 } else {
                     listener.newFavorite(parseFavoriteItem(jsonObject));
                 }
-            }else{
+            } else {
                 String err = jsonObject.getString(SocketData.err);
                 listener.favoriteError(err);
             }
-        }catch(JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
         }
     }

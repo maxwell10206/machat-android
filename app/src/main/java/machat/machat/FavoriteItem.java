@@ -5,7 +5,6 @@ import android.text.format.DateUtils;
 import java.io.Serializable;
 
 import io.realm.RealmObject;
-import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -37,29 +36,31 @@ public class FavoriteItem extends RealmObject implements Serializable {
 
     private int messageUserId;
 
-    @Ignore
-    private byte[] avatar;
-
-    public void setStatus(int status){
-        this.status = status;
+    public static String getTimeString(long time) {
+        long now = System.currentTimeMillis();
+        if (time == 0) {
+            return "";
+        } else if ((now - time * 1000) < 60000) {
+            return "just now";
+        } else {
+            return DateUtils.getRelativeTimeSpanString(time * 1000, now, DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_ALL).toString();
+        }
     }
 
-    public int getStatus(){
+    public int getStatus() {
         return status;
     }
 
-    public void setMessageId(int messageId){
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public int getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(int messageId) {
         this.messageId = messageId;
-    }
-
-    public int getMessageId(){ return messageId; }
-
-    public void setAvatar(byte[] avatar){
-        this.avatar = avatar;
-    }
-
-    public byte[] getAvatar(){
-        return avatar;
     }
 
     public String getName() {
@@ -132,17 +133,6 @@ public class FavoriteItem extends RealmObject implements Serializable {
 
     public void setBlock(boolean block) {
         this.block = block;
-    }
-
-    public static String getTimeString(long time){
-        long now = System.currentTimeMillis();
-        if(time == 0) {
-            return "";
-        }else if((now - time*1000) < 60000) {
-            return "just now";
-        }else{
-            return DateUtils.getRelativeTimeSpanString(time * 1000, now, DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_ALL).toString();
-        }
     }
 
 }

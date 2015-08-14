@@ -46,14 +46,14 @@ public class LoginActivity extends Activity implements OnLoginListener, SocketAc
 
     }
 
-    public void onReceive(String command, String data){
-        if(command.equals(SocketCommand.LOGIN)){
+    public void onReceive(String command, String data) {
+        if (command.equals(SocketCommand.LOGIN)) {
             SocketParse.parseLogin(data, this);
         }
     }
 
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
         socketActivity.disconnect();
     }
@@ -71,7 +71,7 @@ public class LoginActivity extends Activity implements OnLoginListener, SocketAc
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         String username = PreferenceManager.getDefaultSharedPreferences(this).getString(SavedPrefs.username, "");
-        if(!username.isEmpty()){
+        if (!username.isEmpty()) {
             usernameView.setText(username);
         }
 
@@ -80,25 +80,25 @@ public class LoginActivity extends Activity implements OnLoginListener, SocketAc
     }
 
     @Override
-    protected void onStart(){
+    protected void onStart() {
         super.onStart();
         socketActivity.connect();
     }
 
     @Override
-    protected void onStop(){
+    protected void onStop() {
         super.onStop();
         socketActivity.disconnect();
     }
 
     @Override
-    public void onClick(View v){
-        if(service.isConnected()) {
+    public void onClick(View v) {
+        if (service.isConnected()) {
             service.send.login(usernameView.getText().toString(), password.getText().toString());
             loginButton.setEnabled(false);
             loginButton.setText("");
             progressBar.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             errorText.setText("Could not connect to server.");
         }
     }
@@ -111,7 +111,7 @@ public class LoginActivity extends Activity implements OnLoginListener, SocketAc
         startActivity(intent);
     }
 
-    public void onLoginFailed(String err){
+    public void onLoginFailed(String err) {
         errorText.setText(err);
         password.setText("");
         loginButton.setEnabled(true);
@@ -126,9 +126,9 @@ public class LoginActivity extends Activity implements OnLoginListener, SocketAc
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        if(usernameView.getText().length() != 0 && password.getText().length() != 0){
+        if (usernameView.getText().length() != 0 && password.getText().length() != 0) {
             loginButton.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             loginButton.setVisibility(View.INVISIBLE);
         }
     }

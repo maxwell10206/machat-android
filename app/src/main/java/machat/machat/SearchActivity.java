@@ -2,7 +2,6 @@ package machat.machat;
 
 import android.app.ListActivity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -21,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import machat.machat.socketIO.OnCallbackAvatar;
 import machat.machat.socketIO.OnSearchResults;
 import machat.machat.socketIO.SocketActivity;
 import machat.machat.socketIO.SocketCommand;
@@ -30,27 +28,21 @@ import machat.machat.socketIO.SocketParse;
 /**
  * Created by Admin on 6/26/2015.
  */
-public class SearchActivity extends ListActivity implements SocketActivity.SocketListener, TextWatcher, OnSearchResults, OnCallbackAvatar, View.OnClickListener {
-
-    private SocketActivity socketActivity = new SocketActivity(this);
-    private boolean connected = false;
-
-    private SocketService mService;
-
-    private SearchArrayAdapter arrayAdapter;
-
-    private EditText searchEditText;
-
-    private ImageButton clearButton;
+public class SearchActivity extends ListActivity implements SocketActivity.SocketListener, TextWatcher, OnSearchResults, View.OnClickListener {
 
     private static final int SEARCH_DELAY = 500;
-
+    private SocketActivity socketActivity = new SocketActivity(this);
+    private boolean connected = false;
+    private SocketService mService;
+    private SearchArrayAdapter arrayAdapter;
+    private EditText searchEditText;
+    private ImageButton clearButton;
     private Timer searchTimer = new Timer();
 
     private MyProfile myProfile;
 
     @Override
-    protected void onCreate(Bundle saveInstanceState){
+    protected void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
         setContentView(R.layout.activity_search);
         socketActivity.setOnSocketListener(this);
@@ -61,19 +53,19 @@ public class SearchActivity extends ListActivity implements SocketActivity.Socke
     }
 
     @Override
-    protected void onStart(){
+    protected void onStart() {
         super.onStart();
         socketActivity.connect();
     }
 
     @Override
-    protected void onStop(){
+    protected void onStop() {
         super.onStop();
         socketActivity.disconnect();
     }
 
     @Override
-    public boolean onOptionsItemSelected (MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
@@ -82,6 +74,7 @@ public class SearchActivity extends ListActivity implements SocketActivity.Socke
                 return super.onOptionsItemSelected(item);
         }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //inflate with your particular xml
@@ -112,10 +105,8 @@ public class SearchActivity extends ListActivity implements SocketActivity.Socke
 
     @Override
     public void onReceive(String command, String data) {
-        if(command.equals(SocketCommand.SEARCH)){
+        if (command.equals(SocketCommand.SEARCH)) {
             SocketParse.parseSearchResults(data, this);
-        }else if(command.equals(SocketCommand.GET_AVATAR)){
-            SocketParse.parseGetAvatar(data, this);
         }
     }
 
@@ -130,16 +121,16 @@ public class SearchActivity extends ListActivity implements SocketActivity.Socke
         searchTimer.purge();
         searchTimer = new Timer();
         final String searchText = s.toString();
-        if(searchText.isEmpty()){
+        if (searchText.isEmpty()) {
             clearButton.setVisibility(View.INVISIBLE);
             arrayAdapter.clear();
-        }else{
+        } else {
             clearButton.setVisibility(View.VISIBLE);
         }
         searchTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                if(connected && mService.isConnected() && !searchText.isEmpty()){
+                if (connected && mService.isConnected() && !searchText.isEmpty()) {
                     mService.send.search(searchText);
                 }
             }
@@ -158,26 +149,16 @@ public class SearchActivity extends ListActivity implements SocketActivity.Socke
     }
 
     @Override
-    public void newAvatar(final int id, final byte[] avatar, long time) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                arrayAdapter.setBitmapById(id, avatar);
-            }
-        });
-    }
-
-    @Override
-    protected void onListItemClick (ListView l, View v, int position, long i){
+    protected void onListItemClick(ListView l, View v, int position, long i) {
         SearchItem user = arrayAdapter.getItem(position);
-        if(user.isBlock()){
+        if (user.isBlock()) {
             Toast.makeText(this, "You are blocked from this house", Toast.LENGTH_SHORT).show();
-        }else {
+        } else {
             Intent intent = new Intent(this, HouseActivity.class);
-            int houseId = user.getUser().getId();
+            int houseId = user.getId();
             intent.putExtra(HouseActivity.EXTRA_ID, houseId);
             intent.putExtra(HouseActivity.MY_ID, myProfile.getId());
-            intent.putExtra(HouseActivity.HOUSE_NAME, user.getUser().getName());
+            intent.putExtra(HouseActivity.HOUSE_NAME, user.getName());
             intent.putExtra(HouseActivity.FAVORITE, mService.favorites.getFavorite(houseId));
             intent.putExtra(HouseActivity.MUTE, mService.favorites.getMute(houseId));
             startActivity(intent);

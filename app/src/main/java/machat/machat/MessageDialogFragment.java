@@ -23,17 +23,6 @@ public class MessageDialogFragment extends DialogFragment {
     public static final String HOUSE_ID = "houseId";
 
     public static final String MESSAGE = "message";
-
-    public interface Action {
-
-        void goToProfile(int userId);
-
-        void goToHouse(int houseId, String name);
-
-        void copyText(String text);
-
-    }
-
     private Action action;
 
     @Override
@@ -60,7 +49,7 @@ public class MessageDialogFragment extends DialogFragment {
         final int messageId = getArguments().getInt(MESSAGE_ID);
         final String message = getArguments().getString(MESSAGE);
         builder.setTitle(name);
-        if(myId == id) {
+        if (myId == id) {
             builder.setItems(R.array.message_dialog_options_short, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -69,18 +58,28 @@ public class MessageDialogFragment extends DialogFragment {
                     }
                 }
             });
-        }else{
+        } else {
             builder.setItems(R.array.message_dialog_options_full, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     if (which == 0) {
                         action.copyText(message);
-                    } else{
+                    } else {
                         action.goToProfile(id);
                     }
                 }
-                    });
+            });
         }
         return builder.create();
+    }
+
+    public interface Action {
+
+        void goToProfile(int userId);
+
+        void goToHouse(int houseId, String name);
+
+        void copyText(String text);
+
     }
 
 }

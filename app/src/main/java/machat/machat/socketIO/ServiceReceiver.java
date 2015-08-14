@@ -8,13 +8,7 @@ import android.preference.PreferenceManager;
 
 import com.github.nkzawa.socketio.client.Socket;
 
-import java.util.ArrayList;
-
-import io.realm.Realm;
-import machat.machat.FavoriteItem;
 import machat.machat.MachatApplication;
-import machat.machat.Message;
-import machat.machat.MissedMessage;
 import machat.machat.MyProfile;
 import machat.machat.SavedPrefs;
 import machat.machat.SocketService;
@@ -22,7 +16,7 @@ import machat.machat.SocketService;
 /**
  * Created by Admin on 6/28/2015.
  */
-public class ServiceReceiver extends BroadcastReceiver implements OnChangeEmail, OnChangeName, OnLoginListener{
+public class ServiceReceiver extends BroadcastReceiver implements OnChangeEmail, OnChangeName, OnLoginListener {
 
     private SocketService mService;
 
@@ -34,16 +28,14 @@ public class ServiceReceiver extends BroadcastReceiver implements OnChangeEmail,
 
     private boolean login = false;
 
-    private Realm realm;
+    public ServiceReceiver(SocketService mService) {
+        this.application = (MachatApplication) mService.getApplication();
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(mService);
+        this.mService = mService;
+    }
 
     public boolean isLogin() {
         return login;
-    }
-
-    public ServiceReceiver(SocketService mService){
-        this.application = (MachatApplication)mService.getApplication();
-        sharedPref = PreferenceManager.getDefaultSharedPreferences(mService);
-        this.mService = mService;
     }
 
     public MyProfile getMyProfile() {
@@ -85,7 +77,7 @@ public class ServiceReceiver extends BroadcastReceiver implements OnChangeEmail,
         editor.commit();
     }
 
-    public void logout(){
+    public void logout() {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.remove(SavedPrefs.sessionId);
         editor.commit();
@@ -96,21 +88,21 @@ public class ServiceReceiver extends BroadcastReceiver implements OnChangeEmail,
     public void onReceive(Context context, Intent intent) {
         String command = intent.getStringExtra(SocketService.COMMAND);
         String data = intent.getStringExtra(SocketService.DATA);
-        if(command.equals(SocketCommand.LOGOUT)){
+        if (command.equals(SocketCommand.LOGOUT)) {
             logout();
-        }else if(command.equals(Socket.EVENT_CONNECT)){
+        } else if (command.equals(Socket.EVENT_CONNECT)) {
             String sessionId = sharedPref.getString(SavedPrefs.sessionId, "");
             if (!sessionId.isEmpty()) {
                 mService.send.loginSession(sessionId);
             }
-        }else if(command.equals(SocketCommand.LOGIN)){
+        } else if (command.equals(SocketCommand.LOGIN)) {
             SocketParse.parseLogin(data, this);
             AvatarManager.reDownload();
-        }else if(command.equals(SocketCommand.LOGIN)){
+        } else if (command.equals(SocketCommand.LOGIN)) {
             SocketParse.parseLogin(data, this);
-        }else if(command.equals(SocketCommand.CHANGE_NAME)){
+        } else if (command.equals(SocketCommand.CHANGE_NAME)) {
             SocketParse.parseChangeName(data, this);
-        }else if(command.equals(SocketCommand.CHANGE_EMAIL)){
+        } else if (command.equals(SocketCommand.CHANGE_EMAIL)) {
             SocketParse.parseChangeEmail(data, this);
         }
     }
@@ -134,4 +126,5 @@ public class ServiceReceiver extends BroadcastReceiver implements OnChangeEmail,
     public void changeNameFailed(String err) {
 
     }
+
 }

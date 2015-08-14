@@ -3,10 +3,15 @@ package machat.machat;
 import android.app.Application;
 import android.content.Intent;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+
 /**
  * Created by Admin on 5/27/2015.
  */
-public class MachatApplication extends Application{
+public class MachatApplication extends Application {
+
+    private static boolean activityVisible;
 
     public static boolean isActivityVisible() {
         return activityVisible;
@@ -20,12 +25,16 @@ public class MachatApplication extends Application{
         activityVisible = false;
     }
 
-    private static boolean activityVisible;
-
     @Override
-    public void onCreate(){
+    public void onCreate() {
         super.onCreate();
         startService(new Intent(this, SocketService.class));
+        RealmConfiguration config = new RealmConfiguration.Builder(this)
+                .name("machat.main")
+                .schemaVersion(1)
+                .deleteRealmIfMigrationNeeded()
+                .build();
+        Realm.setDefaultConfiguration(config);
     }
 
 }

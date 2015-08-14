@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 /**
  * Created by Admin on 6/22/2015.
  */
-public class MyProfile{
+public class MyProfile {
 
     private int id;
 
@@ -19,7 +19,7 @@ public class MyProfile{
 
     private Bitmap avatar;
 
-    public MyProfile(int id, String username, String name, String email, String sessionId){
+    public MyProfile(int id, String username, String name, String email, String sessionId) {
         this.id = id;
         this.username = username;
         this.name = name;
@@ -27,25 +27,39 @@ public class MyProfile{
         this.email = email;
     }
 
-    public Bitmap getAvatar(){ return avatar;}
+    public Bitmap getAvatar() {
+        return avatar;
+    }
 
-    public void setAvatar(Bitmap avatar){ this.avatar = avatar; }
+    public void setAvatar(Bitmap avatar) {
+        this.avatar = avatar;
+    }
 
-    public int getId(){ return id; }
+    public int getId() {
+        return id;
+    }
 
-    public String getName(){ return name;}
+    public String getName() {
+        return name;
+    }
 
-    public void setName(String name){ this.name = name;}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getUsername(){ return username; }
+    public String getUsername() {
+        return username;
+    }
 
-    public String getSessionId(){ return sessionId; }
+    public String getSessionId() {
+        return sessionId;
+    }
 
-    public String getEmail(){
+    public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email){
+    public void setEmail(String email) {
         this.email = email;
     }
 }

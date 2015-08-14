@@ -9,17 +9,41 @@ public class SearchItem extends RealmObject {
 
     private boolean block;
 
-    private User user;
+    private int id;
 
-    public void setUser(User user){
-        this.user = user;
+    private String username;
+
+    private String name;
+
+    public int getId() {
+        return id;
     }
 
-    public User getUser(){
-        return user;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void setBlock(boolean block){ this.block = block; }
+    public String getUsername() {
+        return username;
+    }
 
-    public boolean isBlock(){ return block; }
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean isBlock() {
+        return block;
+    }
+
+    public void setBlock(boolean block) {
+        this.block = block;
+    }
 }

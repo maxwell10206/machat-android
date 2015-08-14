@@ -15,7 +15,7 @@ public class MissedMessage {
 
     private int missedMessages;
 
-    public MissedMessage(int houseId, String houseName, String name, String message, int missedMessages){
+    public MissedMessage(int houseId, String houseName, String name, String message, int missedMessages) {
         this.houseId = houseId;
         this.houseName = houseName;
         this.name = name;
@@ -23,31 +23,39 @@ public class MissedMessage {
         this.missedMessages = missedMessages;
     }
 
-    public int getHouseId(){ return houseId; }
+    public int getHouseId() {
+        return houseId;
+    }
 
     public String getName() {
         return name;
     }
 
-    public String getHouseName(){ return houseName; }
-
-    public String getMessage(){ return  message; }
-
-    public int getMissedMessages(){
-        return missedMessages;
-    }
-
-    public void setMessage(String message){
-        this.message = message;
-    }
-
-    public void setMissedMessages(int missedMessages){
-        this.missedMessages = missedMessages;
-    }
-
-    public void setName(String name){
+    public void setName(String name) {
         this.name = name;
     }
 
-    public void setHouseName(String houseName){ this.houseName = houseName; }
+    public String getHouseName() {
+        return houseName;
+    }
+
+    public void setHouseName(String houseName) {
+        this.houseName = houseName;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public int getMissedMessages() {
+        return missedMessages;
+    }
+
+    public void setMissedMessages(int missedMessages) {
+        this.missedMessages = missedMessages;
+    }
 }

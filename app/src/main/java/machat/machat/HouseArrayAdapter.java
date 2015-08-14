@@ -1,6 +1,7 @@
 package machat.machat;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,31 +30,20 @@ public class HouseArrayAdapter extends ArrayAdapter {
         this.houseActivity = houseActivity;
     }
 
-    public void setBitmapById(int id, byte[] avatar){
-        for(int i = 0; i < messageList.size(); i++){
-            if(messageList.get(i).getUserId() == id){
-                houseActivity.realm.beginTransaction();
-                messageList.get(i).setAvatar(avatar);
-                houseActivity.realm.commitTransaction();
-            }
-        }
-        notifyDataSetChanged();
-    }
-
-    public void replaceByLocalId(int localId, Message message){
-        for(int i = 0; i < messageList.size(); i++){
-            if(messageList.get(i).getLocalId() == localId){
+    public void replaceByLocalId(int localId, Message message) {
+        for (int i = 0; i < messageList.size(); i++) {
+            if (messageList.get(i).getLocalId() == localId) {
                 messageList.set(i, message);
             }
         }
         notifyDataSetChanged();
     }
 
-    public void changeMessageStatus(int id, int status){
-        for(int i = 0; i < messageList.size(); i++){
-            if(messageList.get(i).getId() == id){
+    public void changeMessageStatus(int id, int status) {
+        for (int i = 0; i < messageList.size(); i++) {
+            if (messageList.get(i).getId() == id) {
                 int oldStatus = messageList.get(i).getStatus();
-                if(oldStatus < status) {
+                if (oldStatus < status) {
                     houseActivity.realm.beginTransaction();
                     messageList.get(i).setStatus(status);
                     houseActivity.realm.commitTransaction();
@@ -72,7 +62,7 @@ public class HouseArrayAdapter extends ArrayAdapter {
     }
 
     @Override
-    public Message getItem (int position){
+    public Message getItem(int position) {
         return messageList.get(position);
     }
 
@@ -82,20 +72,15 @@ public class HouseArrayAdapter extends ArrayAdapter {
         View rowView;
 
         final Message message = messageList.get(position);
-        if(houseActivity.getMyId() == message.getUserId()){
+        if (houseActivity.getMyId() == message.getUserId()) {
             rowView = inflater.inflate(R.layout.message_right, parent, false);
             ImageView statusView = (ImageView) rowView.findViewById(R.id.status);
             statusView.setImageResource(Message.getStatusImageId(message.getStatus()));
-        }else {
+        } else {
             rowView = inflater.inflate(R.layout.message_left, parent, false);
             TextView nameView = (TextView) rowView.findViewById(R.id.username);
             nameView.setText(message.getName());
             final ImageView avatarView = (ImageView) rowView.findViewById(R.id.avatar);
-
-            byte[] imageByteArray = message.getAvatar();
-            if(imageByteArray != null && imageByteArray.length > 0){
-                avatarView.setImageBitmap(User.getBitmapAvatar(imageByteArray));
-            }
 
             AvatarManager.getAvatar(message.getUserId(), new OnCallbackAvatar() {
                 @Override
@@ -103,7 +88,7 @@ public class HouseArrayAdapter extends ArrayAdapter {
                     houseActivity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            avatarView.setImageBitmap(User.getBitmapAvatar(avatar));
+                            avatarView.setImageBitmap(BitmapFactory.decodeByteArray(avatar, 0, avatar.length));
                         }
                     });
                 }

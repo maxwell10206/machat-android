@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <EditText
+        android:id="@+id/search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/search"
-        android:hint="Search machat"
-        android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:singleLine="true"
+        android:layout_centerVertical="true"
         android:layout_toLeftOf="@+id/clear"
         android:layout_toStartOf="@+id/clear"
-        android:maxLength="24" />
+        android:hint="Search machat"
+        android:maxLength="24"
+        android:singleLine="true" />
 
     <ImageButton
+        android:id="@+id/clear"
         android:layout_width="48dp"
         android:layout_height="wrap_content"
-        android:id="@+id/clear"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignTop="@+id/search"
         android:layout_alignBottom="@+id/search"
-        android:src="@drawable/ic_close_black_24dp"
-        android:background="@android:color/transparent" />
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/search"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_close_black_24dp" />
 </RelativeLayout>

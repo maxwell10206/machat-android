@@ -1,37 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="match_parent"
-    android:layout_width="match_parent">
-    <PreferenceScreen android:title="@string/pref_notification_settings"
-                      android:persistent="false">
-        <CheckBoxPreference android:title="@string/pref_summary_receive_notifications"
-                            android:key="@string/pref_key_receive_notifications"
-                            android:defaultValue="true"/>
-        <CheckBoxPreference android:title="@string/pref_summary_vibrate"
-                            android:key="@string/pref_key_vibrate"
-                            android:defaultValue="true"/>
-        <CheckBoxPreference android:title="@string/pref_summary_sound"
-                            android:key="@string/pref_key_sound"
-                            android:defaultValue="true"/>
-        <CheckBoxPreference android:title="@string/pref_summary_blinkLED"
-                            android:key="@string/pref_key_blinkLED"
-                            android:defaultValue="true"/>
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <PreferenceScreen
+        android:persistent="false"
+        android:title="@string/pref_notification_settings">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/pref_key_receive_notifications"
+            android:title="@string/pref_summary_receive_notifications" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/pref_key_vibrate"
+            android:title="@string/pref_summary_vibrate" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/pref_key_sound"
+            android:title="@string/pref_summary_sound" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/pref_key_blinkLED"
+            android:title="@string/pref_summary_blinkLED" />
     </PreferenceScreen>
-    <PreferenceScreen android:title="@string/pref_account_settings"
-        android:persistent="false">
+    <PreferenceScreen
+        android:persistent="false"
+        android:title="@string/pref_account_settings">
         <EditTextPreference
             android:id="@+id/pref_name"
-            android:title="@string/pref_summary_name"
             android:key="@string/pref_key_name"
-            android:maxLength="24"/>
+            android:maxLength="24"
+            android:title="@string/pref_summary_name" />
         <machat.machat.EmailPreference
-            android:title="@string/pref_summary_email"
-            android:key="@string/pref_key_email"/>
+            android:key="@string/pref_key_email"
+            android:title="@string/pref_summary_email" />
         <machat.machat.PasswordPreference
-            android:title="@string/pref_summary_password"
-            android:key="@string/pref_key_password"/>
+            android:key="@string/pref_key_password"
+            android:title="@string/pref_summary_password" />
         <machat.machat.LogoutDialogPreference
-            android:title="@string/pref_summary_logout"
-            android:key="@string/pref_key_logout"/>
+            android:key="@string/pref_key_logout"
+            android:title="@string/pref_summary_logout" />
     </PreferenceScreen>
 </PreferenceScreen>

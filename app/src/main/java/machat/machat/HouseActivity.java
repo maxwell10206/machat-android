@@ -22,13 +22,11 @@ import java.util.ArrayList;
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
-import machat.machat.socketIO.OnCallbackAvatar;
 import machat.machat.socketIO.OnCallbackFavorite;
 import machat.machat.socketIO.OnCallbackMessageStatus;
 import machat.machat.socketIO.OnDeliveredMessage;
 import machat.machat.socketIO.OnJoinHouse;
 import machat.machat.socketIO.OnLoginListener;
-import machat.machat.socketIO.OnNewHouse;
 import machat.machat.socketIO.OnNewMessage;
 import machat.machat.socketIO.OnNewMessageList;
 import machat.machat.socketIO.OnUserReadMessage;
@@ -39,7 +37,7 @@ import machat.machat.socketIO.SocketParse;
 /**
  * Created by Admin on 6/13/2015.
  */
-public class HouseActivity extends ListActivity implements SocketActivity.SocketListener, OnCallbackMessageStatus, machat.machat.socketIO.OnBlockedByUser, MessageDialogFragment.Action, OnLoginListener, OnJoinHouse, OnUserReadMessage, OnDeliveredMessage, OnCallbackAvatar, machat.machat.socketIO.OnCallbackSendMessage, OnNewMessageList, OnCallbackFavorite, ListView.OnScrollListener, OnNewMessage, View.OnClickListener {
+public class HouseActivity extends ListActivity implements SocketActivity.SocketListener, OnCallbackMessageStatus, machat.machat.socketIO.OnBlockedByUser, MessageDialogFragment.Action, OnLoginListener, OnJoinHouse, OnUserReadMessage, OnDeliveredMessage, machat.machat.socketIO.OnCallbackSendMessage, OnNewMessageList, OnCallbackFavorite, ListView.OnScrollListener, OnNewMessage, View.OnClickListener {
 
     public final static String EXTRA_ID = "houseId";
 
@@ -50,23 +48,14 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
     public final static String FAVORITE = "favorite";
 
     public final static String MUTE = "mute";
-
+    public Realm realm;
     private SocketActivity socketActivity = new SocketActivity(this);
-
     private HouseArrayAdapter arrayAdapter;
-
     private boolean mute;
-
     private boolean favorite;
-
     private String houseName;
-
     private int houseId;
-
     private int myId;
-
-    public int getMyId(){ return myId; }
-
     private int localId = 0;
 
     private SocketService mService;
@@ -98,13 +87,14 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
     private Menu menu;
 
     private MyProfile myProfile;
-
-    public Realm realm;
-
     private ProgressBar progressBar;
 
+    public int getMyId() {
+        return myId;
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         oldestMessageId = Integer.MAX_VALUE;
         newestMessageId = 0;
@@ -132,12 +122,12 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         l.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
         l.setStackFromBottom(true);
 
-        realm = Realm.getInstance(getApplicationContext());
+        realm = Realm.getDefaultInstance();
 
     }
 
     @Override
-    public boolean onOptionsItemSelected (MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
@@ -148,12 +138,12 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
                 startActivity(intent);
                 return true;
             case R.id.action_favorite:
-                if(connected && mService.isConnected()) {
-                    if(!waitingForFavorite) {
+                if (connected && mService.isConnected()) {
+                    if (!waitingForFavorite) {
                         mService.send.favoriteHouse(houseId, (!favorite));
                         waitingForFavorite = true;
                     }
-                }else{
+                } else {
                     Toast.makeText(this, "Not connected to server", Toast.LENGTH_SHORT).show();
                 }
                 return true;
@@ -168,7 +158,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         }
     }
 
-    public void createMessageDialog(Message message){
+    public void createMessageDialog(Message message) {
         MessageDialogFragment messageDialogFragment = new MessageDialogFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(MessageDialogFragment.ID, message.getUserId());
@@ -184,21 +174,21 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
-        if(this.menu == null) {
+        if (this.menu == null) {
             socketActivity.connect();
         }
         this.menu = menu;
         MenuInflater inflater = getMenuInflater();
-        if(myId == houseId){
+        if (myId == houseId) {
             inflater.inflate(R.menu.menu_my_house, menu);
-        }else {
+        } else {
             inflater.inflate(R.menu.menu_house, menu);
             favoriteMenuItem = menu.findItem(R.id.action_favorite);
         }
         muteMenuItem = menu.findItem(R.id.action_mute);
 
         sendMessage.setOnClickListener(this);
-        if(myId != houseId) {
+        if (myId != houseId) {
             favoriteMenuItem.setActionView(null).setEnabled(true);
             if (favorite) {
                 favoriteMenuItem.setIcon(R.drawable.ic_favorite_black_24dp);
@@ -221,50 +211,50 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
     }
 
     @Override
-    protected void onStart(){
+    protected void onStart() {
         super.onStart();
         updateMessages();
-        if(menu != null){
+        if (menu != null) {
             socketActivity.connect();
         }
-        if(connected){
+        if (connected) {
             mService.machatNotificationManager.clearNotification(houseId);
         }
     }
 
     @Override
-    protected void onStop(){
+    protected void onStop() {
         super.onStop();
         mService.houseReceiver.setHouseId(0);
         socketActivity.disconnect();
-        if(!favorite) {
+        if (!favorite) {
             mService.send.leaveHouse(houseId);
         }
     }
 
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
         realm.beginTransaction();
         RealmQuery<Message> query = realm.where(Message.class).equalTo("houseId", houseId);
         RealmResults<Message> result = query.findAll();
         result.sort("id", false);
-        for(int i = 20; i < result.size(); i++){
+        for (int i = 20; i < result.size(); i++) {
             result.remove(i);
         }
         realm.commitTransaction();
     }
 
-    private void getOldMessages(){
-        if(connected && !waitingForOldMessages && olderMessages && mService.isConnected()){
+    private void getOldMessages() {
+        if (connected && !waitingForOldMessages && olderMessages && mService.isConnected()) {
             mService.send.getOldMessages(houseId, oldestMessageId);
             waitingForOldMessages = true;
             loadingView.setVisibility(View.VISIBLE);
         }
     }
 
-    private void getNewMessages(){
-        if(connected && !waitingForNewMessages && mService.isConnected()){
+    private void getNewMessages() {
+        if (connected && !waitingForNewMessages && mService.isConnected()) {
             mService.send.getNewMessages(houseId, newestMessageId);
             waitingForNewMessages = true;
         }
@@ -281,11 +271,11 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         mService.send.getHouse(houseId);
         mService.houseReceiver.setHouseId(houseId);
         mService.machatNotificationManager.clearNotification(houseId);
-        for(int i = 0; i < arrayAdapter.getCount(); i++){
+        for (int i = 0; i < arrayAdapter.getCount(); i++) {
             Message message = arrayAdapter.getItem(i);
             int messageId = message.getId();
-            if(message.getStatus() < Message.READ){
-                if(mService.isConnected()) {
+            if (message.getStatus() < Message.READ) {
+                if (mService.isConnected()) {
                     mService.send.getMessageStatus(messageId);
                 }
             }
@@ -297,20 +287,20 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
 
     }
 
-    private void updateMessages(){
+    private void updateMessages() {
         RealmResults<Message> results = realm.where(Message.class).equalTo("houseId", houseId).greaterThan("id", newestMessageId).findAll();
         arrayAdapter.addAll(results);
-        for(int i = 0; i < arrayAdapter.getCount(); i++){
+        for (int i = 0; i < arrayAdapter.getCount(); i++) {
             Message message = arrayAdapter.getItem(i);
             int messageId = message.getId();
-            if(messageId > newestMessageId){
+            if (messageId > newestMessageId) {
                 newestMessageId = messageId;
             }
-            if(messageId < oldestMessageId){
+            if (messageId < oldestMessageId) {
                 oldestMessageId = messageId;
             }
         }
-        if(results.size() > 0){
+        if (results.size() > 0) {
             progressBar.setVisibility(View.INVISIBLE);
         }
     }
@@ -331,27 +321,27 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
 
     @Override
     public void onReceive(String command, String data) {
-        if(command.equals(SocketCommand.GET_OLD_MESSAGES)) {
+        if (command.equals(SocketCommand.GET_OLD_MESSAGES)) {
             SocketParse.parseMessageList(SocketCommand.GET_OLD_MESSAGES, data, this);
-        }else if(command.equals(SocketCommand.GET_NEW_MESSAGES)){
+        } else if (command.equals(SocketCommand.GET_NEW_MESSAGES)) {
             SocketParse.parseMessageList(SocketCommand.GET_NEW_MESSAGES, data, this);
-        }else if(command.equals(SocketCommand.NEW_MESSAGE)){
+        } else if (command.equals(SocketCommand.NEW_MESSAGE)) {
             SocketParse.parseMessage(data, this);
-        }else if(command.equals(SocketCommand.FAVORITE_HOUSE)){
+        } else if (command.equals(SocketCommand.FAVORITE_HOUSE)) {
             SocketParse.parseFavoriteHouse(data, this);
-        }else if(command.equals(SocketCommand.SEND_MESSAGE)){
+        } else if (command.equals(SocketCommand.SEND_MESSAGE)) {
             SocketParse.parseSendMessage(data, this);
-        }else if(command.equals(SocketCommand.READ_MESSAGE)){
+        } else if (command.equals(SocketCommand.READ_MESSAGE)) {
             SocketParse.parseUserReadMessage(data, this);
-        }else if(command.equals(SocketCommand.DELIVERED_MESSAGE)){
+        } else if (command.equals(SocketCommand.DELIVERED_MESSAGE)) {
             SocketParse.parseDeliveredMessage(data, this);
-        }else if(command.equals(SocketCommand.JOIN_HOUSE)){
+        } else if (command.equals(SocketCommand.JOIN_HOUSE)) {
             SocketParse.parseJoinHouse(data, this);
-        }else if(command.equals(SocketCommand.LOGIN)){
+        } else if (command.equals(SocketCommand.LOGIN)) {
             SocketParse.parseLogin(data, this);
-        }else if(command.equals(SocketCommand.BLOCKED_BY_USER)){
+        } else if (command.equals(SocketCommand.BLOCKED_BY_USER)) {
             SocketParse.parseBlockedByUser(data, this);
-        }else if(command.equals(SocketCommand.GET_MESSAGE_STATUS)){
+        } else if (command.equals(SocketCommand.GET_MESSAGE_STATUS)) {
             SocketParse.parseGetMessageStatus(data, this);
         }
     }
@@ -363,10 +353,10 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        if(firstVisibleItem == 0 && (firstVisibleItem != 0 || totalItemCount >= 10)){
+        if (firstVisibleItem == 0 && (firstVisibleItem != 0 || totalItemCount >= 10)) {
             getOldMessages();
         }
-        if(arrayAdapter != null && arrayAdapter.getCount() != 0) {
+        if (arrayAdapter != null && arrayAdapter.getCount() != 0) {
             for (int i = firstVisibleItem + getListView().getHeaderViewsCount(); i < firstVisibleItem + visibleItemCount; i++) {
                 Message message = (Message) getListView().getItemAtPosition(i);
                 if (message.getStatus() != Message.READ && connected && message.getUserId() != myProfile.getId()) {
@@ -378,7 +368,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
 
     @Override
     public void newMessage(Message message) {
-        if(message.getHouseId() == houseId) {
+        if (message.getHouseId() == houseId) {
             arrayAdapter.add(message);
             mService.send.readHouse(houseId);
             newestMessageId = message.getId();
@@ -390,7 +380,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
 
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.sendMessage) {
+        if (v.getId() == R.id.sendMessage) {
             String messageString = inputMessage.getText().toString().trim();
             if (connected && mService.isConnected()) {
                 if (!messageString.isEmpty()) {
@@ -409,24 +399,19 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
                     if (mute) {
                         muteHouse(false);
                     }
-                    if(!favorite){
+                    if (!favorite) {
                         mService.send.favoriteHouse(houseId, true);
                         favorite = true;
                     }
                 }
                 inputMessage.setText("");
-            }else{
+            } else {
                 Toast.makeText(this, "Not connected to server", Toast.LENGTH_SHORT).show();
             }
-        }else if(v.getId() == R.id.inputMessage){
+        } else if (v.getId() == R.id.inputMessage) {
             getListView().smoothScrollBy(0, 0);
             getListView().setSelection(getListView().getCount() - 1);
         }
-    }
-
-    @Override
-    public void newAvatar(int id, byte[] avatar, long time) {
-        arrayAdapter.setBitmapById(id, avatar);
     }
 
     @Override
@@ -492,17 +477,17 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         getListView().setSelectionFromTop(positionToSave, top);
         waitingForOldMessages = false;
         loadingView.setVisibility(View.INVISIBLE);
-        for(int i = 0; i < messageList.size(); i++){
+        for (int i = 0; i < messageList.size(); i++) {
             Message message = messageList.get(i);
             int messageId = message.getId();
-            if(messageId > newestMessageId){
+            if (messageId > newestMessageId) {
                 newestMessageId = message.getId();
             }
-            if(messageId < oldestMessageId){
+            if (messageId < oldestMessageId) {
                 oldestMessageId = messageId;
             }
         }
-        if(messageList.size() == 0){
+        if (messageList.size() == 0) {
             olderMessages = false;
             getListView().removeHeaderView(loadingView);
         }
@@ -511,17 +496,17 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
     @Override
     public void addNewMessages(ArrayList<Message> messageList) {
         waitingForNewMessages = false;
-        if(messageList.size() >= 20){
+        if (messageList.size() >= 20) {
             arrayAdapter.clear();
             oldestMessageId = 0;
         }
-        for(int i = 0; i < messageList.size(); i++){
+        for (int i = 0; i < messageList.size(); i++) {
             Message message = messageList.get(i);
             int messageId = message.getId();
-            if(messageId > newestMessageId){
+            if (messageId > newestMessageId) {
                 newestMessageId = messageId;
             }
-            if(messageId < oldestMessageId){
+            if (messageId < oldestMessageId) {
                 oldestMessageId = messageId;
             }
         }

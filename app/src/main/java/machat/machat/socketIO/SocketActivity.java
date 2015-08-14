@@ -15,35 +15,16 @@ import com.github.nkzawa.socketio.client.Socket;
 
 import machat.machat.SocketService;
 
-public class SocketActivity{
-
-    private SocketListener socketListener;
-
-    public interface SocketListener{
-
-        void onConnect(SocketService mService);
-
-        void onDisconnect();
-
-        void onReceive(String command, String data);
-    }
-
-    public void setOnSocketListener(SocketListener socketListener){
-        this.socketListener = socketListener;
-    }
-
-    Activity activity;
-
-    public SocketActivity(Activity activity){
-        this.activity = activity;
-    }
+public class SocketActivity {
 
     public SocketService mService;
+    Activity activity;
     boolean mBound = false;
-
+    private SocketListener socketListener;
     private Receiver receiver = new Receiver();
-
-    /** Defines callbacks for service binding, passed to bindService() */
+    /**
+     * Defines callbacks for service binding, passed to bindService()
+     */
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
@@ -54,7 +35,7 @@ public class SocketActivity{
             mService = binder.getService();
             mBound = true;
 
-            if(socketListener != null) {
+            if (socketListener != null) {
                 socketListener.onConnect(mService);
             }
         }
@@ -62,11 +43,18 @@ public class SocketActivity{
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
             mBound = false;
-            if(socketListener != null) {
+            if (socketListener != null) {
                 socketListener.onDisconnect();
             }
         }
     };
+    public SocketActivity(Activity activity) {
+        this.activity = activity;
+    }
+
+    public void setOnSocketListener(SocketListener socketListener) {
+        this.socketListener = socketListener;
+    }
 
     public void connect() {
         LocalBroadcastManager.getInstance(activity).registerReceiver(receiver, new IntentFilter(SocketService.ACTION));
@@ -75,12 +63,21 @@ public class SocketActivity{
         activity.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
-    public void disconnect(){
+    public void disconnect() {
         LocalBroadcastManager.getInstance(activity).unregisterReceiver(receiver);
-        if(mBound) {
+        if (mBound) {
             activity.unbindService(mConnection);
             mBound = false;
         }
+    }
+
+    public interface SocketListener {
+
+        void onConnect(SocketService mService);
+
+        void onDisconnect();
+
+        void onReceive(String command, String data);
     }
 
     private class Receiver extends BroadcastReceiver {
@@ -88,10 +85,10 @@ public class SocketActivity{
         public void onReceive(Context context, Intent intent) {
             String command = intent.getStringExtra(SocketService.COMMAND);
             String data = intent.getStringExtra(SocketService.DATA);
-            if(socketListener != null) {
+            if (socketListener != null) {
                 socketListener.onReceive(command, data);
             }
-            if(command.equals(Socket.EVENT_DISCONNECT)){
+            if (command.equals(Socket.EVENT_DISCONNECT)) {
                 Toast.makeText(activity, "Lost Connection", Toast.LENGTH_SHORT).show();
             }
         }

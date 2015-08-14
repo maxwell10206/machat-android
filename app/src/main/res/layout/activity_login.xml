@@ -4,85 +4,85 @@
     android:layout_height="match_parent">
 
     <EditText
+        android:id="@+id/username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/username"
-        android:layout_alignParentTop="false"
-        android:layout_alignLeft="@+id/error"
-        android:layout_alignStart="@+id/error"
-        android:layout_marginTop="15dp"
-        android:layout_alignRight="@+id/password"
         android:layout_alignEnd="@+id/password"
-        android:hint="Username"
+        android:layout_alignLeft="@+id/error"
         android:layout_alignParentBottom="false"
+        android:layout_alignParentTop="false"
+        android:layout_alignRight="@+id/password"
+        android:layout_alignStart="@+id/error"
         android:layout_below="@+id/loginText"
+        android:layout_marginTop="15dp"
+        android:hint="Username"
         android:maxLength="24" />
 
     <EditText
+        android:id="@+id/password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:ems="10"
-        android:id="@+id/password"
-        android:layout_below="@+id/username"
-        android:layout_alignLeft="@+id/error"
-        android:layout_alignStart="@+id/error"
-        android:layout_marginTop="15dp"
-        android:layout_alignRight="@+id/error"
         android:layout_alignEnd="@+id/error"
+        android:layout_alignLeft="@+id/error"
+        android:layout_alignRight="@+id/error"
+        android:layout_alignStart="@+id/error"
+        android:layout_below="@+id/username"
+        android:layout_marginTop="15dp"
+        android:ems="10"
         android:hint="Password"
+        android:inputType="textPassword"
         android:maxLength="24" />
 
     <TextView
+        android:id="@+id/error"
         android:layout_width="300sp"
         android:layout_height="35dp"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:id="@+id/error"
         android:layout_below="@+id/password"
         android:layout_centerHorizontal="true"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#ffff0000" />
 
     <Button
+        android:id="@+id/loginButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Login"
-        android:id="@+id/loginButton"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
         android:background="@android:color/holo_blue_light"
-        android:textColor="@android:color/white"
         android:isScrollContainer="true"
+        android:text="Login"
+        android:textColor="@android:color/white"
         android:textStyle="bold"
-        android:visibility="invisible"/>
+        android:visibility="invisible" />
 
     <TextView
+        android:id="@+id/loginText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Log In"
-        android:id="@+id/loginText"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:textSize="30dp"
+        android:layout_marginTop="25dp"
+        android:text="Log In"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@android:color/holo_orange_dark"
-        android:textStyle="bold"
-        android:layout_marginTop="25dp" />
+        android:textSize="30dp"
+        android:textStyle="bold" />
 
     <ProgressBar
+        android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/progressBar"
-        android:layout_alignParentBottom="true"
-        android:layout_alignTop="@+id/loginButton"
-        android:layout_alignRight="@+id/loginText"
         android:layout_alignEnd="@+id/loginText"
         android:layout_alignLeft="@+id/loginText"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/loginText"
         android:layout_alignStart="@+id/loginText"
-        android:visibility="invisible"
-        android:isScrollContainer="true"/>
+        android:layout_alignTop="@+id/loginButton"
+        android:isScrollContainer="true"
+        android:visibility="invisible" />
 
 </RelativeLayout>

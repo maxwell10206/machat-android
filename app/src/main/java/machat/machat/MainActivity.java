@@ -16,9 +16,8 @@ import machat.machat.socketIO.SocketParse;
  */
 public class MainActivity extends Activity implements SocketActivity.SocketListener, OnLoginListener {
 
-    private SocketActivity socketActivity = new SocketActivity(this);
-
     boolean finished = false;
+    private SocketActivity socketActivity = new SocketActivity(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,13 +26,13 @@ public class MainActivity extends Activity implements SocketActivity.SocketListe
     }
 
     @Override
-    protected void onStart(){
+    protected void onStart() {
         super.onStart();
         socketActivity.connect();
     }
 
     @Override
-    protected void onStop(){
+    protected void onStop() {
         super.onStop();
         socketActivity.disconnect();
     }
@@ -43,9 +42,9 @@ public class MainActivity extends Activity implements SocketActivity.SocketListe
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String sessionId = sharedPref.getString(SavedPrefs.sessionId, "");
 
-        if(mService.user.isLogin() || (!sessionId.isEmpty() && !mService.isConnected())){
+        if (mService.user.isLogin() || (!sessionId.isEmpty() && !mService.isConnected())) {
             startFavoriteListActivity(mService.user.getMyProfile().getId());
-        }else if(sessionId.isEmpty()){
+        } else if (sessionId.isEmpty()) {
             startLoginOrRegisterActivity();
         }
     }
@@ -57,7 +56,7 @@ public class MainActivity extends Activity implements SocketActivity.SocketListe
 
     @Override
     public void onReceive(String command, String data) {
-        if(command.equals(SocketCommand.LOGIN)){
+        if (command.equals(SocketCommand.LOGIN)) {
             SocketParse.parseLogin(data, this);
         }
     }
@@ -72,13 +71,13 @@ public class MainActivity extends Activity implements SocketActivity.SocketListe
         startLoginOrRegisterActivity();
     }
 
-    public void startLoginOrRegisterActivity(){
+    public void startLoginOrRegisterActivity() {
         startActivity(new Intent(this, LoginOrRegisterActivity.class));
         finish();
         finished = true;
     }
 
-    public void startFavoriteListActivity(int myId){
+    public void startFavoriteListActivity(int myId) {
         startActivity(new Intent(this, FavoriteListActivity.class).putExtra(FavoriteListActivity.MY_ID, myId));
         finish();
         finished = true;

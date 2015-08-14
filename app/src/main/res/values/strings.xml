@@ -32,13 +32,11 @@
     <string name="pref_key_logout">logout</string>
     <string name="socket_error">Error connecting to server</string>
     <string name="unblock">Unblock</string>
-    <string-array
-        name="message_dialog_options_full">
+    <string-array name="message_dialog_options_full">
         <item>Copy Message</item>
         <item>Go to profile</item>
     </string-array>
-    <string-array
-        name="message_dialog_options_short">
+    <string-array name="message_dialog_options_short">
         <item>Copy Message</item>
     </string-array>
 </resources>

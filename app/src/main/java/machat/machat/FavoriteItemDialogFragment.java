@@ -13,17 +13,7 @@ import android.os.Bundle;
 
 public class FavoriteItemDialogFragment extends DialogFragment {
 
-    public interface OnCompleteListener {
-
-        void muteHouse(int id, boolean mute);
-
-        void unFavoriteHouse(int id);
-
-        void openProfile(int id);
-    }
-
     public static final String FAVORITE_ITEM = "favoriteItem";
-
     private OnCompleteListener listener;
 
     @Override
@@ -38,9 +28,9 @@ public class FavoriteItemDialogFragment extends DialogFragment {
         final FavoriteItem favoriteItem = (FavoriteItem) getArguments().getSerializable(FAVORITE_ITEM);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         String list[] = new String[3];
-        if(favoriteItem.isMute()){
+        if (favoriteItem.isMute()) {
             list[0] = "UnMute";
-        }else{
+        } else {
             list[0] = "Mute";
         }
         list[1] = "Profile";
@@ -48,11 +38,11 @@ public class FavoriteItemDialogFragment extends DialogFragment {
         builder.setTitle(favoriteItem.getName())
                 .setItems(list, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        if(which == 0){
+                        if (which == 0) {
                             listener.muteHouse(favoriteItem.getUserId(), !(favoriteItem.isMute()));
-                        }else if(which == 1){
+                        } else if (which == 1) {
                             listener.openProfile(favoriteItem.getUserId());
-                        }else{
+                        } else {
                             listener.unFavoriteHouse(favoriteItem.getUserId());
                         }
                     }
@@ -63,6 +53,15 @@ public class FavoriteItemDialogFragment extends DialogFragment {
             }
         });
         return builder.create();
+    }
+
+    public interface OnCompleteListener {
+
+        void muteHouse(int id, boolean mute);
+
+        void unFavoriteHouse(int id);
+
+        void openProfile(int id);
     }
 
 }

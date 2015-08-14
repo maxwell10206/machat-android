@@ -1,83 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/avatar"
         android:layout_width="96dp"
         android:layout_height="96dp"
-        android:id="@+id/avatar"
-        android:src="@drawable/ic_person_black_36dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="10dp"
+        android:src="@drawable/ic_person_black_36dp" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Name"
         android:id="@+id/name"
-        android:layout_below="@+id/avatar"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:singleLine="true"
-        android:gravity="center_horizontal" />
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="username"
-        android:id="@+id/username"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_below="@+id/name"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
+        android:layout_below="@+id/avatar"
+        android:gravity="center_horizontal"
         android:singleLine="true"
-        android:gravity="center_horizontal" />
+        android:text="Name"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/name"
+        android:gravity="center_horizontal"
+        android:singleLine="true"
+        android:text="username"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <ProgressBar
+        android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/progressBar"
-        android:indeterminate="false"
-        android:layout_alignTop="@+id/avatar"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignTop="@+id/avatar"
+        android:indeterminate="false" />
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_below="@+id/username"
+        android:orientation="horizontal"
         android:padding="8dp">
 
         <ImageView
+            android:id="@+id/imageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageView"
-            android:src="@drawable/ic_block_black_24dp"
             android:layout_alignBottom="@+id/blockCheckBox"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/username"
-            android:layout_gravity="center_vertical" />
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_block_black_24dp" />
 
         <CheckBox
+            android:id="@+id/blockCheckBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Block"
-            android:id="@+id/blockCheckBox"
-            android:checked="false"
-            android:layout_below="@+id/username"
-            android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_toRightOf="@+id/imageView"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/username"
+            android:layout_gravity="center"
             android:layout_toEndOf="@+id/imageView"
-            android:layout_gravity="center" />
+            android:layout_toRightOf="@+id/imageView"
+            android:checked="false"
+            android:text="Block" />
 
     </LinearLayout>
 

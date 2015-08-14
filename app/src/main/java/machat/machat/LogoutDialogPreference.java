@@ -15,7 +15,7 @@ public class LogoutDialogPreference extends DialogPreference {
     }
 
     @Override
-    protected void onDialogClosed (boolean positiveResult) {
+    protected void onDialogClosed(boolean positiveResult) {
         if (positiveResult) {
             callChangeListener(null);
         }

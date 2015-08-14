@@ -1,10 +1,7 @@
 package machat.machat;
 
-import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,27 +19,19 @@ import machat.machat.socketIO.OnCallbackAvatar;
  */
 public class BlockListArrayAdapter extends ArrayAdapter {
 
-    private ArrayList<User> blockList;
+    private ArrayList<BlockUser> blockList;
 
-    private Activity activity;
+    private BlockListActivity activity;
 
-    public BlockListArrayAdapter(Activity activity, ArrayList<User> blockList) {
+    public BlockListArrayAdapter(BlockListActivity activity, ArrayList<BlockUser> blockList) {
         super(activity, -1, blockList);
         this.blockList = blockList;
         this.activity = activity;
     }
 
     @Override
-    public User getItem (int position){
+    public BlockUser getItem(int position) {
         return blockList.get(position);
-    }
-
-    public void removeById(int id){
-        for(int i = 0; i < blockList.size(); i++){
-            if(blockList.get(i).getId() == id){
-                remove(blockList.get(i));
-            }
-        }
     }
 
     @Override
@@ -51,7 +40,7 @@ public class BlockListArrayAdapter extends ArrayAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.item_search, parent, false);
 
-        User user = blockList.get(position);
+        BlockUser user = blockList.get(position);
 
         TextView usernameView = (TextView) rowView.findViewById(R.id.username);
         TextView nameView = (TextView) rowView.findViewById(R.id.name);
@@ -66,7 +55,7 @@ public class BlockListArrayAdapter extends ArrayAdapter {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        avatarView.setImageBitmap(User.getBitmapAvatar(avatar));
+                        avatarView.setImageBitmap(BitmapFactory.decodeByteArray(avatar, 0, avatar.length));
                     }
                 });
             }

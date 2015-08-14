@@ -1,6 +1,7 @@
 package machat.machat;
 
 import android.app.Activity;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,30 +26,21 @@ import machat.machat.socketIO.SocketParse;
 public class ProfileActivity extends Activity implements SocketActivity.SocketListener, OnCallbackBlock, OnLoginListener, CompoundButton.OnCheckedChangeListener, OnNewProfile, OnCallbackAvatar {
 
     public static final String BUNDLE_ID = "id";
-
+    private final String TITLE_PROFILE = "Profile";
     private SocketActivity socketActivity = new SocketActivity(this);
-
     private SocketService mService;
-
     private Profile profile;
-
     private boolean connected = false;
-
     private boolean waitingForBlock = false;
-
     private TextView name;
     private TextView username;
     private ProgressBar progressBar;
     private CheckBox blockCheckBox;
-
     private ImageView avatarView;
-
     private int id;
 
-    private final String TITLE_PROFILE = "Profile";
-
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         socketActivity.setOnSocketListener(this);
@@ -64,7 +56,7 @@ public class ProfileActivity extends Activity implements SocketActivity.SocketLi
     }
 
     @Override
-    public boolean onOptionsItemSelected (MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
@@ -75,13 +67,13 @@ public class ProfileActivity extends Activity implements SocketActivity.SocketLi
     }
 
     @Override
-    protected void onStart(){
+    protected void onStart() {
         super.onStart();
         socketActivity.connect();
     }
 
     @Override
-    protected void onStop(){
+    protected void onStop() {
         super.onStop();
         socketActivity.disconnect();
     }
@@ -100,45 +92,36 @@ public class ProfileActivity extends Activity implements SocketActivity.SocketLi
 
     @Override
     public void onReceive(String command, String data) {
-        if(command.equals(SocketCommand.GET_PROFILE)){
+        if (command.equals(SocketCommand.GET_PROFILE)) {
             SocketParse.parseProfile(data, this);
-        }else if(command.equals(SocketCommand.BLOCK_USER)){
+        } else if (command.equals(SocketCommand.BLOCK_USER)) {
             SocketParse.parseBlockUser(data, this);
-        }else if(command.equals(SocketCommand.GET_AVATAR)){
+        } else if (command.equals(SocketCommand.GET_AVATAR)) {
             SocketParse.parseGetAvatar(data, this);
-        }else if(command.equals(SocketCommand.LOGIN)){
+        } else if (command.equals(SocketCommand.LOGIN)) {
             SocketParse.parseLogin(data, this);
         }
     }
 
     @Override
     public void newProfile(Profile profile) {
-        if(profile.getUser().getId() == id) {
+        if (profile.getId() == id) {
             this.profile = profile;
             blockCheckBox.setOnCheckedChangeListener(this);
-            name.setText(profile.getUser().getName());
-            username.setText(profile.getUser().getUsername());
+            name.setText(profile.getName());
+            username.setText(profile.getUsername());
             progressBar.setVisibility(View.GONE);
             blockCheckBox.setChecked(profile.isBlocked());
         }
     }
 
     @Override
-    public void callbackBlock(int id, boolean block) {
-        if(id == this.id) {
-            profile.setBlocked(block);
-            blockCheckBox.setChecked(block);
-            waitingForBlock = false;
-        }
-    }
-
-    @Override
     public void newAvatar(int id, final byte[] avatar, long time) {
-        if(id == this.id) {
+        if (id == this.id) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    avatarView.setImageBitmap(User.getBitmapAvatar(avatar));
+                    avatarView.setImageBitmap(BitmapFactory.decodeByteArray(avatar, 0, avatar.length));
                 }
             });
         }
@@ -146,8 +129,8 @@ public class ProfileActivity extends Activity implements SocketActivity.SocketLi
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if(connected && mService.isConnected() && !waitingForBlock) {
-            if(profile.isBlocked() != isChecked) {
+        if (connected && mService.isConnected() && !waitingForBlock) {
+            if (profile.isBlocked() != isChecked) {
                 mService.send.blockUser(id, isChecked);
             }
         }
@@ -162,5 +145,23 @@ public class ProfileActivity extends Activity implements SocketActivity.SocketLi
     @Override
     public void onLoginFailed(String err) {
 
+    }
+
+    @Override
+    public void unBlocked(int id) {
+        if (id == this.id) {
+            profile.setBlocked(false);
+            blockCheckBox.setChecked(false);
+            waitingForBlock = false;
+        }
+    }
+
+    @Override
+    public void blocked(BlockUser blockUser) {
+        if (blockUser.getId() == this.id) {
+            profile.setBlocked(true);
+            blockCheckBox.setChecked(true);
+            waitingForBlock = false;
+        }
     }
 }

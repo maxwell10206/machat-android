@@ -3,9 +3,10 @@
     <item
         android:id="@+id/action_mute"
         android:icon="@drawable/ic_volume_up_black_24dp"
+        android:showAsAction="always"
         android:title="@string/action_mute"
-        android:visible="false"
-        android:showAsAction="always" />
-    <item android:id="@+id/action_block_list"
-        android:title="@string/action_block_list"/>
+        android:visible="false" />
+    <item
+        android:id="@+id/action_block_list"
+        android:title="@string/action_block_list" />
 </menu>

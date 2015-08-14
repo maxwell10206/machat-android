@@ -1,8 +1,5 @@
 package machat.machat;
 
-import android.graphics.Bitmap;
-import android.util.Log;
-
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.Ack;
 import com.github.nkzawa.socketio.client.Socket;
@@ -25,11 +22,17 @@ import machat.machat.socketIO.SocketValid;
 /**
  * Created by Admin on 5/23/2015.
  */
-public class SocketCommunication implements OnCallbackAvatar{
+public class SocketCommunication implements OnCallbackAvatar {
 
     private Socket mSocket;
 
     private SocketService service;
+    private Emitter.Listener onConnectError = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            service.sendBroadcast(Socket.EVENT_ERROR, null);
+        }
+    };
 
     public SocketCommunication(final SocketService service, Socket mSocket) {
         this.mSocket = mSocket;
@@ -85,13 +88,6 @@ public class SocketCommunication implements OnCallbackAvatar{
         mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
     }
 
-    private Emitter.Listener onConnectError = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            service.sendBroadcast(Socket.EVENT_ERROR, null);
-        }
-    };
-
     public void turnOffListeners() {
         mSocket.off(Socket.EVENT_CONNECT);
         mSocket.off(Socket.EVENT_DISCONNECT);
@@ -104,21 +100,21 @@ public class SocketCommunication implements OnCallbackAvatar{
         mSocket.off(Socket.EVENT_ERROR);
     }
 
-    public void deliveredMessage(int id){
+    public void deliveredMessage(int id) {
         mSocket.emit(SocketCommand.DELIVERED_MESSAGE, id);
     }
 
-    public void readHouse(int houseId){
+    public void readHouse(int houseId) {
         mSocket.emit(SocketCommand.READ_HOUSE, houseId);
         service.sendBroadcast(SocketCommand.READ_HOUSE, Integer.toString(houseId));
     }
 
-    public void readMessage(int id){
+    public void readMessage(int id) {
         mSocket.emit(SocketCommand.READ_MESSAGE, id);
         service.sendBroadcast(SocketCommand.READ_MESSAGE, Integer.toString(id));
     }
 
-    public void search(String text){
+    public void search(String text) {
         mSocket.emit(SocketCommand.SEARCH, text, new Ack() {
             @Override
             public void call(Object... args) {
@@ -172,7 +168,7 @@ public class SocketCommunication implements OnCallbackAvatar{
         });
     }
 
-    public void joinHouse(int houseId){
+    public void joinHouse(int houseId) {
         mSocket.emit(SocketCommand.JOIN_HOUSE, houseId, new Ack() {
             @Override
             public void call(Object... args) {
@@ -181,7 +177,7 @@ public class SocketCommunication implements OnCallbackAvatar{
         });
     }
 
-    public void getBlockList(){
+    public void getBlockList() {
         mSocket.emit(SocketCommand.GET_BLOCK_LIST, new Ack() {
             @Override
             public void call(Object... args) {
@@ -190,7 +186,7 @@ public class SocketCommunication implements OnCallbackAvatar{
         });
     }
 
-    public void leaveHouse(int houseId){
+    public void leaveHouse(int houseId) {
         mSocket.emit(SocketCommand.LEAVE_HOUSE, houseId, new Ack() {
             @Override
             public void call(Object... args) {
@@ -199,7 +195,7 @@ public class SocketCommunication implements OnCallbackAvatar{
         });
     }
 
-    public void getNewMessages(int id, int newestMessageId){
+    public void getNewMessages(int id, int newestMessageId) {
         mSocket.emit(SocketCommand.GET_NEW_MESSAGES, SocketCompose.getNewMessages(id, newestMessageId), new Ack() {
             @Override
             public void call(Object... args) {
@@ -217,7 +213,7 @@ public class SocketCommunication implements OnCallbackAvatar{
         });
     }
 
-    public void blockUser(final int id,final boolean block) {
+    public void blockUser(final int id, final boolean block) {
         mSocket.emit(SocketCommand.BLOCK_USER, SocketCompose.blockUser(id, block), new Ack() {
             @Override
             public void call(Object... args) {
@@ -235,14 +231,14 @@ public class SocketCommunication implements OnCallbackAvatar{
         });
     }
 
-    public void logout(String sessionId){
+    public void logout(String sessionId) {
         mSocket.emit(SocketCommand.LOGOUT, sessionId);
         service.sendBroadcast(SocketCommand.LOGOUT, "");
         mSocket.disconnect();
         mSocket.connect();
     }
 
-    public void registerAccount(String username, String email, String password){
+    public void registerAccount(String username, String email, String password) {
         mSocket.emit(SocketCommand.REGISTER, SocketCompose.registerAccount(username, email, password), new Ack() {
             @Override
             public void call(Object... args) {
@@ -263,7 +259,7 @@ public class SocketCommunication implements OnCallbackAvatar{
 
     public void changeName(final String name, OnChangeName listener) {
         boolean valid = SocketValid.checkName(name, listener);
-        if(valid)
+        if (valid)
             mSocket.emit(SocketCommand.CHANGE_NAME, name, new Ack() {
                 @Override
                 public void call(Object... args) {
@@ -272,7 +268,7 @@ public class SocketCommunication implements OnCallbackAvatar{
             });
     }
 
-    public void getMessageStatus(int id){
+    public void getMessageStatus(int id) {
         mSocket.emit(SocketCommand.GET_MESSAGE_STATUS, id, new Ack() {
             @Override
             public void call(Object... args) {
@@ -321,7 +317,7 @@ public class SocketCommunication implements OnCallbackAvatar{
         });
     }
 
-    public void updateAvatars(ArrayList<BitmapUser> bitmapUsers){
+    public void updateAvatars(ArrayList<BitmapUser> bitmapUsers) {
         mSocket.emit(SocketCommand.UPDATE_AVATARS, SocketCompose.getAvatarUpdates(bitmapUsers), new Ack() {
             @Override
             public void call(Object... args) {
@@ -332,7 +328,7 @@ public class SocketCommunication implements OnCallbackAvatar{
         });
     }
 
-    public void sendAvatar(byte[] avatar){
+    public void sendAvatar(byte[] avatar) {
         mSocket.emit(SocketCommand.SEND_AVATAR, avatar, new Ack() {
             @Override
             public void call(Object... args) {
@@ -341,7 +337,7 @@ public class SocketCommunication implements OnCallbackAvatar{
         });
     }
 
-    public void getUndeliveredMessages(){
+    public void getUndeliveredMessages() {
         mSocket.emit(SocketCommand.GET_UNDELIVERED_MESSAGES, new Ack() {
             @Override
             public void call(Object... args) {

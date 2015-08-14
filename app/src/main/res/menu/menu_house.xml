@@ -3,18 +3,19 @@
     <item
         android:id="@+id/action_mute"
         android:icon="@drawable/ic_volume_up_black_24dp"
+        android:showAsAction="always"
         android:title="@string/action_mute"
-        android:visible="false"
-        android:showAsAction="always" />
-    <item android:id="@+id/action_favorite"
-        android:icon="@drawable/ic_favorite_border_black_24dp"
-        android:title="@string/action_favorite"
+        android:visible="false" />
+    <item
+        android:id="@+id/action_favorite"
         android:actionLayout="@layout/progressbar"
         android:enabled="false"
-        android:showAsAction="always" />
+        android:icon="@drawable/ic_favorite_border_black_24dp"
+        android:showAsAction="always"
+        android:title="@string/action_favorite" />
     <item
         android:id="@+id/action_profile"
         android:icon="@drawable/ic_perm_identity_black_24dp"
-        android:title="@string/action_profile"
-        android:showAsAction="always" />
+        android:showAsAction="always"
+        android:title="@string/action_profile" />
 </menu>

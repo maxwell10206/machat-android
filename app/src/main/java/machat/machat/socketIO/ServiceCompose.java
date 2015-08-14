@@ -10,13 +10,13 @@ import org.json.JSONObject;
  */
 public class ServiceCompose {
 
-    public static JSONObject getAvatar(JSONObject jsonObject){
-        try{
+    public static JSONObject getAvatar(JSONObject jsonObject) {
+        try {
             byte[] byteImage = (byte[]) jsonObject.get(SocketData.byteArray);
             String base64Image = Base64.encodeToString(byteImage, Base64.DEFAULT);
             jsonObject.remove(SocketData.byteArray);
             jsonObject.put(SocketData.byteArray, base64Image);
-        }catch(JSONException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
         }
         return jsonObject;

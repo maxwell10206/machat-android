@@ -11,35 +11,8 @@ import android.widget.TextView;
  */
 public class PasswordPreference extends DialogPreference {
 
-    public class PasswordChange{
-
-        private String oldPassword;
-
-        private String newPassword;
-
-        private String retypePassword;
-
-        PasswordChange(String oldPassword, String newPassword, String retypePassword){
-            this.oldPassword = oldPassword;
-            this.newPassword = newPassword;
-            this.retypePassword = retypePassword;
-        }
-
-        public String getOldPassword(){
-            return oldPassword;
-        }
-        public String getNewPassword(){
-            return newPassword;
-        }
-        public String getRetypePassword(){
-            return retypePassword;
-        }
-    }
-
     private TextView oldPassword;
-
     private TextView newPassword;
-
     private TextView retypePassword;
 
     public PasswordPreference(Context context, AttributeSet attrs) {
@@ -49,7 +22,7 @@ public class PasswordPreference extends DialogPreference {
     }
 
     @Override
-    protected void onBindDialogView (View view){
+    protected void onBindDialogView(View view) {
         super.onBindDialogView(view);
         oldPassword = (TextView) view.findViewById(R.id.oldPassword);
         newPassword = (TextView) view.findViewById(R.id.newPassword);
@@ -57,9 +30,36 @@ public class PasswordPreference extends DialogPreference {
     }
 
     @Override
-    protected void onDialogClosed (boolean positiveResult){
-        if(positiveResult){
+    protected void onDialogClosed(boolean positiveResult) {
+        if (positiveResult) {
             callChangeListener(new PasswordChange(oldPassword.getText().toString(), newPassword.getText().toString(), retypePassword.getText().toString()));
+        }
+    }
+
+    public class PasswordChange {
+
+        private String oldPassword;
+
+        private String newPassword;
+
+        private String retypePassword;
+
+        PasswordChange(String oldPassword, String newPassword, String retypePassword) {
+            this.oldPassword = oldPassword;
+            this.newPassword = newPassword;
+            this.retypePassword = retypePassword;
+        }
+
+        public String getOldPassword() {
+            return oldPassword;
+        }
+
+        public String getNewPassword() {
+            return newPassword;
+        }
+
+        public String getRetypePassword() {
+            return retypePassword;
         }
     }
 

@@ -67,20 +67,20 @@ public class RegisterActivity extends Activity implements View.OnClickListener, 
     }
 
     @Override
-    protected void onStart(){
+    protected void onStart() {
         super.onStart();
         socketActivity.connect();
     }
 
     @Override
-    protected void onStop(){
+    protected void onStop() {
         super.onStop();
         socketActivity.disconnect();
     }
 
     @Override
     public void onClick(View v) {
-        if(connected && mService.isConnected()) {
+        if (connected && mService.isConnected()) {
             String username = usernameView.getText().toString();
             String email = emailView.getText().toString();
             String password = passwordView.getText().toString();
@@ -104,7 +104,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener, 
 
     @Override
     public void onReceive(String command, String data) {
-        if(command.equals(SocketCommand.REGISTER)){
+        if (command.equals(SocketCommand.REGISTER)) {
             SocketParse.parseRegister(data, this);
         }
     }
@@ -120,12 +120,12 @@ public class RegisterActivity extends Activity implements View.OnClickListener, 
         String password = passwordView.getText().toString();
         String username = usernameView.getText().toString();
         String email = emailView.getText().toString();
-        if(password.equals(retypePassword)) {
+        if (password.equals(retypePassword)) {
             errorView.setText("");
-            if(!username.isEmpty() && !email.isEmpty() && !password.isEmpty() && !retypePassword.isEmpty()) {
+            if (!username.isEmpty() && !email.isEmpty() && !password.isEmpty() && !retypePassword.isEmpty()) {
                 registerButton.setVisibility(View.VISIBLE);
             }
-        }else if(!retypePassword.isEmpty()){
+        } else if (!retypePassword.isEmpty()) {
             errorView.setText(PASSWORD_MISMATCH);
             registerButton.setVisibility(View.INVISIBLE);
         }

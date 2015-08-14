@@ -8,7 +8,22 @@ import android.view.View;
 /**
  * Created by Admin on 5/16/2015.
  */
-public class LoginOrRegisterActivity extends Activity{
+public class LoginOrRegisterActivity extends Activity {
+
+    View.OnClickListener loginHandler = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(LoginOrRegisterActivity.this, LoginActivity.class);
+            startActivity(intent);
+        }
+    };
+    View.OnClickListener registerHandler = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(LoginOrRegisterActivity.this, RegisterActivity.class);
+            startActivity(intent);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,24 +37,8 @@ public class LoginOrRegisterActivity extends Activity{
     }
 
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
     }
-
-    View.OnClickListener loginHandler = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent intent = new Intent(LoginOrRegisterActivity.this, LoginActivity.class);
-            startActivity(intent);
-        }
-    };
-
-    View.OnClickListener registerHandler = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent intent = new Intent(LoginOrRegisterActivity.this, RegisterActivity.class);
-            startActivity(intent);
-        }
-    };
 
 }

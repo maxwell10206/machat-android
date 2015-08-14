@@ -1,21 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/avatar">
-        <bitmap android:src="@drawable/ic_person_black_36dp"
-            android:gravity="center" />
+    <item android:id="@+id/avatar">
+        <bitmap
+            android:gravity="center"
+            android:src="@drawable/ic_person_black_36dp" />
     </item>
-    <item android:top="20dp" android:left="20dp">
-        <shape
-            xmlns:android="http://schemas.android.com/apk/res/android"
+    <item
+        android:left="20dp"
+        android:top="20dp">
+        <shape xmlns:android="http://schemas.android.com/apk/res/android"
             android:shape="oval">
             <solid android:color="@color/machat_orange"></solid>
-            <size android:height="16dp" android:width="16dp"></size>
+            <size
+                android:width="16dp"
+                android:height="16dp"></size>
         </shape>
 
     </item>
-    <item android:top="10dp" android:left="10dp">
-        <bitmap android:src="@drawable/blue_circle"
-            android:gravity="center" />
+    <item
+        android:left="10dp"
+        android:top="10dp">
+        <bitmap
+            android:gravity="center"
+            android:src="@drawable/blue_circle" />
     </item>
 </layer-list>

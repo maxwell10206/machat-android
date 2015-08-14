@@ -1,14 +1,14 @@
 package machat.machat.socketIO;
 
+import machat.machat.BlockUser;
+
 /**
  * Created by Admin on 6/21/2015.
  */
 public interface OnCallbackBlock {
 
-    public final static String blockId = "blockId";
+    void unBlocked(int id);
 
-    public final static String block = "block";
-
-    void callbackBlock(int id, boolean block);
+    void blocked(BlockUser blockUser);
 
 }

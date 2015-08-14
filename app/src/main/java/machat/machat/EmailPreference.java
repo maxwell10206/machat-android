@@ -11,31 +11,9 @@ import android.widget.EditText;
  */
 public class EmailPreference extends DialogPreference {
 
-    public class EmailChange{
-
-        private String password;
-
-        private String email;
-
-        public EmailChange(String password, String email){
-            this.password = password;
-            this.email = email;
-        }
-
-        public String getPassword(){ return password; }
-
-        public String getEmail(){ return email; }
-    }
-
     private EditText passwordText;
-
     private EditText emailText;
-
     private String email;
-
-    public void setEmail(String email){
-        this.email = email;
-    }
 
     public EmailPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -43,8 +21,12 @@ public class EmailPreference extends DialogPreference {
         setDialogLayoutResource(R.layout.email_preference_dialog);
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @Override
-    protected void onBindDialogView (View view){
+    protected void onBindDialogView(View view) {
         super.onBindDialogView(view);
 
         passwordText = (EditText) view.findViewById(R.id.password);
@@ -53,9 +35,29 @@ public class EmailPreference extends DialogPreference {
     }
 
     @Override
-    protected void onDialogClosed (boolean positiveResult){
-        if(positiveResult){
+    protected void onDialogClosed(boolean positiveResult) {
+        if (positiveResult) {
             callChangeListener(new EmailChange(passwordText.getText().toString(), emailText.getText().toString()));
+        }
+    }
+
+    public class EmailChange {
+
+        private String password;
+
+        private String email;
+
+        public EmailChange(String password, String email) {
+            this.password = password;
+            this.email = email;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public String getEmail() {
+            return email;
         }
     }
 }

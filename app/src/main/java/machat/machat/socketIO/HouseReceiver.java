@@ -17,7 +17,7 @@ import machat.machat.SocketService;
 /**
  * Created by Maxwell on 8/8/2015.
  */
-public class HouseReceiver extends BroadcastReceiver implements OnNewMessage, OnCallbackSendMessage, OnNewMessageList, OnUndeliveredMessages{
+public class HouseReceiver extends BroadcastReceiver implements OnNewMessage, OnCallbackSendMessage, OnNewMessageList, OnUndeliveredMessages {
 
     private SocketService mService;
 
@@ -27,10 +27,10 @@ public class HouseReceiver extends BroadcastReceiver implements OnNewMessage, On
 
     private MachatApplication application;
 
-    public HouseReceiver(SocketService mService){
+    public HouseReceiver(SocketService mService) {
         this.mService = mService;
-        this.application = (MachatApplication)mService.getApplication();
-        realm = Realm.getInstance(mService);
+        this.application = (MachatApplication) mService.getApplication();
+        realm = Realm.getDefaultInstance();
     }
 
     @Override
@@ -39,20 +39,20 @@ public class HouseReceiver extends BroadcastReceiver implements OnNewMessage, On
         String data = intent.getStringExtra(SocketService.DATA);
         if (command.equals(SocketCommand.NEW_MESSAGE)) {
             SocketParse.parseMessage(data, this);
-        }else if (command.equals(SocketCommand.SEND_MESSAGE)) {
+        } else if (command.equals(SocketCommand.SEND_MESSAGE)) {
             SocketParse.parseSendMessage(data, this);
         } else if (command.equals(SocketCommand.GET_NEW_MESSAGES)) {
             SocketParse.parseMessageList(SocketCommand.GET_NEW_MESSAGES, data, this);
-        } else if(command.equals(SocketCommand.GET_OLD_MESSAGES)){
+        } else if (command.equals(SocketCommand.GET_OLD_MESSAGES)) {
             SocketParse.parseMessageList(SocketCommand.GET_OLD_MESSAGES, data, this);
-        } else if(command.equals(SocketCommand.GET_UNDELIVERED_MESSAGES)){
+        } else if (command.equals(SocketCommand.GET_UNDELIVERED_MESSAGES)) {
             SocketParse.parseUndeliveredMessages(data, this);
-        } else if(command.equals(SocketCommand.LOGOUT)){
+        } else if (command.equals(SocketCommand.LOGOUT)) {
             clearAllMessages();
         }
     }
 
-    public void setHouseId(int id){
+    public void setHouseId(int id) {
         houseId = id;
     }
 
@@ -66,10 +66,10 @@ public class HouseReceiver extends BroadcastReceiver implements OnNewMessage, On
 
     }
 
-    public void clearAllMessages(){
+    public void clearAllMessages() {
         RealmResults<Message> results = realm.where(Message.class).findAll();
         realm.beginTransaction();
-        for(int i = 0; i < results.size(); i++){
+        for (int i = 0; i < results.size(); i++) {
             results.get(i).removeFromRealm();
         }
         realm.commitTransaction();
@@ -79,20 +79,20 @@ public class HouseReceiver extends BroadcastReceiver implements OnNewMessage, On
     public void newMessage(Message message) {
 
         boolean mute = false;
-        for(int i = 0; i < mService.favorites.getFavoritesList().size(); i++){
+        for (int i = 0; i < mService.favorites.getFavoritesList().size(); i++) {
             FavoriteItem favoriteItem = mService.favorites.getFavoritesList().get(i);
-            if(favoriteItem.getUserId() == message.getHouseId()){
+            if (favoriteItem.getUserId() == message.getHouseId()) {
                 mute = favoriteItem.isMute();
             }
         }
-        if(!application.isActivityVisible() && houseId != message.getHouseId() && !mute) {
+        if (!application.isActivityVisible() && houseId != message.getHouseId() && !mute) {
             mService.machatNotificationManager.newMissedMessages(message.getHouseId(), mService.user.getMyProfile().getId(), message.getHouseName(), message.getName(), message.getMessage(), 1, true);
         }
-        if(!mute) {
+        if (!mute) {
             mService.send.deliveredMessage(message.getId());
         }
 
-        if(houseId == 0) {
+        if (houseId == 0) {
             int newestMessageId = 0;
             RealmResults<Message> results = realm.where(Message.class).equalTo("houseId", message.getHouseId()).findAll();
             for (int i = 0; i < results.size(); i++) {
@@ -129,7 +129,7 @@ public class HouseReceiver extends BroadcastReceiver implements OnNewMessage, On
     public void undeliveredMessages(ArrayList<MissedMessage> messages) {
         for (int i = 0; i < messages.size(); i++) {
             MissedMessage message = messages.get(i);
-            if(!application.isActivityVisible() && houseId != message.getHouseId()) {
+            if (!application.isActivityVisible() && houseId != message.getHouseId()) {
                 mService.machatNotificationManager.newMissedMessages(message.getHouseId(), mService.user.getMyProfile().getId(), message.getHouseName(), message.getName(), message.getMessage(), message.getMissedMessages(), false);
             }
         }

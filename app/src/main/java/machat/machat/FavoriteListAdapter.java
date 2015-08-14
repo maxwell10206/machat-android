@@ -1,6 +1,7 @@
 package machat.machat;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,26 +26,19 @@ public class FavoriteListAdapter extends ArrayAdapter {
 
     private int myId = 0;
 
-    public void setMyId(int id){ myId = id;}
-
-    @Override
-    public FavoriteItem getItem (int position){
-        return favoriteItems.get(position);
-    }
-
     public FavoriteListAdapter(FavoriteListActivity favoriteListActivity, ArrayList<FavoriteItem> favoriteItems) {
         super(favoriteListActivity, -1, favoriteItems);
         this.favoriteListActivity = favoriteListActivity;
         this.favoriteItems = favoriteItems;
     }
 
-    public void setBitmapById(int id, byte[] avatar){
-        for(int i = 0; i < favoriteItems.size(); i++){
-            if(favoriteItems.get(i).getUserId() == id) {
-                favoriteItems.get(i).setAvatar(avatar);
-            }
-        }
-        notifyDataSetChanged();
+    public void setMyId(int id) {
+        myId = id;
+    }
+
+    @Override
+    public FavoriteItem getItem(int position) {
+        return favoriteItems.get(position);
     }
 
     @Override
@@ -70,9 +64,9 @@ public class FavoriteListAdapter extends ArrayAdapter {
         final FavoriteItem favoriteItem = favoriteItems.get(position);
         name.setText(favoriteItem.getName());
 
-        if(favoriteItem.getMessage().isEmpty()){
+        if (favoriteItem.getMessage().isEmpty()) {
             lastMessage.setText("No messages");
-        }else {
+        } else {
             lastMessage.setText(favoriteItem.getMessage());
         }
         messageTime.setText(FavoriteItem.getTimeString(favoriteItem.getTime()));
@@ -84,32 +78,28 @@ public class FavoriteListAdapter extends ArrayAdapter {
             status.setImageResource(R.drawable.ic_play_arrow_black_18dp);
         }
 
-        if (favoriteItem.isBlock()){
+        if (favoriteItem.isBlock()) {
             lastMessage.setText("BLOCKED");
         }
 
-        if(!favoriteItem.isRead()){
+        if (!favoriteItem.isRead()) {
             ImageView notRead = (ImageView) rowView.findViewById(R.id.notRead);
             notRead.setImageResource(R.drawable.blue_circle);
         }
 
-        byte[] imageByteArray = favoriteItem.getAvatar();
-        if(imageByteArray != null && imageByteArray.length != 0) {
-            avatarView.setImageBitmap(User.getBitmapAvatar(imageByteArray));
-        }
         AvatarManager.getAvatar(favoriteItem.getUserId(), new OnCallbackAvatar() {
             @Override
             public void newAvatar(int id, final byte[] avatar, long time) {
                 favoriteListActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        avatarView.setImageBitmap(User.getBitmapAvatar(avatar));
+                        avatarView.setImageBitmap(BitmapFactory.decodeByteArray(avatar, 0, avatar.length));
                     }
                 });
             }
         });
 
-        if(favoriteItem.isMute()){
+        if (favoriteItem.isMute()) {
             mute.setImageResource(R.drawable.ic_volume_mute_black_24dp);
         } else {
             mute.setImageResource(R.drawable.ic_volume_up_black_24dp);

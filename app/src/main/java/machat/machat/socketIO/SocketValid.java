@@ -5,11 +5,11 @@ package machat.machat.socketIO;
  */
 public class SocketValid {
 
-    public static boolean checkEmail(String email, OnChangeEmail listener){
+    public static boolean checkEmail(String email, OnChangeEmail listener) {
         return true;
     }
 
-    public static boolean checkName(String name, OnChangeName listener){
+    public static boolean checkName(String name, OnChangeName listener) {
         return true;
     }
 }

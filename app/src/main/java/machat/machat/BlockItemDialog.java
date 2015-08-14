@@ -15,13 +15,6 @@ public class BlockItemDialog extends DialogFragment {
     public static final String NAME = "name";
 
     public static final String ID = "id";
-
-    public interface BlockChange{
-
-        void unBlock(int id);
-
-    }
-
     private BlockChange blockChange;
 
     @Override
@@ -52,10 +45,16 @@ public class BlockItemDialog extends DialogFragment {
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // User cancelled the dialog
+                        // BlockUser cancelled the dialog
                     }
                 });
         // Create the AlertDialog object and return it
         return builder.create();
+    }
+
+    public interface BlockChange {
+
+        void unBlock(int id);
+
     }
 }

@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,7 +38,7 @@ import machat.machat.socketIO.SocketParse;
 /**
  * Created by Admin on 6/21/2015.
  */
-public class MyProfileActivity extends Activity implements View.OnClickListener, OnCallbackSendAvatar, SocketActivity.SocketListener, OnCallbackAvatar, OptionsFragment.OnPreferenceChange, OnChangePassword, OnChangeEmail, OnChangeName{
+public class MyProfileActivity extends Activity implements View.OnClickListener, OnCallbackSendAvatar, SocketActivity.SocketListener, OnCallbackAvatar, OptionsFragment.OnPreferenceChange, OnChangePassword, OnChangeEmail, OnChangeName {
 
     OptionsFragment fragment = new OptionsFragment();
 
@@ -82,19 +81,19 @@ public class MyProfileActivity extends Activity implements View.OnClickListener,
     }
 
     @Override
-    protected void onStart(){
+    protected void onStart() {
         super.onStart();
         socketActivity.connect();
     }
 
     @Override
-    protected void onStop(){
+    protected void onStop() {
         super.onStop();
         socketActivity.disconnect();
     }
 
     @Override
-    public boolean onOptionsItemSelected (MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
@@ -122,25 +121,25 @@ public class MyProfileActivity extends Activity implements View.OnClickListener,
 
     @Override
     public void onReceive(String command, String data) {
-        if(command.equals(SocketCommand.CHANGE_NAME)){
+        if (command.equals(SocketCommand.CHANGE_NAME)) {
             SocketParse.parseChangeName(data, this);
-        }else if(command.equals(SocketCommand.CHANGE_PASSWORD)){
+        } else if (command.equals(SocketCommand.CHANGE_PASSWORD)) {
             SocketParse.parseChangePassword(data, this);
-        }else if(command.equals(SocketCommand.CHANGE_EMAIL)){
+        } else if (command.equals(SocketCommand.CHANGE_EMAIL)) {
             SocketParse.parseChangeEmail(data, this);
-        }else if(command.equals(SocketCommand.GET_AVATAR)){
+        } else if (command.equals(SocketCommand.GET_AVATAR)) {
             SocketParse.parseGetAvatar(data, this);
-        }else if(command.equals(SocketCommand.SEND_AVATAR)){
+        } else if (command.equals(SocketCommand.SEND_AVATAR)) {
             SocketParse.parseSendAvatar(data, this);
         }
     }
 
     @Override
     public void changeName(String name) {
-        if(connected && mService.isConnected()){
-            if(name.equals(mService.user.getMyProfile().getName())) {
+        if (connected && mService.isConnected()) {
+            if (name.equals(mService.user.getMyProfile().getName())) {
                 Toast.makeText(this, "Name is same as current one", Toast.LENGTH_SHORT).show();
-            }else{
+            } else {
                 mService.send.changeName(name, this);
             }
         }
@@ -148,10 +147,10 @@ public class MyProfileActivity extends Activity implements View.OnClickListener,
 
     @Override
     public void changeEmail(String password, String email) {
-        if(connected && mService.isConnected()){
-            if(email.equals(mService.user.getMyProfile().getEmail())){
+        if (connected && mService.isConnected()) {
+            if (email.equals(mService.user.getMyProfile().getEmail())) {
                 Toast.makeText(this, "Email is same as current one", Toast.LENGTH_SHORT).show();
-            }else {
+            } else {
                 mService.send.changeEmail(password, email, this);
             }
         }
@@ -159,7 +158,7 @@ public class MyProfileActivity extends Activity implements View.OnClickListener,
 
     @Override
     public void changePassword(String oldPassword, String newPassword) {
-        if(connected && mService.isConnected()){
+        if (connected && mService.isConnected()) {
             mService.send.changePassword(oldPassword, newPassword);
         }
     }
@@ -205,11 +204,11 @@ public class MyProfileActivity extends Activity implements View.OnClickListener,
 
     @Override
     public void newAvatar(int id, final byte[] avatar, long time) {
-        if(id == myProfile.getId()) {
+        if (id == myProfile.getId()) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    avatarView.setImageBitmap(User.getBitmapAvatar(avatar));
+                    avatarView.setImageBitmap(BitmapFactory.decodeByteArray(avatar, 0, avatar.length));
                 }
             });
         }
