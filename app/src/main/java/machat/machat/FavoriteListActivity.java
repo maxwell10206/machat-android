@@ -42,7 +42,9 @@ import machat.machat.socketIO.SocketParse;
  */
 public class FavoriteListActivity extends ListActivity implements OnCallbackAvatar, OnLoginListener, SocketActivity.SocketListener, SwipeRefreshLayout.OnRefreshListener, AdapterView.OnItemLongClickListener, FavoriteItemDialogFragment.OnCompleteListener {
 
-    SocketActivity socketActivity = new SocketActivity(this);
+    public static String MY_ID = "myId";
+
+    private SocketActivity socketActivity = new SocketActivity(this);
 
     private FavoriteListAdapter arrayAdapter;
 
@@ -54,13 +56,17 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
 
     private SocketService mService;
 
-    private MyProfile myProfile;
-
     private Menu menu;
 
     private SwipeRefreshLayout refreshLayout;
 
     public Realm realm;
+
+    private int myId;
+
+    public int getMyId(){
+        return myId;
+    }
 
     private RealmChangeListener realmListener;
 
@@ -69,7 +75,7 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
         Intent intent = new Intent(this, HouseActivity.class);
         FavoriteItem favoriteItem = (FavoriteItem) getListView().getItemAtPosition(position);
         intent.putExtra(HouseActivity.EXTRA_ID, favoriteItem.getUserId());
-        intent.putExtra(HouseActivity.MY_ID, myProfile.getId());
+        intent.putExtra(HouseActivity.MY_ID, myId);
         intent.putExtra(HouseActivity.HOUSE_NAME, favoriteItem.getName());
         intent.putExtra(HouseActivity.FAVORITE, mService.favorites.getFavorite(favoriteItem.getUserId()));
         intent.putExtra(HouseActivity.MUTE, mService.favorites.getMute(favoriteItem.getUserId()));
@@ -79,7 +85,7 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         FavoriteItem favoriteItem = (FavoriteItem) getListView().getItemAtPosition(position);
-        if(myProfile.getId() == favoriteItem.getUserId()){
+        if(myId == favoriteItem.getUserId()){
             if(mService.isConnected()) {
                 muteHouse(favoriteItem.getUserId(), !(favoriteItem.isMute()));
             }
@@ -97,6 +103,7 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        myId = getIntent().getExtras().getInt(MY_ID);
         setContentView(R.layout.activity_favorite_list);
         socketActivity.setOnSocketListener(this);
         getListView().setOnItemLongClickListener(this);
@@ -112,8 +119,8 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
     }
 
     @Override
-    protected void onResume(){
-        super.onResume();
+    protected void onStart(){
+        super.onStart();
         ((MachatApplication) getApplication()).activityResumed();
 
         realmListener = new RealmChangeListener() {
@@ -137,8 +144,8 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
     }
 
     @Override
-    protected void onPause(){
-        super.onPause();
+    protected void onStop(){
+        super.onStop();
         ((MachatApplication) getApplication()).activityPaused();
         realm.removeChangeListener(realmListener);
         socketActivity.disconnect();
@@ -148,11 +155,8 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
     public void onConnect(SocketService mService) {
         this.mService = mService;
         connected = true;
-        myProfile = mService.user.getMyProfile();
-        arrayAdapter.setMyId(myProfile.getId());
-        if(mService.user.isLogin()) {
-            onLoginSuccess(myProfile);
-        }
+        arrayAdapter.setMyId(myId);
+        onLoginSuccess(mService.user.getMyProfile());
     }
 
     @Override
@@ -171,9 +175,7 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
     }
 
     public void getHouses(){
-        if(connected){
-            mService.send.getFavoriteList();
-        }
+        mService.send.getFavoriteList();
     }
 
     @Override
@@ -198,9 +200,7 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
 
     @Override
     public void onReceive(String command, String data) {
-        if (command.equals(Socket.EVENT_CONNECT)) {
-            getHouses();
-        }else if(command.equals(SocketCommand.GET_AVATAR)){
+        if(command.equals(SocketCommand.GET_AVATAR)){
             SocketParse.parseGetAvatar(data, this);
         }else if(command.equals(SocketCommand.LOGIN)){
             SocketParse.parseLogin(data, this);
@@ -230,7 +230,6 @@ public class FavoriteListActivity extends ListActivity implements OnCallbackAvat
     @Override
     public void onRefresh() {
         getHouses();
-        refreshLayout.setRefreshing(false);
     }
 
     @Override

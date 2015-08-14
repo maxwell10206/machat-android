@@ -47,6 +47,8 @@ public class HouseReceiver extends BroadcastReceiver implements OnNewMessage, On
             SocketParse.parseMessageList(SocketCommand.GET_OLD_MESSAGES, data, this);
         } else if(command.equals(SocketCommand.GET_UNDELIVERED_MESSAGES)){
             SocketParse.parseUndeliveredMessages(data, this);
+        } else if(command.equals(SocketCommand.LOGOUT)){
+            clearAllMessages();
         }
     }
 
@@ -62,6 +64,15 @@ public class HouseReceiver extends BroadcastReceiver implements OnNewMessage, On
     @Override
     public void sendMessageFailed(String err) {
 
+    }
+
+    public void clearAllMessages(){
+        RealmResults<Message> results = realm.where(Message.class).findAll();
+        realm.beginTransaction();
+        for(int i = 0; i < results.size(); i++){
+            results.get(i).removeFromRealm();
+        }
+        realm.commitTransaction();
     }
 
     @Override

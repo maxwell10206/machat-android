@@ -106,6 +106,7 @@ public class LoginActivity extends Activity implements OnLoginListener, SocketAc
     @Override
     public void onLoginSuccess(MyProfile myProfile) {
         Intent intent = new Intent(this, FavoriteListActivity.class);
+        intent.putExtra(FavoriteListActivity.MY_ID, myProfile.getId());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }

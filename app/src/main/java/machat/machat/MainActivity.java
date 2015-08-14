@@ -44,7 +44,7 @@ public class MainActivity extends Activity implements SocketActivity.SocketListe
         String sessionId = sharedPref.getString(SavedPrefs.sessionId, "");
 
         if(mService.user.isLogin() || (!sessionId.isEmpty() && !mService.isConnected())){
-            startFavoriteListActivity();
+            startFavoriteListActivity(mService.user.getMyProfile().getId());
         }else if(sessionId.isEmpty()){
             startLoginOrRegisterActivity();
         }
@@ -64,7 +64,7 @@ public class MainActivity extends Activity implements SocketActivity.SocketListe
 
     @Override
     public void onLoginSuccess(MyProfile myProfile) {
-        startFavoriteListActivity();
+        startFavoriteListActivity(myProfile.getId());
     }
 
     @Override
@@ -78,8 +78,8 @@ public class MainActivity extends Activity implements SocketActivity.SocketListe
         finished = true;
     }
 
-    public void startFavoriteListActivity(){
-        startActivity(new Intent(this, FavoriteListActivity.class));
+    public void startFavoriteListActivity(int myId){
+        startActivity(new Intent(this, FavoriteListActivity.class).putExtra(FavoriteListActivity.MY_ID, myId));
         finish();
         finished = true;
     }

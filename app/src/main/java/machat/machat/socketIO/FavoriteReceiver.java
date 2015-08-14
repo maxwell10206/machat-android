@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,6 +70,8 @@ public class FavoriteReceiver extends BroadcastReceiver implements OnNewFavorite
             SocketParse.parseUserReadMessage(data, this);
         }else if(command.equals(SocketCommand.READ_HOUSE)){
             SocketParse.parseReadHouse(data, this);
+        }else if(command.equals(SocketCommand.LOGOUT)){
+            clearAllFavorites();
         }
     }
 
@@ -126,6 +129,17 @@ public class FavoriteReceiver extends BroadcastReceiver implements OnNewFavorite
 
     @Override
     public void sendMessageFailed(String err) {
+
+    }
+
+    public void clearAllFavorites(){
+        RealmResults<FavoriteItem> results = realm.where(FavoriteItem.class).findAll();
+        realm.beginTransaction();
+        for(int i = 0; i < results.size(); i++){
+            results.get(i).removeFromRealm();
+        }
+        realm.commitTransaction();
+
 
     }
 

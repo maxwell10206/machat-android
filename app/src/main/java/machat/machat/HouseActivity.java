@@ -85,8 +85,6 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
 
     private boolean olderMessages = true;
 
-    private boolean loadOfflineMessages = true;
-
     private int oldestMessageId;
 
     private int newestMessageId;
@@ -274,6 +272,9 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
 
     @Override
     public void onLoginSuccess(MyProfile myProfile) {
+        waitingForOldMessages = false;
+        waitingForNewMessages = false;
+        waitingForFavorite = false;
         mService.send.readHouse(houseId);
         mService.send.joinHouse(houseId);
         getNewMessages();
