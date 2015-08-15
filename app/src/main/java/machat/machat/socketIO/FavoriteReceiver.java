@@ -134,12 +134,8 @@ public class FavoriteReceiver extends BroadcastReceiver implements OnNewFavorite
     public void clearAllFavorites() {
         RealmResults<FavoriteItem> results = realm.where(FavoriteItem.class).findAll();
         realm.beginTransaction();
-        for (int i = 0; i < results.size(); i++) {
-            results.get(i).removeFromRealm();
-        }
+        results.clear();
         realm.commitTransaction();
-
-
     }
 
     @Override
@@ -152,9 +148,7 @@ public class FavoriteReceiver extends BroadcastReceiver implements OnNewFavorite
             }
         }
         RealmResults<FavoriteItem> results = realm.where(FavoriteItem.class).findAll();
-        for (int i = 0; i < results.size(); i++) {
-            results.get(i).removeFromRealm();
-        }
+        results.clear();
         List<FavoriteItem> realmFavoriteItems = realm.copyToRealmOrUpdate(favoriteItems);
         realm.commitTransaction();
 

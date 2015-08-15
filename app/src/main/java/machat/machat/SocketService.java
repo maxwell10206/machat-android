@@ -75,11 +75,11 @@ public class SocketService extends Service {
             sc.init(null, trustAllCerts, new SecureRandom());
             IO.setDefaultSSLContext(sc);
             HttpsURLConnection.setDefaultHostnameVerifier(new RelaxedHostNameVerifier());
-            opts = new IO.Options();
-            opts.sslContext = sc;
-            opts.secure = true;
             /*/
-            mSocket = IO.socket(address);
+            opts = new IO.Options();
+            //opts.sslContext = sc;
+            //opts.secure = true;
+            mSocket = IO.socket(address, opts);
             send = new SocketCommunication(this, mSocket);
             machatNotificationManager = new MachatNotificationManager(this);
             user = new ServiceReceiver(this);

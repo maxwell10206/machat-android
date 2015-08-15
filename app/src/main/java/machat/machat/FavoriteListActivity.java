@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -38,6 +39,7 @@ public class FavoriteListActivity extends ListActivity implements OnLoginListene
     private SwipeRefreshLayout refreshLayout;
     private int myId;
     private RealmChangeListener realmListener;
+    private ProgressBar progressBar;
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long i) {
@@ -78,6 +80,7 @@ public class FavoriteListActivity extends ListActivity implements OnLoginListene
         socketActivity.setOnSocketListener(this);
         getListView().setOnItemLongClickListener(this);
         loadingItem = (RelativeLayout) getLayoutInflater().inflate(R.layout.loading_item, null);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_main_swipe_refresh_layout);
         refreshLayout.setOnRefreshListener(this);
@@ -101,6 +104,9 @@ public class FavoriteListActivity extends ListActivity implements OnLoginListene
                 RealmResults<FavoriteItem> result = realm.where(FavoriteItem.class).findAll();
                 arrayAdapter.addAll(result);
                 refreshLayout.setRefreshing(false);
+                if(!result.isEmpty()) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
             }
         };
 
@@ -108,6 +114,9 @@ public class FavoriteListActivity extends ListActivity implements OnLoginListene
         RealmResults<FavoriteItem> result = query.findAll();
         arrayAdapter.clear();
         arrayAdapter.addAll(result);
+        if(!result.isEmpty()){
+            progressBar.setVisibility(View.INVISIBLE);
+        }
 
         realm.addChangeListener(realmListener);
         socketActivity.connect();

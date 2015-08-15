@@ -246,8 +246,8 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         RealmQuery<Message> query = realm.where(Message.class).equalTo("houseId", houseId);
         RealmResults<Message> result = query.findAll();
         result.sort("id", false);
-        for (int i = 20; i < result.size(); i++) {
-            result.remove(i);
+        while(result.size() > 20){
+            result.removeLast();
         }
         realm.commitTransaction();
     }
@@ -476,47 +476,57 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
 
     @Override
     public void addOldMessages(ArrayList<Message> messageList) {
-        for (int i = 0; i < messageList.size(); i++) {
-            Message message = messageList.get(i);
-            int messageId = message.getId();
-            if (messageId > newestMessageId) {
-                newestMessageId = messageId;
+        if(!messageList.isEmpty() && messageList.get(0).getHouseId() == houseId) {
+            for (int i = 0; i < messageList.size(); i++) {
+                Message message = messageList.get(i);
+                int messageId = message.getId();
+                if (messageId > newestMessageId) {
+                    newestMessageId = messageId;
+                }
+                if (messageId < oldestMessageId) {
+                    oldestMessageId = messageId;
+                }
             }
-            if (messageId < oldestMessageId) {
-                oldestMessageId = messageId;
-            }
+            int headerViewCount = getListView().getHeaderViewsCount();
+            final int positionToSave = getListView().getFirstVisiblePosition() + messageList.size() + headerViewCount;
+            View v = getListView().getChildAt(headerViewCount);
+            final int top = (v == null) ? 0 : v.getTop();
+            arrayAdapter.addAll(messageList);
+            getListView().setSelectionFromTop(positionToSave, top);
         }
-        int headerViewCount = getListView().getHeaderViewsCount();
-        final int positionToSave = getListView().getFirstVisiblePosition() + messageList.size() + headerViewCount;
-        View v = getListView().getChildAt(headerViewCount);
-        final int top = (v == null) ? 0 : v.getTop();
-        arrayAdapter.addAll(messageList);
-        getListView().setSelectionFromTop(positionToSave, top);
-        loadingView.setVisibility(View.INVISIBLE);
-        if (messageList.size() == 0) {
+        if (messageList.isEmpty()) {
             olderMessages = false;
             getListView().removeHeaderView(loadingView);
         }
+        loadingView.setVisibility(View.INVISIBLE);
         waitingForOldMessages = false;
     }
 
     @Override
     public void addNewMessages(ArrayList<Message> messageList) {
-        if (messageList.size() >= 20) {
-            arrayAdapter.clear();
-            oldestMessageId = Integer.MAX_VALUE;
-        }
-        for (int i = 0; i < messageList.size(); i++) {
-            Message message = messageList.get(i);
-            int messageId = message.getId();
-            if (messageId > newestMessageId) {
-                newestMessageId = messageId;
+        if(!messageList.isEmpty() && messageList.get(0).getHouseId() == houseId) {
+            if (messageList.size() >= 20) {
+                arrayAdapter.clear();
+                oldestMessageId = Integer.MAX_VALUE;
+                newestMessageId = 0;
             }
-            if (messageId < oldestMessageId) {
-                oldestMessageId = messageId;
+            for(int i = 0; i < messageList.size(); i++){
+                Message message = messageList.get(i);
+                if(message.getId() > newestMessageId) {
+                    arrayAdapter.add(message);
+                }
+            }
+            for (int i = 0; i < messageList.size(); i++) {
+                Message message = messageList.get(i);
+                int messageId = message.getId();
+                if (messageId > newestMessageId) {
+                    newestMessageId = messageId;
+                }
+                if (messageId < oldestMessageId) {
+                    oldestMessageId = messageId;
+                }
             }
         }
-        arrayAdapter.addAll(messageList);
         mService.send.readHouse(houseId);
         progressBar.setVisibility(View.INVISIBLE);
         waitingForNewMessages = false;

@@ -61,9 +61,7 @@ public class BlockReceiver extends BroadcastReceiver implements OnCallbackBlock,
     public void newBlockList(ArrayList<BlockUser> newBlockList) {
         realm.beginTransaction();
         RealmResults<BlockUser> results = realm.where(BlockUser.class).findAll();
-        for (int i = 0; i < results.size(); i++) {
-            results.get(i).removeFromRealm();
-        }
+        results.clear();
         blockUserList.clear();
         blockUserList.addAll(realm.copyToRealmOrUpdate(newBlockList));
         realm.commitTransaction();
