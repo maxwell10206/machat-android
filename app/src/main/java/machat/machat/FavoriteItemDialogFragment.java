@@ -41,7 +41,7 @@ public class FavoriteItemDialogFragment extends DialogFragment {
                         if (which == 0) {
                             listener.muteHouse(favoriteItem.getUserId(), !(favoriteItem.isMute()));
                         } else if (which == 1) {
-                            listener.openProfile(favoriteItem.getUserId());
+                            listener.openProfile(favoriteItem.getUserId(), favoriteItem.getName(), favoriteItem.getUsername());
                         } else {
                             listener.unFavoriteHouse(favoriteItem.getUserId());
                         }
@@ -61,7 +61,7 @@ public class FavoriteItemDialogFragment extends DialogFragment {
 
         void unFavoriteHouse(int id);
 
-        void openProfile(int id);
+        void openProfile(int id, String name, String username);
     }
 
 }

@@ -11,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import io.realm.Realm;
+import io.realm.RealmResults;
 import machat.machat.socketIO.AvatarManager;
 import machat.machat.socketIO.OnCallbackAvatar;
 import machat.machat.socketIO.OnCallbackBlock;
@@ -20,24 +22,25 @@ import machat.machat.socketIO.SocketActivity;
 import machat.machat.socketIO.SocketCommand;
 import machat.machat.socketIO.SocketParse;
 
-/**
- * Created by Admin on 6/18/2015.
- */
 public class ProfileActivity extends Activity implements SocketActivity.SocketListener, OnCallbackBlock, OnLoginListener, CompoundButton.OnCheckedChangeListener, OnNewProfile, OnCallbackAvatar {
 
-    public static final String BUNDLE_ID = "id";
+    public static final String USER_ID = "userId";
+    public static final String USERNAME = "username";
+    public static final String NAME = "name";
     private final String TITLE_PROFILE = "Profile";
     private SocketActivity socketActivity = new SocketActivity(this);
     private SocketService mService;
     private Profile profile;
     private boolean connected = false;
     private boolean waitingForBlock = false;
-    private TextView name;
-    private TextView username;
-    private ProgressBar progressBar;
+    private TextView nameView;
+    private TextView usernameView;
     private CheckBox blockCheckBox;
     private ImageView avatarView;
     private int id;
+    private String name;
+    private String username;
+    private Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,13 +49,27 @@ public class ProfileActivity extends Activity implements SocketActivity.SocketLi
         socketActivity.setOnSocketListener(this);
         getActionBar().setTitle(TITLE_PROFILE);
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        id = getIntent().getExtras().getInt(BUNDLE_ID);
+        id = getIntent().getExtras().getInt(USER_ID);
+        name = getIntent().getExtras().getString(NAME);
+        username = getIntent().getExtras().getString(USERNAME);
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        name = (TextView) findViewById(R.id.name);
-        username = (TextView) findViewById(R.id.username);
+        nameView = (TextView) findViewById(R.id.name);
+        usernameView = (TextView) findViewById(R.id.username);
+
+        nameView.setText(name);
+        usernameView.setText(username);
+
         blockCheckBox = (CheckBox) findViewById(R.id.blockCheckBox);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
         avatarView = (ImageView) findViewById(R.id.avatar);
+        realm = Realm.getDefaultInstance();
+
+        RealmResults<BlockUser> blockUsers = realm.where(BlockUser.class).findAll();
+        for(int i = 0; i < blockUsers.size(); i++){
+            BlockUser blockUser = blockUsers.get(i);
+            if(blockUser.getId() == id){
+                blockCheckBox.setChecked(true);
+            }
+        }
     }
 
     @Override
@@ -108,9 +125,8 @@ public class ProfileActivity extends Activity implements SocketActivity.SocketLi
         if (profile.getId() == id) {
             this.profile = profile;
             blockCheckBox.setOnCheckedChangeListener(this);
-            name.setText(profile.getName());
-            username.setText(profile.getUsername());
-            progressBar.setVisibility(View.GONE);
+            nameView.setText(profile.getName());
+            usernameView.setText(profile.getUsername());
             blockCheckBox.setChecked(profile.isBlocked());
         }
     }

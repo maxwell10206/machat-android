@@ -14,6 +14,8 @@ public class MessageDialogFragment extends DialogFragment {
 
     public static final String NAME = "name";
 
+    public static final String USERNAME = "username";
+
     public static final String ID = "id";
 
     public static final String MESSAGE_ID = "messageId";
@@ -42,11 +44,12 @@ public class MessageDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        String name = getArguments().getString(NAME);
+        final String name = getArguments().getString(NAME);
         int myId = getArguments().getInt(MY_ID);
         int houseId = getArguments().getInt(HOUSE_ID);
         final int id = getArguments().getInt(ID);
         final int messageId = getArguments().getInt(MESSAGE_ID);
+        final String username = getArguments().getString(USERNAME);
         final String message = getArguments().getString(MESSAGE);
         builder.setTitle(name);
         if (myId == id) {
@@ -64,7 +67,7 @@ public class MessageDialogFragment extends DialogFragment {
                     if (which == 0) {
                         action.copyText(message);
                     } else {
-                        action.goToProfile(id);
+                        action.goToProfile(id, name, username);
                     }
                 }
             });
@@ -74,9 +77,9 @@ public class MessageDialogFragment extends DialogFragment {
 
     public interface Action {
 
-        void goToProfile(int userId);
+        void goToProfile(int userId, String name, String username);
 
-        void goToHouse(int houseId, String name);
+        void goToHouse(int houseId, String name, String username);
 
         void copyText(String text);
 

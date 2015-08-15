@@ -30,7 +30,9 @@ import machat.machat.socketIO.SocketParse;
  */
 public class SearchActivity extends ListActivity implements SocketActivity.SocketListener, TextWatcher, OnSearchResults, View.OnClickListener {
 
-    private static final int SEARCH_DELAY = 500;
+    private static final int MAX_DELAY = 500;
+    private static final int MIN_DELAY = 250;
+    private long lastSearch = 0;
     private SocketActivity socketActivity = new SocketActivity(this);
     private boolean connected = false;
     private SocketService mService;
@@ -117,24 +119,28 @@ public class SearchActivity extends ListActivity implements SocketActivity.Socke
 
     @Override
     public void onTextChanged(final CharSequence s, int start, int before, int count) {
-        searchTimer.cancel();
-        searchTimer.purge();
-        searchTimer = new Timer();
-        final String searchText = s.toString();
+        if((System.currentTimeMillis() - lastSearch) > MAX_DELAY) {
+            lastSearch = System.currentTimeMillis();
+            searchTimer.cancel();
+            searchTimer.purge();
+            searchTimer = new Timer();
+            searchTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    String searchText = s.toString();
+                    if (connected && mService.isConnected() && !searchText.isEmpty()) {
+                        mService.send.search(searchText);
+                    }
+                }
+            }, MIN_DELAY);
+        }
+        String searchText = s.toString();
         if (searchText.isEmpty()) {
             clearButton.setVisibility(View.INVISIBLE);
             arrayAdapter.clear();
         } else {
             clearButton.setVisibility(View.VISIBLE);
         }
-        searchTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (connected && mService.isConnected() && !searchText.isEmpty()) {
-                    mService.send.search(searchText);
-                }
-            }
-        }, SEARCH_DELAY);
     }
 
     @Override
@@ -156,9 +162,10 @@ public class SearchActivity extends ListActivity implements SocketActivity.Socke
         } else {
             Intent intent = new Intent(this, HouseActivity.class);
             int houseId = user.getId();
-            intent.putExtra(HouseActivity.EXTRA_ID, houseId);
+            intent.putExtra(HouseActivity.HOUSE_ID, houseId);
             intent.putExtra(HouseActivity.MY_ID, myProfile.getId());
             intent.putExtra(HouseActivity.HOUSE_NAME, user.getName());
+            intent.putExtra(HouseActivity.HOUSE_USERNAME, user.getUsername());
             intent.putExtra(HouseActivity.FAVORITE, mService.favorites.getFavorite(houseId));
             intent.putExtra(HouseActivity.MUTE, mService.favorites.getMute(houseId));
             startActivity(intent);

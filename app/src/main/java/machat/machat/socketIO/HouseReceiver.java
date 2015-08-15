@@ -116,6 +116,12 @@ public class HouseReceiver extends BroadcastReceiver implements OnNewMessage, On
     @Override
     public void addNewMessages(ArrayList<Message> messageList) {
         realm.beginTransaction();
+        if(messageList.size() >= 20){
+            RealmResults<Message> results = realm.where(Message.class).equalTo("houseId", messageList.get(0).getHouseId()).findAll();
+            for(int i = 0; i < results.size(); i++){
+                results.get(i).removeFromRealm();
+            }
+        }
         realm.copyToRealmOrUpdate(messageList);
         realm.commitTransaction();
     }

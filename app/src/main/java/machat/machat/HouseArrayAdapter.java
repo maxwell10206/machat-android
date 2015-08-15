@@ -97,7 +97,7 @@ public class HouseArrayAdapter extends ArrayAdapter {
                 @Override
                 public void onClick(View v) {
                     if (message.getHouseId() != message.getUserId()) {
-                        houseActivity.goToHouse(message.getUserId(), message.getName());
+                        houseActivity.goToHouse(message.getUserId(), message.getName(), message.getUsername());
                     }
                 }
             });

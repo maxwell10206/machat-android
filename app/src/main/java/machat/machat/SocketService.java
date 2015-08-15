@@ -26,9 +26,6 @@ import machat.machat.socketIO.HouseReceiver;
 import machat.machat.socketIO.ServiceReceiver;
 import machat.machat.socketIO.TimeConvert;
 
-/**
- * Created by Admin on 5/16/2015.
- */
 public class SocketService extends Service {
 
     public final static String COMMAND = "Command";

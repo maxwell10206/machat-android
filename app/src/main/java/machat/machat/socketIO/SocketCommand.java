@@ -1,8 +1,5 @@
 package machat.machat.socketIO;
 
-/**
- * Created by Admin on 5/28/2015.
- */
 public final class SocketCommand {
 
     public static final String LOGIN = "login";
@@ -64,9 +61,5 @@ public final class SocketCommand {
     public static final String GET_UNDELIVERED_MESSAGES = "getUndeliveredMessages";
 
     public static final String GET_BLOCK_LIST = "getBlockList";
-
-    public static final String CLEAR_MESSAGE = "clearMessage";
-
-    public static final String CLEAR_ALL_MESSAGES = "clearAllMessages";
 
 }

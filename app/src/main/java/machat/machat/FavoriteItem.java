@@ -29,6 +29,8 @@ public class FavoriteItem extends RealmObject implements Serializable {
 
     private String name;
 
+    private String username;
+
     private long time;
 
     @PrimaryKey
@@ -73,6 +75,14 @@ public class FavoriteItem extends RealmObject implements Serializable {
 
     public long getTime() {
         return time;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public void setTime(long time) {

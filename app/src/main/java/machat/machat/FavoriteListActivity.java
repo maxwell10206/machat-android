@@ -24,9 +24,6 @@ import machat.machat.socketIO.SocketActivity;
 import machat.machat.socketIO.SocketCommand;
 import machat.machat.socketIO.SocketParse;
 
-/**
- * Created by Admin on 6/7/2015.
- */
 public class FavoriteListActivity extends ListActivity implements OnLoginListener, SocketActivity.SocketListener, SwipeRefreshLayout.OnRefreshListener, AdapterView.OnItemLongClickListener, FavoriteItemDialogFragment.OnCompleteListener {
 
     private static final String DIALOG_BOX = "dialogBox";
@@ -42,17 +39,14 @@ public class FavoriteListActivity extends ListActivity implements OnLoginListene
     private int myId;
     private RealmChangeListener realmListener;
 
-    public int getMyId() {
-        return myId;
-    }
-
     @Override
     protected void onListItemClick(ListView l, View v, int position, long i) {
         Intent intent = new Intent(this, HouseActivity.class);
         FavoriteItem favoriteItem = (FavoriteItem) getListView().getItemAtPosition(position);
-        intent.putExtra(HouseActivity.EXTRA_ID, favoriteItem.getUserId());
+        intent.putExtra(HouseActivity.HOUSE_ID, favoriteItem.getUserId());
         intent.putExtra(HouseActivity.MY_ID, myId);
         intent.putExtra(HouseActivity.HOUSE_NAME, favoriteItem.getName());
+        intent.putExtra(HouseActivity.HOUSE_USERNAME, favoriteItem.getUsername());
         intent.putExtra(HouseActivity.FAVORITE, mService.favorites.getFavorite(favoriteItem.getUserId()));
         intent.putExtra(HouseActivity.MUTE, mService.favorites.getMute(favoriteItem.getUserId()));
         startActivity(intent);
@@ -184,6 +178,8 @@ public class FavoriteListActivity extends ListActivity implements OnLoginListene
     public void muteHouse(int id, boolean mute) {
         if (connected && mService.isConnected()) {
             mService.send.muteHouse(id, mute);
+        }else{
+            Toast.makeText(this, "Not connected to server", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -192,12 +188,18 @@ public class FavoriteListActivity extends ListActivity implements OnLoginListene
         if (connected && mService.isConnected()) {
             mService.send.favoriteHouse(id, false);
             mService.send.leaveHouse(id);
+        }else{
+            Toast.makeText(this, "Not connected to server", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
-    public void openProfile(int id) {
-        startActivity(new Intent(this, ProfileActivity.class).putExtra(ProfileActivity.BUNDLE_ID, id));
+    public void openProfile(int id, String name, String username) {
+        Intent intent = new Intent(this, ProfileActivity.class);
+        intent.putExtra(ProfileActivity.USER_ID, id);
+        intent.putExtra(ProfileActivity.NAME, name);
+        intent.putExtra(ProfileActivity.USERNAME, username);
+        startActivity(intent);
     }
 
     @Override

@@ -39,9 +39,11 @@ import machat.machat.socketIO.SocketParse;
  */
 public class HouseActivity extends ListActivity implements SocketActivity.SocketListener, OnCallbackMessageStatus, machat.machat.socketIO.OnBlockedByUser, MessageDialogFragment.Action, OnLoginListener, OnJoinHouse, OnUserReadMessage, OnDeliveredMessage, machat.machat.socketIO.OnCallbackSendMessage, OnNewMessageList, OnCallbackFavorite, ListView.OnScrollListener, OnNewMessage, View.OnClickListener {
 
-    public final static String EXTRA_ID = "houseId";
+    public final static String HOUSE_ID = "houseId";
 
     public final static String HOUSE_NAME = "houseName";
+
+    public final static String HOUSE_USERNAME = "houseUsername";
 
     public final static String MY_ID = "myId";
 
@@ -54,6 +56,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
     private boolean mute;
     private boolean favorite;
     private String houseName;
+    private String houseUsername;
     private int houseId;
     private int myId;
     private int localId = 0;
@@ -100,9 +103,10 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         newestMessageId = 0;
         setContentView(R.layout.activity_house);
         getListView().setOnScrollListener(this);
-        houseId = getIntent().getExtras().getInt(EXTRA_ID);
+        houseId = getIntent().getExtras().getInt(HOUSE_ID);
         myId = getIntent().getExtras().getInt(MY_ID);
         houseName = getIntent().getExtras().getString(HOUSE_NAME);
+        houseUsername = getIntent().getExtras().getString(HOUSE_USERNAME);
         favorite = getIntent().getExtras().getBoolean(FAVORITE);
         mute = getIntent().getExtras().getBoolean(MUTE);
         getActionBar().setTitle(houseName);
@@ -134,7 +138,9 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
                 return true;
             case R.id.action_profile:
                 Intent intent = new Intent(this, ProfileActivity.class);
-                intent.putExtra(ProfileActivity.BUNDLE_ID, houseId);
+                intent.putExtra(ProfileActivity.USER_ID, houseId);
+                intent.putExtra(ProfileActivity.NAME, houseName);
+                intent.putExtra(ProfileActivity.USERNAME, houseUsername);
                 startActivity(intent);
                 return true;
             case R.id.action_favorite:
@@ -167,6 +173,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         bundle.putInt(MessageDialogFragment.HOUSE_ID, houseId);
         bundle.putInt(MessageDialogFragment.MESSAGE_ID, message.getId());
         bundle.putString(MessageDialogFragment.MESSAGE, message.getMessage());
+        bundle.putString(MessageDialogFragment.USERNAME, message.getUsername());
         messageDialogFragment.setArguments(bundle);
         messageDialogFragment.show(getFragmentManager(), "messageOptions");
     }
@@ -469,36 +476,35 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
 
     @Override
     public void addOldMessages(ArrayList<Message> messageList) {
+        for (int i = 0; i < messageList.size(); i++) {
+            Message message = messageList.get(i);
+            int messageId = message.getId();
+            if (messageId > newestMessageId) {
+                newestMessageId = messageId;
+            }
+            if (messageId < oldestMessageId) {
+                oldestMessageId = messageId;
+            }
+        }
         int headerViewCount = getListView().getHeaderViewsCount();
         final int positionToSave = getListView().getFirstVisiblePosition() + messageList.size() + headerViewCount;
         View v = getListView().getChildAt(headerViewCount);
         final int top = (v == null) ? 0 : v.getTop();
         arrayAdapter.addAll(messageList);
         getListView().setSelectionFromTop(positionToSave, top);
-        waitingForOldMessages = false;
         loadingView.setVisibility(View.INVISIBLE);
-        for (int i = 0; i < messageList.size(); i++) {
-            Message message = messageList.get(i);
-            int messageId = message.getId();
-            if (messageId > newestMessageId) {
-                newestMessageId = message.getId();
-            }
-            if (messageId < oldestMessageId) {
-                oldestMessageId = messageId;
-            }
-        }
         if (messageList.size() == 0) {
             olderMessages = false;
             getListView().removeHeaderView(loadingView);
         }
+        waitingForOldMessages = false;
     }
 
     @Override
     public void addNewMessages(ArrayList<Message> messageList) {
-        waitingForNewMessages = false;
         if (messageList.size() >= 20) {
             arrayAdapter.clear();
-            oldestMessageId = 0;
+            oldestMessageId = Integer.MAX_VALUE;
         }
         for (int i = 0; i < messageList.size(); i++) {
             Message message = messageList.get(i);
@@ -513,6 +519,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         arrayAdapter.addAll(messageList);
         mService.send.readHouse(houseId);
         progressBar.setVisibility(View.INVISIBLE);
+        waitingForNewMessages = false;
     }
 
 
@@ -532,18 +539,21 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
     }
 
     @Override
-    public void goToProfile(int userId) {
+    public void goToProfile(int userId, String name, String username) {
         Intent intent = new Intent(this, ProfileActivity.class);
-        intent.putExtra(ProfileActivity.BUNDLE_ID, userId);
+        intent.putExtra(ProfileActivity.USER_ID, userId);
+        intent.putExtra(ProfileActivity.NAME, name);
+        intent.putExtra(ProfileActivity.USERNAME, username);
         startActivity(intent);
     }
 
     @Override
-    public void goToHouse(int houseId, String name) {
+    public void goToHouse(int houseId, String name, String username) {
         Intent intent = new Intent(this, HouseActivity.class);
         intent.putExtra(HouseActivity.MY_ID, myId);
-        intent.putExtra(HouseActivity.EXTRA_ID, houseId);
+        intent.putExtra(HouseActivity.HOUSE_ID, houseId);
         intent.putExtra(HouseActivity.HOUSE_NAME, name);
+        intent.putExtra(HouseActivity.HOUSE_USERNAME, username);
         intent.putExtra(HouseActivity.FAVORITE, mService.favorites.getFavorite(houseId));
         intent.putExtra(HouseActivity.MUTE, mService.favorites.getMute(houseId));
         startActivity(intent);

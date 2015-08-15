@@ -98,6 +98,7 @@ public class SocketCommunication implements OnCallbackAvatar {
         mSocket.off(SocketCommand.BLOCKED_BY_USER);
         mSocket.off(Socket.EVENT_CONNECT_TIMEOUT);
         mSocket.off(Socket.EVENT_ERROR);
+        mSocket.off(SocketCommand.GET_AVATAR);
     }
 
     public void deliveredMessage(int id) {

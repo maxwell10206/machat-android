@@ -11,9 +11,6 @@ import machat.machat.socketIO.SocketActivity;
 import machat.machat.socketIO.SocketCommand;
 import machat.machat.socketIO.SocketParse;
 
-/**
- * Created by Admin on 5/20/2015.
- */
 public class MainActivity extends Activity implements SocketActivity.SocketListener, OnLoginListener {
 
     boolean finished = false;

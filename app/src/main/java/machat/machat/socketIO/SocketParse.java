@@ -16,9 +16,6 @@ import machat.machat.MyProfile;
 import machat.machat.Profile;
 import machat.machat.SearchItem;
 
-/**
- * Created by Admin on 5/28/2015.
- */
 public class SocketParse {
 
     public static void parseSearchResults(String string, OnSearchResults listener) {
@@ -158,6 +155,7 @@ public class SocketParse {
         favoriteItem.setTime(messageTime);
         favoriteItem.setStatus(status);
         favoriteItem.setName(name);
+        favoriteItem.setUsername(username);
         favoriteItem.setMessageId(messageId);
         favoriteItem.setBlock(block);
         favoriteItem.setMute(mute);
@@ -346,12 +344,12 @@ public class SocketParse {
         String lastMessage = jsonObject.getString(SocketData.message);
         int status = jsonObject.getInt(SocketData.status);
         String houseName = jsonObject.getString(SocketData.houseName);
-        //Message message = new Message(houseId, userId, id, username, name, lastMessage, messageTime, status, houseName);
         Message message = new Message();
         message.setHouseName(houseName);
         message.setStatus(status);
         message.setId(id);
         message.setHouseId(houseId);
+        message.setUsername(username);
         message.setMessage(lastMessage);
         message.setTime(messageTime);
         message.setName(name);
