@@ -3,19 +3,19 @@
     package="machat.machat">
 
     <application
-        android:name=".MachatApplication"
+        android:name=".main.MachatApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_home_white_48pt_3x_background"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
-        <receiver android:name=".AutoStart">
+        <receiver android:name=".util.receivers.StartServiceReciever">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
         <activity
-            android:name=".MainActivity"
+            android:name=".main.activities.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -26,47 +26,47 @@
         </activity>
 
         <activity
-            android:name=".LoginOrRegisterActivity"
+            android:name=".main.activities.LoginOrRegisterActivity"
             android:theme="@style/SplashTheme" />
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".main.activities.LoginActivity"
             android:theme="@style/LoginTheme"
             android:windowSoftInputMode="stateVisible" />
 
         <activity
-            android:name=".RegisterActivity"
+            android:name=".main.activities.RegisterActivity"
             android:theme="@style/LoginTheme"
             android:windowSoftInputMode="stateVisible" />
 
-        <activity android:name=".FavoriteListActivity" />
+        <activity android:name=".main.activities.FavoriteListActivity" />
 
         <activity
-            android:name=".HouseActivity"
-            android:parentActivityName=".FavoriteListActivity"
+            android:name=".main.activities.HouseActivity"
+            android:parentActivityName=".main.activities.FavoriteListActivity"
             android:theme="@style/HouseTheme"
             android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FavoriteListActivity" />
+                android:value=".main.activities.FavoriteListActivity" />
         </activity>
 
         <activity
-            android:name=".SearchActivity"
+            android:name=".main.activities.SearchActivity"
             android:theme="@style/SearchTheme" />
 
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
 
         <activity
-            android:name=".ProfileActivity"
+            android:name=".main.activities.ProfileActivity"
             android:theme="@style/HouseTheme" />
 
-        <activity android:name=".MyProfileActivity" />
+        <activity android:name=".main.activities.MyProfileActivity" />
 
-        <service android:name=".SocketService" />
+        <service android:name=".util.SocketService" />
 
         <activity
-            android:name=".BlockListActivity"
+            android:name=".main.activities.BlockListActivity"
             android:theme="@style/HouseTheme" />
 
     </application>

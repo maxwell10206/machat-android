@@ -30,13 +30,13 @@
             android:key="@string/pref_key_name"
             android:maxLength="24"
             android:title="@string/pref_summary_name" />
-        <machat.machat.EmailPreference
+        <machat.machat.main.preferences.EmailPreference
             android:key="@string/pref_key_email"
             android:title="@string/pref_summary_email" />
-        <machat.machat.PasswordPreference
+        <machat.machat.main.preferences.PasswordPreference
             android:key="@string/pref_key_password"
             android:title="@string/pref_summary_password" />
-        <machat.machat.LogoutDialogPreference
+        <machat.machat.main.preferences.LogoutDialogPreference
             android:key="@string/pref_key_logout"
             android:title="@string/pref_summary_logout" />
     </PreferenceScreen>
