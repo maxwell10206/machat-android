@@ -14,6 +14,7 @@ public class Message extends RealmObject implements Serializable {
     public static final int SENT = 1;
     public static final int DELIVERED = 2;
     public static final int READ = 3;
+    public static final int FAILED_TO_SEND = 4;
 
     private String message;
 
@@ -54,6 +55,8 @@ public class Message extends RealmObject implements Serializable {
                 return R.drawable.ic_done_black_18dp;
             case READ:
                 return R.drawable.ic_done_all_black_18dp;
+            case FAILED_TO_SEND:
+                return R.drawable.ic_report_problem_black_18dp;
             default:
                 return R.drawable.ic_access_time_black_18dp;
         }

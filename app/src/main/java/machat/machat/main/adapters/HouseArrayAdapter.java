@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -75,8 +76,11 @@ public class HouseArrayAdapter extends ArrayAdapter<Message> {
         final Message message = messageList.get(position);
         if (houseActivity.getMyId() == message.getUserId()) {
             rowView = inflater.inflate(R.layout.message_right, parent, false);
-            ImageView statusView = (ImageView) rowView.findViewById(R.id.status);
-            statusView.setImageResource(Message.getStatusImageId(message.getStatus()));
+            ProgressBar statusView = (ProgressBar) rowView.findViewById(R.id.status);
+            int status = message.getStatus();
+            if(status != Message.NOT_SENT) {
+                statusView.setIndeterminateDrawable(houseActivity.getResources().getDrawable(Message.getStatusImageId(status)));
+            }
         } else {
             rowView = inflater.inflate(R.layout.message_left, parent, false);
             TextView nameView = (TextView) rowView.findViewById(R.id.username);
@@ -116,6 +120,13 @@ public class HouseArrayAdapter extends ArrayAdapter<Message> {
             public boolean onLongClick(View v) {
                 houseActivity.createMessageDialog(getItem(position));
                 return true;
+            }
+        });
+
+        messageWrapper.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                houseActivity.createMessageResendDialog(getItem(position));
             }
         });
 

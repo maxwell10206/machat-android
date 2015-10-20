@@ -11,8 +11,7 @@ import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
-import com.github.nkzawa.socketio.client.Socket;
-
+import io.socket.client.Socket;
 import machat.machat.util.SocketService;
 
 public class SocketActivity {

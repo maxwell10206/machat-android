@@ -7,9 +7,6 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.github.nkzawa.socketio.client.IO;
-import com.github.nkzawa.socketio.client.Socket;
-
 import java.net.URISyntaxException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -19,6 +16,8 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import io.socket.client.IO;
+import io.socket.client.Socket;
 import machat.machat.tools.TimeConvert;
 import machat.machat.util.receivers.BlockReceiver;
 import machat.machat.util.receivers.FavoriteReceiver;

@@ -6,8 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.github.nkzawa.socketio.client.Socket;
-
+import io.socket.client.Socket;
 import machat.machat.main.MachatApplication;
 import machat.machat.models.MyProfile;
 import machat.machat.conf.SavedPrefs;

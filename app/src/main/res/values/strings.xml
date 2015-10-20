@@ -39,4 +39,5 @@
     <string-array name="message_dialog_options_short">
         <item>Copy Message</item>
     </string-array>
+    <string name="message_resend">Resend</string>
 </resources>

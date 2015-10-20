@@ -7,12 +7,13 @@
     android:paddingLeft="50dp"
     android:paddingRight="10dp">
 
-    <ImageView
-        android:id="@+id/status"
+    <ProgressBar
+        style="?android:attr/progressBarStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:src="@drawable/ic_access_time_black_18dp" />
+        android:id="@+id/status"
+        android:indeterminate="true"
+        android:layout_margin="5dp" />
 
     <LinearLayout
         android:id="@+id/messageWrapper"

@@ -24,6 +24,7 @@ import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import machat.machat.main.adapters.HouseArrayAdapter;
 import machat.machat.main.dialogs.MessageDialogFragment;
+import machat.machat.main.dialogs.MessageResendDialog;
 import machat.machat.models.FavoriteItem;
 import machat.machat.models.Message;
 import machat.machat.models.MyProfile;
@@ -42,7 +43,7 @@ import machat.machat.parsing.interfaces.OnUserReadMessage;
 import machat.machat.conf.SocketCommand;
 import machat.machat.parsing.SocketParse;
 
-public class HouseActivity extends ListActivity implements SocketActivity.SocketListener, OnCallbackMessageStatus, OnBlockedByUser, MessageDialogFragment.Action, OnLoginListener, OnJoinHouse, OnUserReadMessage, OnDeliveredMessage, OnCallbackSendMessage, OnNewMessageList, OnCallbackFavorite, ListView.OnScrollListener, OnNewMessage, View.OnClickListener {
+public class HouseActivity extends ListActivity implements MessageResendDialog.Action, SocketActivity.SocketListener, OnCallbackMessageStatus, OnBlockedByUser, MessageDialogFragment.Action, OnLoginListener, OnJoinHouse, OnUserReadMessage, OnDeliveredMessage, OnCallbackSendMessage, OnNewMessageList, OnCallbackFavorite, ListView.OnScrollListener, OnNewMessage, View.OnClickListener {
 
     public final static String HOUSE_ID = "houseId";
 
@@ -183,6 +184,15 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         messageDialogFragment.show(getFragmentManager(), "messageOptions");
     }
 
+    public void createMessageResendDialog(Message message){
+        MessageResendDialog messageResendDialog = new MessageResendDialog();
+        Bundle bundle = new Bundle();
+        bundle.putInt(MessageResendDialog.MESSAGE_ID, message.getId());
+        bundle.putInt(MessageResendDialog.LOCAL_ID, message.getLocalId());
+        messageResendDialog.setArguments(bundle);
+        messageResendDialog.show(getFragmentManager(), "messageResend");
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
@@ -286,10 +296,12 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         for (int i = 0; i < arrayAdapter.getCount(); i++) {
             Message message = arrayAdapter.getItem(i);
             int messageId = message.getId();
-            if (message.getStatus() < Message.READ) {
+            if (message.getStatus() == Message.DELIVERED || message.getStatus() == Message.SENT) {
                 if (mService.isConnected()) {
                     mService.send.getMessageStatus(messageId);
                 }
+            }else if(message.getStatus() == Message.NOT_SENT){
+                arrayAdapter.changeMessageStatus(message.getId(), Message.FAILED_TO_SEND);
             }
         }
     }
@@ -394,7 +406,7 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
     public void onClick(View v) {
         if (v.getId() == R.id.sendMessage) {
             String messageString = inputMessage.getText().toString().trim();
-            if (connected && mService.isConnected()) {
+            if (connected) {
                 if (!messageString.isEmpty()) {
                     Message message = new Message();
                     message.setHouseId(houseId);
@@ -611,4 +623,13 @@ public class HouseActivity extends ListActivity implements SocketActivity.Socket
         arrayAdapter.changeMessageStatus(id, status);
     }
 
+    @Override
+    public void resendMessage(int localId, int messageId) {
+        for(int i = 0; i < arrayAdapter.getCount(); i++){
+            Message message = arrayAdapter.getItem(i);
+            if(message.getId() == messageId && message.getLocalId() == localId){
+                mService.send.sendMessage(localId, houseId, message.getMessage());
+            }
+        }
+    }
 }

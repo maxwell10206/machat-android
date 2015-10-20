@@ -1,13 +1,12 @@
 package machat.machat.util;
 
-import com.github.nkzawa.emitter.Emitter;
-import com.github.nkzawa.socketio.client.Ack;
-import com.github.nkzawa.socketio.client.Socket;
-
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import io.socket.client.Ack;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 import machat.machat.parsing.interfaces.OnCallbackAvatar;
 import machat.machat.parsing.interfaces.OnChangeEmail;
 import machat.machat.parsing.interfaces.OnChangeName;
