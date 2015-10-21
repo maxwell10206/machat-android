@@ -3,12 +3,11 @@ package machat.machat.util;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.support.v4.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 
 import java.util.ArrayList;
 
@@ -67,24 +66,26 @@ public class MachatNotificationManager {
     }
 
     private void createMessageNotify(int houseId, int myId, String houseName, String name, String message) {
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(service)
+        Notification mBuilder = new Notification.Builder(service)
                 .setContentText(name.substring(0, Math.min(12, name.length())) + ": " + message)
                 .setContentTitle(houseName)
-                .setSmallIcon(R.drawable.ic_home_white_48pt_3x);
+                .setSmallIcon(R.drawable.ic_home_white_48pt_3x)
+                .build();
 
         createHouseNotification(houseId, myId, houseName, mBuilder);
     }
 
     private void createMultiMessageNotify(int houseId, int myId, String houseName, String name, int missedMessages, String message) {
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(service)
+        Notification mBuilder = new Notification.Builder(service)
                 .setContentText(missedMessages + " messages: ..." + message)
                 .setContentTitle(houseName)
-                .setSmallIcon(R.drawable.ic_home_white_48pt_3x);
+                .setSmallIcon(R.drawable.ic_home_white_48pt_3x)
+                .getNotification();
 
         createHouseNotification(houseId, myId, houseName, mBuilder);
     }
 
-    private void createHouseNotification(int houseId, int myId, String houseName, NotificationCompat.Builder mBuilder) {
+    private void createHouseNotification(int houseId, int myId, String houseName, Notification notification) {
         Intent resultIntent = new Intent(service, HouseActivity.class)
                 .putExtra(HouseActivity.HOUSE_ID, houseId)
                 .putExtra(HouseActivity.MY_ID, myId)
@@ -102,12 +103,8 @@ public class MachatNotificationManager {
         stackBuilder.addNextIntent(resultIntent);
 
 // Gets a PendingIntent containing the entire back stack
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(houseId, PendingIntent.FLAG_ONE_SHOT);
+        notification.contentIntent = stackBuilder.getPendingIntent(houseId, PendingIntent.FLAG_ONE_SHOT);
 
-        mBuilder.setContentIntent(resultPendingIntent);
-
-        Notification notification = mBuilder.build();
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(service);
@@ -122,7 +119,7 @@ public class MachatNotificationManager {
         }
         if (blinkLED) {
             notification.flags |= Notification.FLAG_SHOW_LIGHTS;
-            notification.ledARGB = 0xff00ff00;
+            notification.ledARGB = 0xffFFA500;
             notification.ledOnMS = 300;
             notification.ledOffMS = 1000;
         }

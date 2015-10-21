@@ -2,7 +2,6 @@ package machat.machat.main.activities;
 
 import android.app.ListActivity;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
@@ -38,7 +37,7 @@ public class BlockListActivity extends ListActivity implements SocketActivity.So
     private Realm realm;
 
     @Override
-    protected void onCreate(@NonNull Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         socketActivity.setOnSocketListener(this);
         getActionBar().setTitle(TITLE);

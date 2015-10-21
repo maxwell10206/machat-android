@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
 import io.socket.client.Socket;
@@ -56,14 +55,13 @@ public class SocketActivity {
     }
 
     public void connect() {
-        LocalBroadcastManager.getInstance(activity).registerReceiver(receiver, new IntentFilter(SocketService.ACTION));
-
+        activity.registerReceiver(receiver, new IntentFilter(SocketService.ACTION));
         Intent intent = new Intent(activity, SocketService.class);
         activity.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     public void disconnect() {
-        LocalBroadcastManager.getInstance(activity).unregisterReceiver(receiver);
+        activity.unregisterReceiver(receiver);
         if (mBound) {
             activity.unbindService(mConnection);
             mBound = false;

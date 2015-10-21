@@ -6,7 +6,6 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 
 import machat.machat.models.FavoriteItem;
 import machat.machat.R;
@@ -24,7 +23,7 @@ public class FavoriteItemDialogFragment extends DialogFragment {
     }
 
     @Override
-    public Dialog onCreateDialog(@NonNull Bundle savedInstanceState) {
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the Builder class for convenient dialog construction
         final FavoriteItem favoriteItem = (FavoriteItem) getArguments().getSerializable(FAVORITE_ITEM);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

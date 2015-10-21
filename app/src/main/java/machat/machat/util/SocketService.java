@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
 
 import java.net.URISyntaxException;
 import java.security.cert.CertificateException;
@@ -87,10 +86,10 @@ public class SocketService extends Service {
             AvatarManager.setSocketService(this);
             TimeConvert.setContext(this);
             mSocket.connect();
-            LocalBroadcastManager.getInstance(this).registerReceiver(user, new IntentFilter(ACTION));
-            LocalBroadcastManager.getInstance(this).registerReceiver(favorites, new IntentFilter(ACTION));
-            LocalBroadcastManager.getInstance(this).registerReceiver(houseReceiver, new IntentFilter(ACTION));
-            LocalBroadcastManager.getInstance(this).registerReceiver(blockReceiver, new IntentFilter(ACTION));
+            this.registerReceiver(user, new IntentFilter(ACTION));
+            this.registerReceiver(favorites, new IntentFilter(ACTION));
+            this.registerReceiver(houseReceiver, new IntentFilter(ACTION));
+            this.registerReceiver(blockReceiver, new IntentFilter(ACTION));
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -101,17 +100,17 @@ public class SocketService extends Service {
         super.onDestroy();
         mSocket.disconnect();
         send.turnOffListeners();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(user);
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(favorites);
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(houseReceiver);
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(blockReceiver);
+        this.unregisterReceiver(user);
+        this.unregisterReceiver(favorites);
+        this.unregisterReceiver(houseReceiver);
+        this.unregisterReceiver(blockReceiver);
     }
 
     public void sendBroadcast(String command, String data) {
         Intent intent = new Intent(SocketService.ACTION);
         intent.putExtra(DATA, data);
         intent.putExtra(COMMAND, command);
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+        this.sendBroadcast(intent);
     }
 
     @Override
