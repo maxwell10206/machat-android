@@ -123,12 +123,14 @@ public class HouseArrayAdapter extends ArrayAdapter<Message> {
             }
         });
 
-        messageWrapper.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                houseActivity.createMessageResendDialog(getItem(position));
-            }
-        });
+        if(message.getStatus() == Message.FAILED_TO_SEND) {
+            messageWrapper.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    houseActivity.createMessageResendDialog(getItem(position));
+                }
+            });
+        }
 
         return rowView;
     }
