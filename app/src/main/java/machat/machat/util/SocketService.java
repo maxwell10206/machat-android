@@ -21,6 +21,7 @@ import machat.machat.tools.TimeConvert;
 import machat.machat.util.receivers.BlockReceiver;
 import machat.machat.util.receivers.FavoriteReceiver;
 import machat.machat.util.receivers.HouseReceiver;
+import machat.machat.util.receivers.ScreenOnReceiver;
 import machat.machat.util.receivers.UserReceiver;
 
 public class SocketService extends Service {
@@ -38,6 +39,7 @@ public class SocketService extends Service {
     public FavoriteReceiver favorites;
     public HouseReceiver houseReceiver;
     public BlockReceiver blockReceiver;
+    public ScreenOnReceiver screenOnReceiver;
     private IO.Options opts;
     private Socket mSocket;
     private TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
@@ -63,6 +65,11 @@ public class SocketService extends Service {
         return START_STICKY;
     }
 
+    public void forceReconnect(){
+        mSocket.disconnect();
+        mSocket.connect();
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -83,6 +90,7 @@ public class SocketService extends Service {
             favorites = new FavoriteReceiver(this);
             houseReceiver = new HouseReceiver(this);
             blockReceiver = new BlockReceiver(this);
+            screenOnReceiver = new ScreenOnReceiver(this);
             AvatarManager.setSocketService(this);
             TimeConvert.setContext(this);
             mSocket.connect();
@@ -90,6 +98,7 @@ public class SocketService extends Service {
             this.registerReceiver(favorites, new IntentFilter(ACTION));
             this.registerReceiver(houseReceiver, new IntentFilter(ACTION));
             this.registerReceiver(blockReceiver, new IntentFilter(ACTION));
+            this.registerReceiver(screenOnReceiver, new IntentFilter(Intent.ACTION_SCREEN_ON));
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -104,6 +113,7 @@ public class SocketService extends Service {
         this.unregisterReceiver(favorites);
         this.unregisterReceiver(houseReceiver);
         this.unregisterReceiver(blockReceiver);
+        this.unregisterReceiver(screenOnReceiver);
     }
 
     public void sendBroadcast(String command, String data) {

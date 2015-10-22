@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -66,6 +67,7 @@ public class MyProfileActivity extends Activity implements View.OnClickListener,
         nameView = (TextView) findViewById(R.id.name);
         usernameView = (TextView) findViewById(R.id.username);
         avatarView = (ImageView) findViewById(R.id.avatar);
+        avatarView.setOnClickListener(this);
         uploadAvatar = (Button) findViewById(R.id.uploadAvatar);
         versionView = (TextView) findViewById(R.id.version);
         uploadAvatar.setOnClickListener(this);
@@ -217,7 +219,19 @@ public class MyProfileActivity extends Activity implements View.OnClickListener,
 
     @Override
     public void onClick(View v) {
-        Crop.pickImage(this);
+        if(v.getId() == R.id.uploadAvatar) {
+            Crop.pickImage(this);
+        }else if(v.getId() == R.id.avatar){
+            Bitmap bitmap = ((BitmapDrawable) avatarView.getDrawable()).getBitmap();
+
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            byte[] byteArray = stream.toByteArray();
+
+            Intent intent = new Intent(this, AvatarActivity.class);
+            intent.putExtra(AvatarActivity.AVATAR, byteArray);
+            startActivity(intent);
+        }
     }
 
     @Override

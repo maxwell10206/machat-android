@@ -1,13 +1,19 @@
 package machat.machat.main.activities;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.io.ByteArrayOutputStream;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -24,7 +30,7 @@ import machat.machat.parsing.interfaces.OnNewProfile;
 import machat.machat.conf.SocketCommand;
 import machat.machat.parsing.SocketParse;
 
-public class ProfileActivity extends Activity implements SocketActivity.SocketListener, OnCallbackBlock, OnLoginListener, CompoundButton.OnCheckedChangeListener, OnNewProfile, OnCallbackAvatar {
+public class ProfileActivity extends Activity implements View.OnClickListener, SocketActivity.SocketListener, OnCallbackBlock, OnLoginListener, CompoundButton.OnCheckedChangeListener, OnNewProfile, OnCallbackAvatar {
 
     public static final String USER_ID = "userId";
     public static final String USERNAME = "username";
@@ -63,6 +69,7 @@ public class ProfileActivity extends Activity implements SocketActivity.SocketLi
 
         blockCheckBox = (CheckBox) findViewById(R.id.blockCheckBox);
         avatarView = (ImageView) findViewById(R.id.avatar);
+        avatarView.setOnClickListener(this);
         realm = Realm.getDefaultInstance();
 
         RealmResults<BlockUser> blockUsers = realm.where(BlockUser.class).findAll();
@@ -181,5 +188,18 @@ public class ProfileActivity extends Activity implements SocketActivity.SocketLi
             blockCheckBox.setChecked(true);
             waitingForBlock = false;
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+        Bitmap bitmap = ((BitmapDrawable) avatarView.getDrawable()).getBitmap();
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+
+        Intent intent = new Intent(this, AvatarActivity.class);
+        intent.putExtra(AvatarActivity.AVATAR, byteArray);
+        startActivity(intent);
     }
 }

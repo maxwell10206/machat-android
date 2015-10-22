@@ -70,6 +70,10 @@
             android:name=".main.activities.BlockListActivity"
             android:theme="@style/HouseTheme" />
 
+        <activity
+            android:name=".main.activities.AvatarActivity"
+            android:theme="@style/HouseTheme"/>
+
     </application>
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
