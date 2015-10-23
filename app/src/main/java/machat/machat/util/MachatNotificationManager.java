@@ -70,7 +70,7 @@ public class MachatNotificationManager {
                 .setContentText(name.substring(0, Math.min(12, name.length())) + ": " + message)
                 .setContentTitle(houseName)
                 .setSmallIcon(R.drawable.ic_home_white_48pt_3x)
-                .build();
+                .getNotification();
 
         createHouseNotification(houseId, myId, houseName, mBuilder);
     }

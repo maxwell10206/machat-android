@@ -248,7 +248,7 @@ public class HouseActivity extends ListActivity implements MessageResendDialog.A
     @Override
     protected void onStop() {
         super.onStop();
-        mService.houseReceiver.setHouseId(0);
+        mService.houseReceiver.setHouseId(-1);
         socketActivity.disconnect();
         if (!favorite) {
             mService.send.leaveHouse(houseId);
