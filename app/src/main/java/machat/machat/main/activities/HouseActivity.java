@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -383,7 +384,7 @@ public class HouseActivity extends ListActivity implements MessageResendDialog.A
         if (arrayAdapter != null && arrayAdapter.getCount() != 0) {
             for (int i = firstVisibleItem + getListView().getHeaderViewsCount(); i < firstVisibleItem + visibleItemCount; i++) {
                 Message message = (Message) getListView().getItemAtPosition(i);
-                if (message.getStatus() != Message.READ && connected && message.getUserId() != myProfile.getId()) {
+                if (message.getStatus() != Message.READ && connected  && message.getUserId() != myProfile.getId()) {
                     mService.send.readMessage(message.getId());
                 }
             }

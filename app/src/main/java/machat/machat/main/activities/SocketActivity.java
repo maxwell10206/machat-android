@@ -61,7 +61,11 @@ public class SocketActivity {
     }
 
     public void disconnect() {
-        activity.unregisterReceiver(receiver);
+        try {
+            activity.unregisterReceiver(receiver);
+        }catch(IllegalArgumentException e){
+            e.printStackTrace();
+        }
         if (mBound) {
             activity.unbindService(mConnection);
             mBound = false;
