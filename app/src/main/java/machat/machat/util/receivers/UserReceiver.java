@@ -67,8 +67,6 @@ public class UserReceiver extends BroadcastReceiver implements OnChangeEmail, On
         editor.putString(SavedPrefs.email, myProfile.getEmail());
         editor.commit();
         mService.send.getUndeliveredMessages();
-        mService.send.getFavoriteList();
-        AvatarManager.checkForUpdates();
     }
 
     @Override

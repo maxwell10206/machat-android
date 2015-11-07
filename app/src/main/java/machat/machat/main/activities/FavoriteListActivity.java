@@ -26,6 +26,7 @@ import machat.machat.main.MachatApplication;
 import machat.machat.models.FavoriteItem;
 import machat.machat.models.MyProfile;
 import machat.machat.R;
+import machat.machat.util.AvatarManager;
 import machat.machat.util.SocketService;
 import machat.machat.parsing.interfaces.OnLoginListener;
 import machat.machat.conf.SocketCommand;
@@ -145,7 +146,7 @@ public class FavoriteListActivity extends ListActivity implements OnLoginListene
 
     @Override
     public void onLoginSuccess(MyProfile myProfile) {
-        getHouses();
+        refreshHouses();
     }
 
     @Override
@@ -158,8 +159,9 @@ public class FavoriteListActivity extends ListActivity implements OnLoginListene
         connected = false;
     }
 
-    public void getHouses() {
+    public void refreshHouses() {
         mService.send.getFavoriteList();
+        AvatarManager.checkForUpdates();
     }
 
     @Override
@@ -219,7 +221,7 @@ public class FavoriteListActivity extends ListActivity implements OnLoginListene
 
     @Override
     public void onRefresh() {
-        getHouses();
+        refreshHouses();
     }
 
 }

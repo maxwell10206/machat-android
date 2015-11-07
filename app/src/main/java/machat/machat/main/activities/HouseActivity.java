@@ -21,6 +21,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import machat.machat.main.adapters.HouseArrayAdapter;
@@ -58,6 +59,7 @@ public class HouseActivity extends ListActivity implements MessageResendDialog.A
 
     public final static String MUTE = "mute";
     public Realm realm;
+    private RealmChangeListener realmListener;
     private SocketActivity socketActivity = new SocketActivity(this);
     private HouseArrayAdapter arrayAdapter;
     private boolean mute;
@@ -233,10 +235,84 @@ public class HouseActivity extends ListActivity implements MessageResendDialog.A
         return super.onCreateOptionsMenu(menu);
     }
 
+    private boolean waitingForArrayAdapter = false;
+
     @Override
     protected void onStart() {
         super.onStart();
-        updateMessages();
+
+        realmListener = new RealmChangeListener() {
+            @Override
+            public void onChange() {
+
+                int oldSize = arrayAdapter.getCount();
+
+                waitingForArrayAdapter = true;
+
+                ArrayList<Message> tempList = new ArrayList<>();
+
+                for(int i = 0; i < arrayAdapter.getCount(); i++){
+                    Message message = arrayAdapter.getItem(i);
+                    if(message.getStatus() == Message.NOT_SENT || message.getStatus() == Message.FAILED_TO_SEND){
+                        tempList.add(message);
+                    }
+                }
+                arrayAdapter.clear();
+
+                RealmQuery<Message> query = realm.where(Message.class).equalTo("houseId", houseId);
+                RealmResults<Message> result = query.findAll();
+
+                int sizeDifference = Math.abs(result.size() - oldSize);
+
+                int headerViewCount = getListView().getHeaderViewsCount();
+                final int positionToSave = getListView().getFirstVisiblePosition() + sizeDifference + headerViewCount;
+                View v = getListView().getChildAt(headerViewCount);
+                final int top = (v == null) ? 0 : v.getTop();
+                arrayAdapter.addAll(result);
+                arrayAdapter.addAll(tempList);
+
+                getListView().setSelectionFromTop(positionToSave, top);
+
+                waitingForArrayAdapter = false;
+
+                for(int i = 0; i < arrayAdapter.getCount(); i++) {
+                    Message message = arrayAdapter.getItem(i);
+                    int messageId = message.getId();
+                    int localId = message.getLocalId();
+                    if (messageId > newestMessageId) {
+                        newestMessageId = messageId;
+                    }
+                    if (messageId < oldestMessageId) {
+                        oldestMessageId = messageId;
+                    }
+                    if(localId > HouseActivity.this.localId){
+                        HouseActivity.this.localId = localId;
+                    }
+                }
+            }
+        };
+
+        RealmResults<Message> results = realm.where(Message.class).equalTo("houseId", houseId).greaterThan("id", newestMessageId).findAll();
+        arrayAdapter.addAll(results);
+        for (int i = 0; i < arrayAdapter.getCount(); i++) {
+            Message message = arrayAdapter.getItem(i);
+            int messageId = message.getId();
+            int localId = message.getLocalId();
+            if (messageId > newestMessageId) {
+                newestMessageId = messageId;
+            }
+            if (messageId < oldestMessageId) {
+                oldestMessageId = messageId;
+            }
+            if(localId > this.localId){
+                this.localId = localId;
+            }
+        }
+        if (results.size() > 0) {
+            progressBar.setVisibility(View.INVISIBLE);
+        }
+        realm.addChangeListener(realmListener);
+
         if (menu != null) {
             socketActivity.connect();
         }
@@ -248,6 +324,7 @@ public class HouseActivity extends ListActivity implements MessageResendDialog.A
     @Override
     protected void onStop() {
         super.onStop();
+        realm.removeChangeListener(realmListener);
         mService.houseReceiver.setHouseId(-1);
         socketActivity.disconnect();
         if (!favorite) {
@@ -269,7 +346,7 @@ public class HouseActivity extends ListActivity implements MessageResendDialog.A
     }
 
     private void getOldMessages() {
-        if (connected && !waitingForOldMessages && olderMessages && mService.isConnected()) {
+        if (connected && !waitingForOldMessages && olderMessages && !waitingForArrayAdapter && mService.isConnected()) {
             mService.send.getOldMessages(houseId, oldestMessageId);
             waitingForOldMessages = true;
             loadingView.setVisibility(View.VISIBLE);
@@ -310,24 +387,6 @@ public class HouseActivity extends ListActivity implements MessageResendDialog.A
     @Override
     public void onLoginFailed(String err) {
 
-    }
-
-    private void updateMessages() {
-        RealmResults<Message> results = realm.where(Message.class).equalTo("houseId", houseId).greaterThan("id", newestMessageId).findAll();
-        arrayAdapter.addAll(results);
-        for (int i = 0; i < arrayAdapter.getCount(); i++) {
-            Message message = arrayAdapter.getItem(i);
-            int messageId = message.getId();
-            if (messageId > newestMessageId) {
-                newestMessageId = messageId;
-            }
-            if (messageId < oldestMessageId) {
-                oldestMessageId = messageId;
-            }
-        }
-        if (results.size() > 0) {
-            progressBar.setVisibility(View.INVISIBLE);
-        }
     }
 
     @Override
@@ -434,8 +493,7 @@ public class HouseActivity extends ListActivity implements MessageResendDialog.A
                 Toast.makeText(this, "Not connected to server", Toast.LENGTH_SHORT).show();
             }
         } else if (v.getId() == R.id.inputMessage) {
-            getListView().smoothScrollBy(0, 0);
-            getListView().setSelection(getListView().getCount() - 1);
+            getListView().smoothScrollToPosition(arrayAdapter.getCount());
         }
     }
 
@@ -494,24 +552,6 @@ public class HouseActivity extends ListActivity implements MessageResendDialog.A
 
     @Override
     public void addOldMessages(ArrayList<Message> messageList) {
-        if(!messageList.isEmpty() && messageList.get(0).getHouseId() == houseId) {
-            for (int i = 0; i < messageList.size(); i++) {
-                Message message = messageList.get(i);
-                int messageId = message.getId();
-                if (messageId > newestMessageId) {
-                    newestMessageId = messageId;
-                }
-                if (messageId < oldestMessageId) {
-                    oldestMessageId = messageId;
-                }
-            }
-            int headerViewCount = getListView().getHeaderViewsCount();
-            final int positionToSave = getListView().getFirstVisiblePosition() + messageList.size() + headerViewCount;
-            View v = getListView().getChildAt(headerViewCount);
-            final int top = (v == null) ? 0 : v.getTop();
-            arrayAdapter.addAll(messageList);
-            getListView().setSelectionFromTop(positionToSave, top);
-        }
         if (messageList.isEmpty()) {
             olderMessages = false;
             getListView().removeHeaderView(loadingView);
@@ -522,34 +562,10 @@ public class HouseActivity extends ListActivity implements MessageResendDialog.A
 
     @Override
     public void addNewMessages(ArrayList<Message> messageList) {
-        if(!messageList.isEmpty() && messageList.get(0).getHouseId() == houseId) {
-            if (messageList.size() >= 20) {
-                arrayAdapter.clear();
-                oldestMessageId = Integer.MAX_VALUE;
-                newestMessageId = 0;
-            }
-            for(int i = 0; i < messageList.size(); i++){
-                Message message = messageList.get(i);
-                if(message.getId() > newestMessageId) {
-                    arrayAdapter.add(message);
-                }
-            }
-            for (int i = 0; i < messageList.size(); i++) {
-                Message message = messageList.get(i);
-                int messageId = message.getId();
-                if (messageId > newestMessageId) {
-                    newestMessageId = messageId;
-                }
-                if (messageId < oldestMessageId) {
-                    oldestMessageId = messageId;
-                }
-            }
-        }
+        waitingForNewMessages = false;
         mService.send.readHouse(houseId);
         progressBar.setVisibility(View.INVISIBLE);
-        waitingForNewMessages = false;
     }
-
 
     @Override
     public void getMessageListFailed(String err) {
