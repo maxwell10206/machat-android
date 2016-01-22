@@ -81,6 +81,7 @@ public class FavoriteListActivity extends ListActivity implements OnLoginListene
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         myId = getIntent().getExtras().getInt(MY_ID);
         setContentView(R.layout.activity_favorite_list);

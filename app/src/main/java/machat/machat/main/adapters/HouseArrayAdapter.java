@@ -32,15 +32,6 @@ public class HouseArrayAdapter extends ArrayAdapter<Message> {
         this.houseActivity = houseActivity;
     }
 
-    public void replaceByLocalId(int localId, Message message) {
-        for (int i = 0; i < messageList.size(); i++) {
-            if (messageList.get(i).getLocalId() == localId) {
-                messageList.set(i, message);
-            }
-        }
-        notifyDataSetChanged();
-    }
-
     public void changeMessageStatus(int id, int status) {
         for (int i = 0; i < messageList.size(); i++) {
             if (messageList.get(i).getId() == id) {

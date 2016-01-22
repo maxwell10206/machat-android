@@ -111,6 +111,9 @@ public class HouseReceiver extends BroadcastReceiver implements OnNewMessage, On
             }
             mService.send.getNewMessages(message.getHouseId(), newestMessageId);
         }
+        realm.beginTransaction();
+        realm.copyToRealm(message);
+        realm.commitTransaction();
 
     }
 

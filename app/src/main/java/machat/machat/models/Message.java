@@ -3,7 +3,6 @@ package machat.machat.models;
 import java.io.Serializable;
 
 import io.realm.RealmObject;
-import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 import machat.machat.R;
 import machat.machat.tools.TimeConvert;
@@ -20,7 +19,6 @@ public class Message extends RealmObject implements Serializable {
 
     private long time;
 
-    @PrimaryKey
     private int id;
 
     private int houseId;
@@ -28,8 +26,8 @@ public class Message extends RealmObject implements Serializable {
     //0 = not sent, 1 = sent, 2 = delivered, 3 = seen
     private int status = 0;
 
-    @Ignore
-    private int localId = -1;
+    @PrimaryKey
+    private int dbId = -1;
 
     private String houseName;
 
@@ -130,12 +128,12 @@ public class Message extends RealmObject implements Serializable {
         this.status = status;
     }
 
-    public int getLocalId() {
-        return localId;
+    public int getDbId() {
+        return dbId;
     }
 
-    public void setLocalId(int localId) {
-        this.localId = localId;
+    public void setDbId(int dbId) {
+        this.dbId = dbId;
     }
 
 }

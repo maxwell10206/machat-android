@@ -3,6 +3,8 @@ package machat.machat.util;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v4.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
@@ -66,20 +68,26 @@ public class MachatNotificationManager {
     }
 
     private void createMessageNotify(int houseId, int myId, String houseName, String name, String message) {
+        byte[] byteAvatar = AvatarManager.getAvatar(houseId);
+        Bitmap avatar = BitmapFactory.decodeByteArray(byteAvatar, 0, byteAvatar.length);
         Notification mBuilder = new Notification.Builder(service)
                 .setContentText(name.substring(0, Math.min(12, name.length())) + ": " + message)
                 .setContentTitle(houseName)
                 .setSmallIcon(R.drawable.ic_home_white_48pt_3x)
+                .setLargeIcon(avatar)
                 .getNotification();
 
         createHouseNotification(houseId, myId, houseName, mBuilder);
     }
 
     private void createMultiMessageNotify(int houseId, int myId, String houseName, String name, int missedMessages, String message) {
+        byte[] byteAvatar = AvatarManager.getAvatar(houseId);
+        Bitmap avatar = BitmapFactory.decodeByteArray(byteAvatar, 0, byteAvatar.length);
         Notification mBuilder = new Notification.Builder(service)
                 .setContentText(missedMessages + " messages: ..." + message)
                 .setContentTitle(houseName)
                 .setSmallIcon(R.drawable.ic_home_white_48pt_3x)
+                .setLargeIcon(avatar)
                 .getNotification();
 
         createHouseNotification(houseId, myId, houseName, mBuilder);

@@ -373,6 +373,7 @@ public class SocketParse {
         message.setHouseName(houseName);
         message.setStatus(status);
         message.setId(id);
+        message.setDbId(id);
         message.setHouseId(houseId);
         message.setUsername(username);
         message.setMessage(lastMessage);
@@ -389,7 +390,7 @@ public class SocketParse {
             if (succ) {
                 int localId = jsonObject.getInt(SocketData.localId);
                 Message message = parseMessage(jsonObject);
-                message.setLocalId(localId);
+                message.setDbId(localId);
                 listener.sendMessageSuccess(message);
             } else {
                 String err = jsonObject.getString(SocketData.err);

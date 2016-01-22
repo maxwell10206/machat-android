@@ -5,7 +5,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,6 +23,7 @@ import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
+import io.realm.Sort;
 import machat.machat.main.adapters.HouseArrayAdapter;
 import machat.machat.main.dialogs.MessageDialogFragment;
 import machat.machat.main.dialogs.MessageResendDialog;
@@ -68,7 +68,7 @@ public class HouseActivity extends ListActivity implements MessageResendDialog.A
     private String houseUsername;
     private int houseId;
     private int myId;
-    private int localId = 0;
+    private int dbId = -1;
 
     private SocketService mService;
 
@@ -191,7 +191,7 @@ public class HouseActivity extends ListActivity implements MessageResendDialog.A
         MessageResendDialog messageResendDialog = new MessageResendDialog();
         Bundle bundle = new Bundle();
         bundle.putInt(MessageResendDialog.MESSAGE_ID, message.getId());
-        bundle.putInt(MessageResendDialog.LOCAL_ID, message.getLocalId());
+        bundle.putInt(MessageResendDialog.LOCAL_ID, message.getDbId());
         messageResendDialog.setArguments(bundle);
         messageResendDialog.show(getFragmentManager(), "messageResend");
     }
@@ -249,16 +249,7 @@ public class HouseActivity extends ListActivity implements MessageResendDialog.A
 
                 waitingForArrayAdapter = true;
 
-                ArrayList<Message> tempList = new ArrayList<>();
-
-                for(int i = 0; i < arrayAdapter.getCount(); i++){
-                    Message message = arrayAdapter.getItem(i);
-                    if(message.getStatus() == Message.NOT_SENT || message.getStatus() == Message.FAILED_TO_SEND){
-                        tempList.add(message);
-                    }
-                }
                 arrayAdapter.clear();
-
                 RealmQuery<Message> query = realm.where(Message.class).equalTo("houseId", houseId);
                 RealmResults<Message> result = query.findAll();
 
@@ -269,24 +260,29 @@ public class HouseActivity extends ListActivity implements MessageResendDialog.A
                 View v = getListView().getChildAt(headerViewCount);
                 final int top = (v == null) ? 0 : v.getTop();
                 arrayAdapter.addAll(result);
-                arrayAdapter.addAll(tempList);
 
-                getListView().setSelectionFromTop(positionToSave, top);
+                if(oldSize == 0) {
+                    getListView().setAdapter(arrayAdapter);
+                    getListView().setSelectionFromTop(positionToSave, top);
+                }
 
                 waitingForArrayAdapter = false;
 
-                for(int i = 0; i < arrayAdapter.getCount(); i++) {
-                    Message message = arrayAdapter.getItem(i);
+                for(Message message: result){
                     int messageId = message.getId();
-                    int localId = message.getLocalId();
                     if (messageId > newestMessageId) {
                         newestMessageId = messageId;
                     }
                     if (messageId < oldestMessageId) {
                         oldestMessageId = messageId;
                     }
-                    if(localId > HouseActivity.this.localId){
-                        HouseActivity.this.localId = localId;
+                }
+
+                RealmQuery<Message> query2 = realm.where(Message.class).lessThan("dbId", dbId);
+                RealmResults<Message> result2 = query2.findAll();
+                for(Message message: result2){
+                    if(message.getDbId() < dbId){
+                        dbId = message.getDbId();
                     }
                 }
             }
@@ -294,18 +290,20 @@ public class HouseActivity extends ListActivity implements MessageResendDialog.A
 
         RealmResults<Message> results = realm.where(Message.class).equalTo("houseId", houseId).greaterThan("id", newestMessageId).findAll();
         arrayAdapter.addAll(results);
-        for (int i = 0; i < arrayAdapter.getCount(); i++) {
-            Message message = arrayAdapter.getItem(i);
+        for (Message message: results) {
             int messageId = message.getId();
-            int localId = message.getLocalId();
             if (messageId > newestMessageId) {
                 newestMessageId = messageId;
             }
             if (messageId < oldestMessageId) {
                 oldestMessageId = messageId;
             }
-            if(localId > this.localId){
-                this.localId = localId;
+        }
+        RealmQuery<Message> query2 = realm.where(Message.class).lessThan("dbId", dbId);
+        RealmResults<Message> result2 = query2.findAll();
+        for(Message message: result2){
+            if(message.getDbId() < dbId){
+                dbId = message.getDbId();
             }
         }
         if (results.size() > 0) {
@@ -338,7 +336,7 @@ public class HouseActivity extends ListActivity implements MessageResendDialog.A
         realm.beginTransaction();
         RealmQuery<Message> query = realm.where(Message.class).equalTo("houseId", houseId);
         RealmResults<Message> result = query.findAll();
-        result.sort("id", false);
+        result.sort("id", Sort.DESCENDING);
         while(result.size() > 20){
             result.removeLast();
         }
@@ -453,12 +451,8 @@ public class HouseActivity extends ListActivity implements MessageResendDialog.A
     @Override
     public void newMessage(Message message) {
         if (message.getHouseId() == houseId) {
-            arrayAdapter.add(message);
             mService.send.readHouse(houseId);
             newestMessageId = message.getId();
-            realm.beginTransaction();
-            realm.copyToRealmOrUpdate(message);
-            realm.commitTransaction();
         }
     }
 
@@ -468,18 +462,20 @@ public class HouseActivity extends ListActivity implements MessageResendDialog.A
             String messageString = inputMessage.getText().toString().trim();
             if (connected) {
                 if (!messageString.isEmpty()) {
+                    dbId--;
                     Message message = new Message();
                     message.setHouseId(houseId);
-                    message.setId(newestMessageId + 1);
+                    message.setId(dbId);
                     message.setName(myProfile.getName());
                     message.setUserId(myProfile.getId());
-                    message.setLocalId(localId);
+                    message.setDbId(dbId);
                     message.setMessage(messageString);
                     message.setTime(System.currentTimeMillis() / 1000);
                     message.setHouseName(houseName);
-                    mService.send.sendMessage(localId, houseId, messageString);
-                    arrayAdapter.add(message);
-                    localId++;
+                    mService.send.sendMessage(dbId, houseId, messageString);
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(message);
+                    realm.commitTransaction();
                     if (mute) {
                         muteHouse(false);
                     }
@@ -612,10 +608,8 @@ public class HouseActivity extends ListActivity implements MessageResendDialog.A
 
     @Override
     public void sendMessageSuccess(Message message) {
-        int localId = message.getLocalId();
-        newestMessageId = message.getId();
         realm.beginTransaction();
-        arrayAdapter.replaceByLocalId(localId, realm.copyToRealmOrUpdate(message));
+        realm.copyToRealmOrUpdate(message);
         realm.commitTransaction();
     }
 
@@ -644,7 +638,7 @@ public class HouseActivity extends ListActivity implements MessageResendDialog.A
     public void resendMessage(int localId, int messageId) {
         for(int i = 0; i < arrayAdapter.getCount(); i++){
             Message message = arrayAdapter.getItem(i);
-            if(message.getId() == messageId && message.getLocalId() == localId){
+            if(message.getId() == messageId && message.getDbId() == localId){
                 mService.send.sendMessage(localId, houseId, message.getMessage());
             }
         }
