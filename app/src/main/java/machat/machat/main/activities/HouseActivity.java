@@ -256,14 +256,17 @@ public class HouseActivity extends ListActivity implements MessageResendDialog.A
                 int sizeDifference = Math.abs(result.size() - oldSize);
 
                 int headerViewCount = getListView().getHeaderViewsCount();
-                final int positionToSave = getListView().getFirstVisiblePosition() + sizeDifference + headerViewCount;
+                int positionToSave = getListView().getFirstVisiblePosition() + headerViewCount;
                 View v = getListView().getChildAt(headerViewCount);
-                final int top = (v == null) ? 0 : v.getTop();
-                arrayAdapter.addAll(result);
+                int top = (v == null) ? 0 : v.getTop();
 
-                if(oldSize == 0) {
-                    getListView().setAdapter(arrayAdapter);
+                if(sizeDifference > 1){
+                    positionToSave += sizeDifference;
                 }
+
+                arrayAdapter.addAll(result);
+                arrayAdapter.notifyDataSetChanged();
+
                 getListView().setSelectionFromTop(positionToSave, top);
 
                 waitingForArrayAdapter = false;
