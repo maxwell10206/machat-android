@@ -263,8 +263,8 @@ public class HouseActivity extends ListActivity implements MessageResendDialog.A
 
                 if(oldSize == 0) {
                     getListView().setAdapter(arrayAdapter);
-                    getListView().setSelectionFromTop(positionToSave, top);
                 }
+                getListView().setSelectionFromTop(positionToSave, top);
 
                 waitingForArrayAdapter = false;
 
