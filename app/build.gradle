@@ -8,8 +8,8 @@ android {
         applicationId "machat.machat"
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 59
-        versionName "2.8.3"
+        versionCode 60
+        versionName "2.8.4"
     }
     buildTypes {
         release {

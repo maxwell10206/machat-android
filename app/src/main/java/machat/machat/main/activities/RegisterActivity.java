@@ -13,10 +13,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import machat.machat.R;
-import machat.machat.util.SocketService;
-import machat.machat.parsing.interfaces.OnCallbackRegister;
 import machat.machat.conf.SocketCommand;
 import machat.machat.parsing.SocketParse;
+import machat.machat.parsing.interfaces.OnCallbackRegister;
+import machat.machat.util.SocketService;
 
 public class RegisterActivity extends Activity implements View.OnClickListener, SocketActivity.SocketListener, TextWatcher, OnCallbackRegister {
 
@@ -83,6 +83,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener, 
             String email = emailView.getText().toString();
             String password = passwordView.getText().toString();
             progressBar.setVisibility(View.VISIBLE);
+            errorView.setText("");
             registerButton.setText("");
             registerButton.setEnabled(false);
             mService.send.registerAccount(username, email, password);

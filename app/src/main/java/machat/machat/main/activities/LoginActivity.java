@@ -12,13 +12,13 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import machat.machat.models.MyProfile;
 import machat.machat.R;
 import machat.machat.conf.SavedPrefs;
-import machat.machat.util.SocketService;
-import machat.machat.parsing.interfaces.OnLoginListener;
 import machat.machat.conf.SocketCommand;
+import machat.machat.models.MyProfile;
 import machat.machat.parsing.SocketParse;
+import machat.machat.parsing.interfaces.OnLoginListener;
+import machat.machat.util.SocketService;
 
 public class LoginActivity extends Activity implements OnLoginListener, SocketActivity.SocketListener, TextWatcher, View.OnClickListener {
 
@@ -98,6 +98,7 @@ public class LoginActivity extends Activity implements OnLoginListener, SocketAc
             loginButton.setEnabled(false);
             loginButton.setText("");
             progressBar.setVisibility(View.VISIBLE);
+            errorText.setText("");
         } else {
             errorText.setText("Could not connect to server.");
         }
